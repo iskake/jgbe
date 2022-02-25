@@ -23,7 +23,7 @@ public final class LD_r8_r8 extends Instruction {
     }
 
     @Override
-    public final void doOp(CPU cpu, int opcode) {
+    public void doOp(CPU cpu, int opcode) {
         cpu.reg.writeRegisterByte(r1, cpu.reg.readRegisterByte(r2));
     }
     
