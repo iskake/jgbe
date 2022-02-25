@@ -47,7 +47,7 @@ public class Registers {
      * @param value Value to be written to the given register
      * @param reg Register to be written to.
      */
-    public void writeRegisterByte(int value, RegisterIndex reg) {
+    public void writeRegisterByte(RegisterIndex reg, int value) {
         value = Bitwise.toByte(value);
         registerValues[reg.val] = value;
     }
@@ -75,7 +75,7 @@ public class Registers {
      * @param value Value to be written to the given register
      * @param reg Register to be written to.
      */
-    public void writeRegisterShort(int value, RegisterIndex reg) {
+    public void writeRegisterShort(RegisterIndex reg, int value) {
         value = Bitwise.toShort(value);
 
         // Index gets rounded down: 0b011 -> 0b001 == 0b010 -> 0b001
