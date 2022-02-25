@@ -1,6 +1,7 @@
 package tland.gb.Inst;
 
 import tland.gb.CPU;
+import tland.gb.GameBoy;
 
 public class NOP extends Instruction {
 
@@ -9,7 +10,7 @@ public class NOP extends Instruction {
     }
 
     @Override
-    public void doOp(CPU cpu, int opcode) {
+    public void doOp(GameBoy gb, int opcode) {
     }
 
 }

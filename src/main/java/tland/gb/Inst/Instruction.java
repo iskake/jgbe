@@ -1,6 +1,7 @@
 package tland.gb.Inst;
 
 import tland.gb.CPU;
+import tland.gb.GameBoy;
 
 /**
  * Opcode
@@ -17,7 +18,7 @@ public abstract class Instruction {
      * @param cpu
      * @param opcode
      */
-    abstract void doOp(CPU cpu, int opcode);
+    public abstract void doOp(GameBoy gb, int opcode);
 
     public String getName() {
         return name;

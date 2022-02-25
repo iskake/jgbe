@@ -1,6 +1,7 @@
 package tland.gb.Inst;
 
 import tland.gb.CPU;
+import tland.gb.GameBoy;
 import tland.gb.Registers.RegisterIndex;
 
 /**
@@ -17,8 +18,8 @@ public class LD_r8_n8 extends Instruction {
     }
 
     @Override
-    void doOp(CPU cpu, int opcode) {
-        cpu.reg.writeRegisterByte(reg, cpu.readNextByte());
+    public void doOp(GameBoy gb, int opcode) {
+        gb.reg.writeRegisterByte(reg, gb.readNextByte());
     }
     
 }
