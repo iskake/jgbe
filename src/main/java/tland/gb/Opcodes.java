@@ -15,7 +15,7 @@ public class Opcodes {
 /* 0x04 */ new IllegalInst("illegal, 0x04"),
 /* 0x05 */ new IllegalInst("illegal, 0x05"),
 
-/* 0x06 */ new LD_r8_n8("ld b, `n8`", RegisterIndex.B),
+/* 0x06 */ new LD_r8_n8("ld b, $%2d", RegisterIndex.B),
 
 /* 0x07 */ new IllegalInst("illegal, 0x07"),
 /* 0x08 */ new IllegalInst("illegal, 0x08"),
@@ -25,7 +25,7 @@ public class Opcodes {
 /* 0x0c */ new IllegalInst("illegal, 0x0c"),
 /* 0x0d */ new IllegalInst("illegal, 0x0d"),
 
-/* 0x0e */ new LD_r8_n8("ld c, `n8`", RegisterIndex.C),
+/* 0x0e */ new LD_r8_n8("ld c, $%2d", RegisterIndex.C),
 
 /* 0x0f */ new IllegalInst("illegal, 0x0f"),
 /* 0x10 */ new IllegalInst("illegal, 0x10"),
@@ -35,7 +35,7 @@ public class Opcodes {
 /* 0x14 */ new IllegalInst("illegal, 0x14"),
 /* 0x15 */ new IllegalInst("illegal, 0x15"),
 
-/* 0x16 */ new LD_r8_n8("ld d, `n8`", RegisterIndex.D),
+/* 0x16 */ new LD_r8_n8("ld d, $%2d", RegisterIndex.D),
 
 /* 0x17 */ new IllegalInst("illegal, 0x17"),
 /* 0x18 */ new IllegalInst("illegal, 0x18"),
@@ -45,7 +45,7 @@ public class Opcodes {
 /* 0x1c */ new IllegalInst("illegal, 0x1c"),
 /* 0x1d */ new IllegalInst("illegal, 0x1d"),
 
-/* 0x1e */ new LD_r8_n8("ld e, `n8`", RegisterIndex.E),
+/* 0x1e */ new LD_r8_n8("ld e, $%2d", RegisterIndex.E),
 
 /* 0x1f */ new IllegalInst("illegal, 0x1f"),
 /* 0x20 */ new IllegalInst("illegal, 0x20"),
@@ -55,7 +55,7 @@ public class Opcodes {
 /* 0x24 */ new IllegalInst("illegal, 0x24"),
 /* 0x25 */ new IllegalInst("illegal, 0x25"),
 
-/* 0x26 */ new LD_r8_n8("ld h, `n8`", RegisterIndex.H),
+/* 0x26 */ new LD_r8_n8("ld h, $%2d", RegisterIndex.H),
 
 /* 0x27 */ new IllegalInst("illegal, 0x27"),
 /* 0x28 */ new IllegalInst("illegal, 0x28"),
@@ -65,7 +65,7 @@ public class Opcodes {
 /* 0x2c */ new IllegalInst("illegal, 0x2c"),
 /* 0x2d */ new IllegalInst("illegal, 0x2d"),
 
-/* 0x2e */ new LD_r8_n8("ld l, `n8`", RegisterIndex.L),
+/* 0x2e */ new LD_r8_n8("ld l, $%2d", RegisterIndex.L),
 
 /* 0x2f */ new IllegalInst("illegal, 0x2f"),
 /* 0x30 */ new IllegalInst("illegal, 0x30"),
