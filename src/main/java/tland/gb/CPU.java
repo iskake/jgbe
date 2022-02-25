@@ -1,9 +1,5 @@
 package tland.gb;
 
-import tland.gb.Inst.IllegalInst;
-import tland.gb.Inst.Instruction;
-import tland.gb.Registers.RegisterIndex;
-
 public class CPU {
     GameBoy gameBoy;
 

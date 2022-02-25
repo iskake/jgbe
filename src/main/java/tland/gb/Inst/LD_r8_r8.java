@@ -1,6 +1,5 @@
 package tland.gb.Inst;
 
-import tland.gb.CPU;
 import tland.gb.GameBoy;
 import tland.gb.Registers.*;
 

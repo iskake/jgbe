@@ -1,9 +1,5 @@
 package tland.gb;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 public class GameBoy {
     ROM rom;
     CPU cpu;
@@ -18,6 +14,10 @@ public class GameBoy {
     }
 
     public void run() {
+        for (int i = 0; i < 0x100; i++) {
+            System.out.println(Opcodes.getOpcode(i).getName());
+
+        }
         cpu.run();
     }
 

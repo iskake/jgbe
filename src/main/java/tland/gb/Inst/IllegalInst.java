@@ -1,7 +1,5 @@
 package tland.gb.Inst;
 
-import java.time.InstantSource;
-
 import tland.gb.GameBoy;
 
 public class IllegalInst extends Instruction {
