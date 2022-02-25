@@ -5,15 +5,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class GameBoy {
+    ROM rom;
     CPU cpu;
 
-    public GameBoy() {
-        cpu = new CPU();
+    public GameBoy(ROM rom) {
+        this.rom = rom;
+        cpu = new CPU(this);
     }
 
-    public void run(Path fp) throws IOException {
-        ROM rom = new ROM(Files.readAllBytes(fp));
-
-        cpu.run(rom);
+    public void run() {
+        cpu.run();
     }
 }
