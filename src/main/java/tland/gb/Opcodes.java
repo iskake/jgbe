@@ -7,7 +7,19 @@ public enum Opcodes {
     // TODO: Fix [hl] instructions
     // TODO: Move instructons to array instead
     NOP(0x00, new NOP()),
+    
+    LD_B_n8(0x06, new LD_r8_n8("ld b, `n8`", RegisterIndex.B)),
 
+    LD_C_n8(0x0E, new LD_r8_n8("ld c, `n8`", RegisterIndex.C)),
+
+    LD_D_n8(0x16, new LD_r8_n8("ld d, `n8`", RegisterIndex.D)),
+
+    LD_E_n8(0x1E, new LD_r8_n8("ld e, `n8`", RegisterIndex.E)),
+    
+    LD_H_n8(0x26, new LD_r8_n8("ld h, `n8`", RegisterIndex.H)),
+    
+    LD_L_n8(0x2E, new LD_r8_n8("ld l, `n8`", RegisterIndex.L)),
+    
     LD_B_B(0x40, new LD_r8_r8("ld b, b", RegisterIndex.B, RegisterIndex.B)),
     LD_B_C(0x41, new LD_r8_r8("ld b, c", RegisterIndex.B, RegisterIndex.C)),
     LD_B_D(0x42, new LD_r8_r8("ld b, d", RegisterIndex.B, RegisterIndex.D)),

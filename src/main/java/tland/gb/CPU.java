@@ -23,4 +23,9 @@ public class CPU {
         // printRegisters();
     }
 
+    public int readNextByte() {
+        // TODO
+        return 0;
+    }
+
 }
