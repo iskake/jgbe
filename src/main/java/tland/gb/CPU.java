@@ -1,26 +1,15 @@
 package tland.gb;
 
 public class CPU {
-    GameBoy gameBoy;
+    private final GameBoy gb;
 
     public CPU(GameBoy gameBoy) {
-        this.gameBoy = gameBoy;
+        this.gb = gameBoy;
     }
 
     public void run() {
-        int i = 0;
-        while (true) {
-            i++;
-            if (i > 10) {
-                break;
-            }
-        }
-        // printRegisters();
-    }
-
-    public int readNextByte() {
-        // TODO
-        return 0;
+        int lastOpcode = gb.readNextByte();
+        Opcodes.getOpcode(lastOpcode).doOp(gb, gb.readNextByte());
     }
 
 }
