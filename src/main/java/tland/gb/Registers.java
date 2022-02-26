@@ -103,6 +103,7 @@ public class Registers {
 
     /**
      * Checks if the given register is valid for byte/short read/write operations
+     * If it is not, throw exception.
      * @param reg Register to check.
      * @param shortReg Check for short register.
      * @throws IndexOutOfBoundsException
@@ -121,6 +122,7 @@ public class Registers {
 
     /**
      * Checks if the given register is valid for byte read/write operations.
+     * If it is not, throw exception.
      * @param reg Register to check.
      * @throws IndexOutOfBoundsException
      */
@@ -130,11 +132,33 @@ public class Registers {
 
     /**
      * Checks if the given register is valid for short read/write operations.
+     * If it is not, throw exception.
      * @param reg Register to check.
      * @throws IndexOutOfBoundsException
      */
     private void checkRegisterShort(RegisterIndex reg) {
         checkRegister(reg, true);
+    }
+    
+    /**
+     * Checks if the given register is a 8-bit register.
+     * @param reg
+     * @return {@code true} if the register is either {@code A},{@code F},{@code B},{@code C},
+     * {@code D},{@code E},{@code H} or {@code L}. {@code false} otherwise.
+     */
+    public boolean isRegisterByte(RegisterIndex reg) {
+        return reg.val >= RegisterIndex.A.val && reg.val <= RegisterIndex.L.val;
+    }
+
+    /**
+     * Checks if the given register is a 16-bit register.
+     * Note: this does not include {@code SP} and {@code PC}
+     * @param reg
+     * @return {@code true} if the register is either {@code AF},{@code BC},{@code DE} or {@code HL}.
+     * {@code false} otherwise.
+     */
+    public boolean isRegisterShort(RegisterIndex reg) {
+        return reg.val >= RegisterIndex.AF.val && reg.val <= RegisterIndex.HL.val;
     }
 
     public void printRegisters() {
