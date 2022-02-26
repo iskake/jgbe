@@ -4,17 +4,13 @@ import tland.gb.GameBoy;
 import tland.gb.Registers.*;
 
 /**
- * Load data from register2 into register1
- * Implements opcodes: `ld r1, r2`
+ * Load byte from register2 into register1.
+ * Implements opcodes: {@code ld r1, r2}
  */
 public final class LD_r8_r8 extends Instruction {
     private final RegisterIndex r1;
     private final RegisterIndex r2;
 
-    /**
-     * Load data from register2 into register1
-     * Implements opcodes: `ld r1, r2`
-     */
     public LD_r8_r8(String name, RegisterIndex r1, RegisterIndex r2) {
         super(name);
 

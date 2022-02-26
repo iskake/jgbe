@@ -4,8 +4,9 @@ import tland.gb.GameBoy;
 import tland.gb.Registers.RegisterIndex;
 
 /**
- * Load byte `n8` into register
- * Implements opcodes: `ld r8, n8`
+ * Load byte into register.
+ * 
+ * Implements opcodes: {@code ld r8, n8}
  */
 public class LD_r8_n8 extends Instruction {
     private final RegisterIndex reg;
