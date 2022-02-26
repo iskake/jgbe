@@ -1,6 +1,7 @@
 package tland;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import tland.gb.GameBoy;
@@ -16,12 +17,16 @@ public class GameBoyTest {
         
         reg.writeRegisterByte(RegisterIndex.B, 0x4e);
         reg.writeRegisterByte(RegisterIndex.C, 0x67);
-        assertEquals(0x4e67, reg.readRegisterShort(RegisterIndex.B));
-        assertEquals(0x4e67, reg.readRegisterShort(RegisterIndex.C));
+        assertEquals(0x4e67, reg.readRegisterShort(RegisterIndex.BC));
 
-        reg.writeRegisterShort(RegisterIndex.D, 0x3f5a);
-        assertEquals(0x3f5a, reg.readRegisterShort(RegisterIndex.D));
-        reg.writeRegisterShort(RegisterIndex.E, 0x3f5a);
-        assertEquals(0x3f5a, reg.readRegisterShort(RegisterIndex.D));
+        // Invalid byte/short register reading
+        assertThrows(IndexOutOfBoundsException.class, () -> reg.readRegisterShort(RegisterIndex.B));
+        assertThrows(IndexOutOfBoundsException.class, () -> reg.readRegisterByte(RegisterIndex.BC));
+
+        reg.writeRegisterShort(RegisterIndex.DE, 0x3f5a);
+        assertEquals(0x3f5a, reg.readRegisterShort(RegisterIndex.DE));
+
+        reg.writeRegisterShort(RegisterIndex.HL, 0x3f5a);
+        assertEquals(0x5a, reg.readRegisterByte(RegisterIndex.L));
     }
 }
