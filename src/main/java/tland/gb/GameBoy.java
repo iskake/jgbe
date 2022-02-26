@@ -1,27 +1,45 @@
 package tland.gb;
 
-public class GameBoy {
-    ROM rom;
-    CPU cpu;
-    int pc;
-    int sp;
-    public Registers reg;
+import tland.Bitwise;
+import tland.gb.mem.CartridgeROM;
+import tland.gb.mem.MemoryMap;
 
-    public GameBoy(ROM rom) {
+public class GameBoy {
+    private CartridgeROM rom;
+    private CPU cpu;
+    private int pc;
+    private int sp;
+    public Registers reg;
+    public MemoryMap memoryMap;
+
+
+    public GameBoy(CartridgeROM rom) {
         this.rom = rom;
+        memoryMap = new MemoryMap(rom);
         reg = new Registers();
         cpu = new CPU(this);
+        pc = 0;
+        sp = 0xffff;
     }
 
     public void run() {
-        for (int i = 0; i < 0x100; i++) {
-            System.out.println(Opcodes.getOpcode(i).getName());
 
+        while (true) {
+            cpu.run();
         }
-        cpu.run();
     }
 
     public int readNextByte() {
-        return cpu.readNextByte();
+        int val = memoryMap.readByte(++pc);
+        return val;
+    }
+
+    public int readNextShort() {
+        int lo = readNextByte();
+        int hi = readNextByte();
+        return Bitwise.toShort(hi, lo);
+    }
+
+    public void writeMemoryAddress(int address, int value) {
     }
 }
