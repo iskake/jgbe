@@ -41,5 +41,10 @@ public class GameBoy {
     }
 
     public void writeMemoryAddress(short address, byte value) {
+        memoryMap.writeByte(address, value);
+    }
+
+    public byte readMemoryAddress(short address) {
+        return memoryMap.readByte(address);
     }
 }
