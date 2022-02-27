@@ -23,5 +23,7 @@ public interface Memory extends ReadableMemory {
      * @param value   The value to write.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
+    // TODO? Check if this is really needed (there aren't any 16-bit load
+    // TODO? instructions that writes a short to memory)
     public void writeShort(int address, short value) throws IndexOutOfBoundsException;
 }
