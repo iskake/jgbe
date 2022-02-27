@@ -15,17 +15,19 @@ public class Opcodes {
 /* 0x04 */ new IllegalInst("illegal, 0x04"),
 /* 0x05 */ new IllegalInst("illegal, 0x05"),
 
-/* 0x06 */ new LD_r8_n8("ld b, $%02d", RegisterIndex.B),
+/* 0x06 */ new LD_r8_n8("ld b, $%02x", RegisterIndex.B),
 
 /* 0x07 */ new IllegalInst("illegal, 0x07"),
 /* 0x08 */ new IllegalInst("illegal, 0x08"),
 /* 0x09 */ new IllegalInst("illegal, 0x09"),
+
 /* 0x0a */ new IllegalInst("illegal, 0x0a"),
+
 /* 0x0b */ new IllegalInst("illegal, 0x0b"),
 /* 0x0c */ new IllegalInst("illegal, 0x0c"),
 /* 0x0d */ new IllegalInst("illegal, 0x0d"),
 
-/* 0x0e */ new LD_r8_n8("ld c, $%02d", RegisterIndex.C),
+/* 0x0e */ new LD_r8_n8("ld c, $%02x", RegisterIndex.C),
 
 /* 0x0f */ new IllegalInst("illegal, 0x0f"),
 /* 0x10 */ new IllegalInst("illegal, 0x10"),
@@ -35,7 +37,7 @@ public class Opcodes {
 /* 0x14 */ new IllegalInst("illegal, 0x14"),
 /* 0x15 */ new IllegalInst("illegal, 0x15"),
 
-/* 0x16 */ new LD_r8_n8("ld d, $%02d", RegisterIndex.D),
+/* 0x16 */ new LD_r8_n8("ld d, $%02x", RegisterIndex.D),
 
 /* 0x17 */ new IllegalInst("illegal, 0x17"),
 /* 0x18 */ new IllegalInst("illegal, 0x18"),
@@ -45,7 +47,7 @@ public class Opcodes {
 /* 0x1c */ new IllegalInst("illegal, 0x1c"),
 /* 0x1d */ new IllegalInst("illegal, 0x1d"),
 
-/* 0x1e */ new LD_r8_n8("ld e, $%02d", RegisterIndex.E),
+/* 0x1e */ new LD_r8_n8("ld e, $%02x", RegisterIndex.E),
 
 /* 0x1f */ new IllegalInst("illegal, 0x1f"),
 /* 0x20 */ new IllegalInst("illegal, 0x20"),
@@ -55,7 +57,7 @@ public class Opcodes {
 /* 0x24 */ new IllegalInst("illegal, 0x24"),
 /* 0x25 */ new IllegalInst("illegal, 0x25"),
 
-/* 0x26 */ new LD_r8_n8("ld h, $%02d", RegisterIndex.H),
+/* 0x26 */ new LD_r8_n8("ld h, $%02x", RegisterIndex.H),
 
 /* 0x27 */ new IllegalInst("illegal, 0x27"),
 /* 0x28 */ new IllegalInst("illegal, 0x28"),
@@ -65,7 +67,7 @@ public class Opcodes {
 /* 0x2c */ new IllegalInst("illegal, 0x2c"),
 /* 0x2d */ new IllegalInst("illegal, 0x2d"),
 
-/* 0x2e */ new LD_r8_n8("ld l, $%02d", RegisterIndex.L),
+/* 0x2e */ new LD_r8_n8("ld l, $%02x", RegisterIndex.L),
 
 /* 0x2f */ new IllegalInst("illegal, 0x2f"),
 /* 0x30 */ new IllegalInst("illegal, 0x30"),
@@ -85,7 +87,7 @@ public class Opcodes {
 /* 0x3c */ new IllegalInst("illegal, 0x3c"),
 /* 0x3d */ new IllegalInst("illegal, 0x3d"),
 
-/* 0x3e */ new LD_r8_n8("ld a, $%02d", RegisterIndex.A),
+/* 0x3e */ new LD_r8_n8("ld a, $%02x", RegisterIndex.A),
 
 /* 0x3f */ new IllegalInst("illegal, 0x3f"),
 
@@ -262,7 +264,7 @@ public class Opcodes {
 /* 0xde */ new IllegalInst("illegal, 0xde"),
 /* 0xdf */ new IllegalInst("illegal, 0xdf"),
 
-/* 0xe0 */ new LD_ptr_A("ldh a, [$%02d]"),
+/* 0xe0 */ new LD_ptr_A("ldh a, [$%02x]"),
 
 /* 0xe1 */ new IllegalInst("illegal, 0xe1"),
 
@@ -276,7 +278,7 @@ public class Opcodes {
 /* 0xe8 */ new IllegalInst("illegal, 0xe8"),
 /* 0xe9 */ new IllegalInst("illegal, 0xe9"),
 
-/* 0xea */ new LD_ptr_A("ld [$%04d], a"),
+/* 0xea */ new LD_ptr_A("ld [$%04x], a"),
 
 /* 0xeb */ new IllegalInst("illegal, 0xeb"),
 /* 0xec */ new IllegalInst("illegal, 0xec"),
@@ -284,7 +286,7 @@ public class Opcodes {
 /* 0xee */ new IllegalInst("illegal, 0xee"),
 /* 0xef */ new IllegalInst("illegal, 0xef"),
 
-/* 0xf0 */ new LD_A_ptr("ld a, [$%02d]"),
+/* 0xf0 */ new LD_A_ptr("ld a, [$%02x]"),
 
 /* 0xf1 */ new IllegalInst("illegal, 0xf1"),
 
@@ -298,7 +300,7 @@ public class Opcodes {
 /* 0xf8 */ new IllegalInst("illegal, 0xf8"),
 /* 0xf9 */ new IllegalInst("illegal, 0xf9"),
 
-/* 0xfa */ new LD_A_ptr("ld a, [$%04d]"),
+/* 0xfa */ new LD_A_ptr("ld a, [$%04x]"),
 
 /* 0xfb */ new IllegalInst("illegal, 0xfb"),
 /* 0xfc */ new IllegalInst("illegal, 0xfc"),
