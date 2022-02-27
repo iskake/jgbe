@@ -1,15 +1,11 @@
 package tland.gb.mem;
 
 /**
- * Interface for memory that can be read from (but not necessarily writable).
+ * Interface for memory that can be read from (but not necessarily written to).
  * 
- * @see Memory
+ * @see WritableMemory
  */
 public interface ReadableMemory {
-    // Note: there is no (practical) use for 'write-only memory' (in the context of
-    // Game Boy memory, at least), so there is no need for a 'WritableMemory'
-    // interface.
-
     /**
      * Read the byte at address {@code address} in memory.
      * 

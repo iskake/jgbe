@@ -6,7 +6,7 @@ import tland.Bitwise;
  * Random Access Memory. Implementation of memory that can be both read and
  * written to.
  */
-public class RAM implements Memory {
+public class RAM implements WritableMemory, ReadableMemory {
     public final int size;
     private byte[] bytes;
 
