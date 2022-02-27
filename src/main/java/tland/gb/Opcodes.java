@@ -309,8 +309,9 @@ public class Opcodes {
 /* 0xff */ new IllegalInst("illegal, 0xff"),
     };
 
-    public static Instruction getOpcode(int index) {
-        return opcodes[index];
+    public static Instruction getOpcode(byte index) {
+        int i = Byte.toUnsignedInt(index);
+        return opcodes[i];
     }
 
 }
