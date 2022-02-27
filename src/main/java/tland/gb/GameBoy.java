@@ -15,18 +15,21 @@ public class GameBoy {
 
     public GameBoy(CartridgeROM rom) {
         this.rom = rom;
-        memoryMap = new MemoryMap(rom);
+        memoryMap = new MemoryMap(this);
         reg = new Registers();
         cpu = new CPU(this);
-        pc = 0;
+        pc = 0xff;
         sp = Bitwise.toShort(0xffff);
     }
 
     public void run() {
-
         while (true) {
             cpu.run();
         }
+    }
+
+    public CartridgeROM getROM() {
+        return rom;
     }
 
     public byte readNextByte() {
