@@ -6,21 +6,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import tland.gb.GameBoy;
-import tland.gb.ROM;
+import tland.gb.mem.CartridgeROM;
 
 public class Main 
 {
     public static void main(String[] args)
     {
+        CartridgeROM rom;
         try {
             Path romFile = Paths.get("rom/test.gb");
-            ROM rom = new ROM(Files.readAllBytes(romFile));
-
-            GameBoy gb = new GameBoy(rom);
-
-            gb.run();
+            rom = new CartridgeROM(Files.readAllBytes(romFile));
+            
         } catch (IOException e) {
             System.out.println("File not found: " + e.getMessage());
+            return;
         }
+
+        GameBoy gb = new GameBoy(rom);
+
+        gb.run();
     }
 }
