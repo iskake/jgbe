@@ -29,7 +29,7 @@ public class Registers {
      * The registers' values, with each register having an index
      * of the {@code val} specified in {@code RegisterIndex} (8-bit).
      */
-    private int[] registerValues = new int[8];
+    private byte[] registerValues = new byte[8];
 
     /**
      * Read the the byte at the given 8-bit register specified
@@ -38,7 +38,7 @@ public class Registers {
      * @param reg Register to be read from
      * @return The byte value of the given register
      */
-    public int readRegisterByte(RegisterIndex reg) {
+    public byte readRegisterByte(RegisterIndex reg) {
         checkRegisterByte(reg);
         return registerValues[reg.val];
     }
@@ -49,10 +49,20 @@ public class Registers {
      * @param value Value to be written to the given register
      * @param reg Register to be written to.
      */
-    public void writeRegisterByte(RegisterIndex reg, int value) {
+    public void writeRegisterByte(RegisterIndex reg, byte value) {
         checkRegisterByte(reg);
         value = Bitwise.toByte(value);
         registerValues[reg.val] = value;
+    }
+
+    /**
+     * Writes the given byte {@code value} to the 8-bit register {@code reg}.
+     * 
+     * @param value Value to be written to the given register
+     * @param reg Register to be written to.
+     */
+    public void writeRegisterByte(RegisterIndex reg, int value) {
+        writeRegisterByte(reg, Bitwise.toByte(value));
     }
 
     /**
@@ -61,7 +71,7 @@ public class Registers {
      * @param reg Register to be read from
      * @return The short value of the given register
      */
-    public int readRegisterShort(RegisterIndex reg) {
+    public short readRegisterShort(RegisterIndex reg) {
         checkRegisterShort(reg);
 
         // Bit level trickery to avoid switch statement:
@@ -71,8 +81,8 @@ public class Registers {
         // (e.g. B(0b10) -> C(0b11))
         int offset = (reg.val & 0b111) << 1;
 
-        int hi = registerValues[offset];
-        int lo = registerValues[offset + 1];
+        byte hi = registerValues[offset];
+        byte lo = registerValues[offset + 1];
 
         return Bitwise.toShort(hi, lo);
     }
@@ -83,9 +93,8 @@ public class Registers {
      * @param value Value to be written to the given register
      * @param reg Register to be written to.
      */
-    public void writeRegisterShort(RegisterIndex reg, int value) {
+    public void writeRegisterShort(RegisterIndex reg, short value) {
         checkRegisterShort(reg);
-        value = Bitwise.toShort(value);
 
         // Bit level trickery to avoid switch statement:
         // Get 3 lsb of value of RegisterIndex (e.g. BC = 0b1001 -> 0b001) and store as offset.
@@ -94,11 +103,21 @@ public class Registers {
         // (e.g. B(0b10) -> C(0b11))
         int offset = (reg.val & 0b111) << 1;
 
-        int hi = Bitwise.getHighByte(value);
-        int lo = Bitwise.getLowByte(value);
+        byte hi = Bitwise.getHighByte(value);
+        byte lo = Bitwise.getLowByte(value);
 
         registerValues[offset] = hi;
         registerValues[offset + 1] = lo;
+    }
+
+    /**
+     * Writes the given {@code value} to the 16-bit register {@code reg}
+     * 
+     * @param value Value to be written to the given register
+     * @param reg Register to be written to.
+     */
+    public void writeRegisterShort(RegisterIndex reg, int value) {
+        writeRegisterShort(reg, Bitwise.toShort(value));
     }
 
     /**

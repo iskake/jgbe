@@ -13,7 +13,7 @@ public interface Memory extends ReadableMemory {
      * @param value   The value to write.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    public void writeByte(int address, int value) throws IndexOutOfBoundsException;
+    public void writeByte(int address, byte value) throws IndexOutOfBoundsException;
 
     /**
      * Write {@code value} to the short (little-endian) starting at address
@@ -23,5 +23,5 @@ public interface Memory extends ReadableMemory {
      * @param value   The value to write.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    public void writeShort(int address, int value) throws IndexOutOfBoundsException;
+    public void writeShort(int address, short value) throws IndexOutOfBoundsException;
 }

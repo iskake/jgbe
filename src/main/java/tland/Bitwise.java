@@ -10,8 +10,8 @@ public class Bitwise {
      * @param value
      * @return the high byte of the specified short.
      */
-    public static int getHighByte(int value) {
-        return value >> 8;
+    public static byte getHighByte(short value) {
+        return (byte) (value >> 8);
     }
 
     /**
@@ -20,40 +20,69 @@ public class Bitwise {
      * @param value
      * @return the low byte of the specified short.
      */
-    public static int getLowByte(int value) {
-        return value & 0xff;
+    public static byte getLowByte(short value) {
+        return (byte) (value & 0xff);
     }
 
     /**
-     * Create a new short from two bytes
+     * Create a new short from two bytes.
      * 
      * @param hi High byte of short.
      * @param lo Low byte of short.
      * @return A new short constructed from the two parameters.
      */
-    public static int toShort(int hi, int lo) {
-        int value = (hi << 8) | lo;
+    public static short toShort(byte hi, byte lo) {
+        short value = (short) ((hi << 8) | lo);
         return value;
     }
 
     /**
-     * Convert an integer into a (unsigned) byte (0x00 to 0xff).
+     * Create a new short from an integer.
+     * 
+     * @param value Integer to convert.
+     * @return The converted short value.
+     */
+    public static short toShort(int value) {
+        return (short) value;
+    }
+
+    /**
+     * Convert an integer into a byte.
      * 
      * @param value Value to convert.
-     * @return The converted integer value.
+     * @return The converted byte value.
      */
-    public static int toByte(int value) {
+    public static byte toByte(int value) {
+        return getLowByte(toShort(value));
+    }
+
+    /**
+     * Convert a short into a byte.
+     * 
+     * @param value Value to convert.
+     * @return The converted byte value.
+     */
+    public static byte toByte(short value) {
         return getLowByte(value);
     }
 
     /**
-     * Convert an integer into a (unsigned) short (0x0000 to 0xffff).
+     * Make given int value into a byte, without converting it.
      * 
-     * @param value Value to convert.
-     * @return The converted integer value.
+     * @param value The value to get as short.
+     * @return Value as short.
      */
-    public static int toShort(int value) {
-        value = value & 0xffff;
-        return value;
+    public static int intAsByte(int value) {
+        return value & 0xff;
+    }
+
+    /**
+     * Make given int value into a short, without converting it.
+     * 
+     * @param value The value to get as short.
+     * @return Value as short.
+     */
+    public static int intAsShort(int value) {
+        return value & 0xffff;
     }
 }

@@ -24,6 +24,7 @@ public class CartridgeROM {
 
     /**
      * Get specified {@code ROMBank} from cartridge ROM.
+     * 
      * @param index The index of the {@code ROMBank}.
      * @return The specified {@code ROMBank}.
      */

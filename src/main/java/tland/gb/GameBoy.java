@@ -7,8 +7,8 @@ import tland.gb.mem.MemoryMap;
 public class GameBoy {
     private CartridgeROM rom;
     private CPU cpu;
-    private int pc;
-    private int sp;
+    private short pc;
+    private short sp;
     public Registers reg;
     public MemoryMap memoryMap;
 
@@ -19,7 +19,7 @@ public class GameBoy {
         reg = new Registers();
         cpu = new CPU(this);
         pc = 0;
-        sp = 0xffff;
+        sp = Bitwise.toShort(0xffff);
     }
 
     public void run() {
@@ -29,17 +29,17 @@ public class GameBoy {
         }
     }
 
-    public int readNextByte() {
-        int val = memoryMap.readByte(++pc);
+    public byte readNextByte() {
+        byte val = memoryMap.readByte(++pc);
         return val;
     }
 
-    public int readNextShort() {
-        int lo = readNextByte();
-        int hi = readNextByte();
+    public short readNextShort() {
+        byte lo = readNextByte();
+        byte hi = readNextByte();
         return Bitwise.toShort(hi, lo);
     }
 
-    public void writeMemoryAddress(int address, int value) {
+    public void writeMemoryAddress(short address, byte value) {
     }
 }

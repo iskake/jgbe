@@ -13,20 +13,21 @@ public class GameBoyTest {
     void registerTest() {
         Registers reg = new Registers();
         reg.writeRegisterByte(RegisterIndex.A, 0xff);
-        assertEquals(0xff, reg.readRegisterByte(RegisterIndex.A));
+        assertEquals(Bitwise.toByte(0xff), reg.readRegisterByte(RegisterIndex.A));
         
         reg.writeRegisterByte(RegisterIndex.B, 0x4e);
         reg.writeRegisterByte(RegisterIndex.C, 0x67);
-        assertEquals(0x4e67, reg.readRegisterShort(RegisterIndex.BC));
+        assertEquals(Bitwise.toShort(0x4e67), reg.readRegisterShort(RegisterIndex.BC));
 
         // Invalid byte/short register reading
         assertThrows(IndexOutOfBoundsException.class, () -> reg.readRegisterShort(RegisterIndex.B));
         assertThrows(IndexOutOfBoundsException.class, () -> reg.readRegisterByte(RegisterIndex.BC));
 
         reg.writeRegisterShort(RegisterIndex.DE, 0x3f5a);
-        assertEquals(0x3f5a, reg.readRegisterShort(RegisterIndex.DE));
+        assertEquals(Bitwise.toShort(0x3f5a), reg.readRegisterShort(RegisterIndex.DE));
 
         reg.writeRegisterShort(RegisterIndex.HL, 0x3f5a);
-        assertEquals(0x5a, reg.readRegisterByte(RegisterIndex.L));
+        assertEquals(Bitwise.toByte(0x5a), reg.readRegisterByte(RegisterIndex.L));
+    }
     }
 }

@@ -8,7 +8,7 @@ public class CPU {
     }
 
     public void run() {
-        int lastOpcode = gb.readNextByte();
+        byte lastOpcode = gb.readNextByte();
         Opcodes.getOpcode(lastOpcode).doOp(gb, gb.readNextByte());
     }
 

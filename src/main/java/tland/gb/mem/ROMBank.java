@@ -16,14 +16,16 @@ public class ROMBank implements ReadableMemory {
     }
 
     @Override
-    public int readByte(int index) {
-        return bytes[index];
+    public byte readByte(int address) {
+        address = Bitwise.intAsByte(address);
+        return bytes[address];
     }
 
     @Override
-    public int readShort(int index) {
-        int hi = readByte(index);
-        int lo = readByte(index + 1);
+    public short readShort(int address) {
+        address = Bitwise.intAsShort(address);
+        byte lo = readByte(address);
+        byte hi = readByte(address + 1);
         return Bitwise.toShort(hi, lo);
     }
 

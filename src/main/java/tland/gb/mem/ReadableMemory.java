@@ -17,7 +17,7 @@ public interface ReadableMemory {
      * @return The byte at the address of {@code address}.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    public int readByte(int address) throws IndexOutOfBoundsException;
+    public byte readByte(int address) throws IndexOutOfBoundsException;
 
     /**
      * Read the short (little-endian) starting at address {@code address} in memory.
@@ -26,5 +26,5 @@ public interface ReadableMemory {
      * @return The byte at the address of {@code address}.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    public int readShort(int address) throws IndexOutOfBoundsException;
+    public short readShort(int address) throws IndexOutOfBoundsException;
 }
