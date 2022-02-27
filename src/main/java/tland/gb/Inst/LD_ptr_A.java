@@ -20,16 +20,17 @@ public class LD_ptr_A extends Instruction {
 
     @Override
     public void doOp(GameBoy gb, int opcode) {
-        int address;
+        byte value = gb.reg.readRegisterByte(reg);
+        short address;
 
         switch (opcode) {
             // ldh [$n8], a (a.k.a. `ld [$ff00+n8], a`)
             case 0xF0:
-                address = Bitwise.toShort(0xff, gb.readNextByte());
+                address = Bitwise.toShort((byte)0xff, gb.readNextByte());
                 break;
             // ld [$c], a (a.k.a. `ld [$ff00+c], a`)
             case 0xF2:
-                address = Bitwise.toShort(0xff, gb.reg.readRegisterByte(RegisterIndex.C));
+                address = Bitwise.toShort((byte)0xff, gb.reg.readRegisterByte(RegisterIndex.C));
                 break;
             // ld [$n16], a
             default:
@@ -37,7 +38,7 @@ public class LD_ptr_A extends Instruction {
                 break;
         }
 
-        gb.writeMemoryAddress(address, gb.reg.readRegisterByte(reg));
+        gb.writeMemoryAddress(address, value);
     }
 
 }
