@@ -28,7 +28,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         bank0 = rom.getBank(0);
         bankX = rom.getBank(1);
         VRAM = new RAM(0x2000);
-        ExtRAM = rom.getRamBank(0);
+        ExtRAM = rom.getRAMBank(0);
         WRAM1 = new RAM(0x1000);
         WRAM2 = new RAM(0x1000);
         // OAM = new RAM(0xa0);

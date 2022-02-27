@@ -9,7 +9,8 @@ import java.util.List;
  * {@code ROMBank}s.
  */
 public class CartridgeROM {
-    private final ROMBank[] banks;
+    private final ROMBank[] ROMBanks;
+    // private RAM[] RAMBanks; // TODO add MBC and External RAM support
 
     public CartridgeROM(byte[] bytes) {
         List<ROMBank> tempBanks = new ArrayList<>();
@@ -19,7 +20,7 @@ public class CartridgeROM {
             tempBanks.add(new ROMBank(Arrays.copyOfRange(bytes, offset, offset + ROMBank.BANK_SIZE)));
         }
 
-        banks = tempBanks.toArray(new ROMBank[tempBanks.size()]);
+        ROMBanks = tempBanks.toArray(new ROMBank[tempBanks.size()]);
     }
 
     /**
@@ -29,6 +30,10 @@ public class CartridgeROM {
      * @return The specified {@code ROMBank}.
      */
     public ROMBank getBank(int index) {
-        return banks[index];
+        return ROMBanks[index];
+    }
+
+    public RAM getRAMBank(int index) {
+        return null; // return RAMBanks[index];
     }
 }
