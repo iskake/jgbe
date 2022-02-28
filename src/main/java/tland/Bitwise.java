@@ -87,6 +87,48 @@ public class Bitwise {
     }
 
     /**
+     * Set a desired bit in {@code value}. {@code bitNum} corresponds to the bit to
+     * set from 0 to 7, with 0 being the least significant bit, and 7 the most
+     * significant bit.
+     * 
+     * @param value  The value to set a bit of.
+     * @param bitNum Bit to set, from 0 to 7.
+     * @return {@code value}, with bit {@code bitNum} set.
+     */
+    public static byte setBit(byte value, byte bitNum) {
+        byte bit = (byte) (0b1 << bitNum);
+        return (byte) (value | bit);
+    }
+
+    /**
+     * Clear a desired bit in {@code value}. {@code bitNum} corresponds to the bit
+     * to clear from 0 to 7, with 0 being the least significant bit, and 7 the most
+     * significant bit.
+     * 
+     * @param value  The value to clear a bit of.
+     * @param bitNum Bit to clear, from 0 to 7.
+     * @return {@code value}, with bit {@code bitNum} cleared.
+     */
+    public static byte clearBit(byte value, byte bitNum) {
+        byte bit = (byte) (0b1 << bitNum);
+        return (byte) (value & ~bit);
+    }
+
+    /**
+     * Flip a desired bit in {@code value}. {@code bitNum} corresponds to the bit to
+     * flip from 0 to 7, with 0 being the least significant bit, and 7 the most
+     * significant bit.
+     * 
+     * @param value  The value to flip a bit of.
+     * @param bitNum Bit to flip, from 0 to 7.
+     * @return {@code value}, with bit {@code bitNum} flipped.
+     */
+    public static byte flipBit(byte value, byte bitNum) {
+        byte bit = (byte) (0b1 << bitNum);
+        return (byte) (value ^ bit);
+    }
+
+    /**
      * Convert byte value to hex string. Same as writing
      * {@code Integer.toHexString(Byte.toUnsignedInt(value))}
      * 
