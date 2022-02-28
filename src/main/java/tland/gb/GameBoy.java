@@ -18,8 +18,12 @@ public class GameBoy {
         memoryMap = new MemoryMap(this);
         reg = new Registers(this);
         cpu = new CPU(this);
-        pc = 0xff;
-        sp = Bitwise.toShort(0xffff);
+        pc = Bitwise.toShort(0x100);
+        sp = Bitwise.toShort(0xfffe);
+    }
+
+    public void setPC(short address) {
+        pc = address;
     }
 
     public void run() {
@@ -33,7 +37,7 @@ public class GameBoy {
     }
 
     public byte readNextByte() {
-        byte val = memoryMap.readByte(++pc);
+        byte val = memoryMap.readByte(pc++);
         return val;
     }
 
