@@ -38,30 +38,54 @@ public class Registers {
     }
 
     /**
-     * Read the the byte at the given 8-bit register specified
-     * by the given register.
+     * Read value at address pointed to by the value in {@code reg}.
+     * 
+     * @param reg Register to be read from
+     * @return Value pointed to by {@code reg}.
+     */
+    public byte readRegisterPtr(RegisterIndex reg) {
+        checkRegisterShort(reg);
+        return gb.readMemoryAddress(readRegisterShort(reg));
+    }
+
+    /**
+     * Write {@code value} to the address pointed to by the value in {@code reg}.
+     * 
+     * @param reg   Register to be read from
+     * @param value Value to write at address pointed to by {@code reg}.
+     */
+    public void writeRegisterPtr(RegisterIndex reg, byte value) {
+        checkRegisterShort(reg);
+        gb.writeMemoryAddress(readRegisterShort(reg), value);
+    }
+
+    /**
+     * Read the the byte at the given register {@ reg} if the specified register is
+     * an 8-bit register. If the specified register is a 16-bit register, the byte
+     * pointed to by that register is is read instead.
      * 
      * @param reg Register to be read from
      * @return The byte value of the given register
      */
     public byte readRegisterByte(RegisterIndex reg) {
-        if (checkRegisterByte(reg) == 1) {
-            return gb.readMemoryAddress(readRegisterShort(reg));
+        if (isRegisterShort(reg)) {
+            return readRegisterPtr(reg);
         }
         return registerValues[reg.val];
     }
 
     /**
      * Writes the given byte {@code value} to the register {@code reg} if the
-     * specified register is an 8-bit register. If the specified register is (HL),
-     * then the byte pointed to by (HL) is written to instead.
+     * specified register is an 8-bit register. If the specified register is a
+     * 16-bit register, then the byte pointed to by that register is written to
+     * instead.
      * 
      * @param value Value to be written to the given register
      * @param reg   Register to be written to.
      */
     public void writeRegisterByte(RegisterIndex reg, byte value) {
-        if (checkRegisterByte(reg) == 1) {
-            gb.writeMemoryAddress(readRegisterShort(reg), value);
+        if (isRegisterShort(reg)) {
+            writeRegisterPtr(reg, value);
             return;
         }
         registerValues[reg.val] = value;
@@ -164,9 +188,6 @@ public class Registers {
      * @throws IndexOutOfBoundsException
      */
     private int checkRegisterByte(RegisterIndex reg) {
-        if (reg.val == RegisterIndex.HL.val)
-            return 1;
-
         checkRegister(reg, false);
         return 0;
     }
@@ -190,7 +211,7 @@ public class Registers {
      *         {@code A},{@code F},{@code B},{@code C},
      *         {@code D},{@code E},{@code H} or {@code L}. {@code false} otherwise.
      */
-    public boolean isRegisterByte(RegisterIndex reg) {
+    public static boolean isRegisterByte(RegisterIndex reg) {
         return reg.val >= RegisterIndex.A.val && reg.val <= RegisterIndex.L.val;
     }
 
@@ -203,14 +224,14 @@ public class Registers {
      *         {@code AF},{@code BC},{@code DE} or {@code HL}.
      *         {@code false} otherwise.
      */
-    public boolean isRegisterShort(RegisterIndex reg) {
+    public static boolean isRegisterShort(RegisterIndex reg) {
         return reg.val >= RegisterIndex.AF.val && reg.val <= RegisterIndex.HL.val;
     }
 
     public void printRegisters() {
-        System.out.printf("AF: %d\n", readRegisterShort(RegisterIndex.AF));
-        System.out.printf("BC: %d\n", readRegisterShort(RegisterIndex.BC));
-        System.out.printf("DE: %d\n", readRegisterShort(RegisterIndex.DE));
-        System.out.printf("HL: %d\n", readRegisterShort(RegisterIndex.HL));
+        System.out.printf("AF: %04x\n", readRegisterShort(RegisterIndex.AF));
+        System.out.printf("BC: %04x\n", readRegisterShort(RegisterIndex.BC));
+        System.out.printf("DE: %04x\n", readRegisterShort(RegisterIndex.DE));
+        System.out.printf("HL: %04x\n", readRegisterShort(RegisterIndex.HL));
     }
 }
