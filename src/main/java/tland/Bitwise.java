@@ -151,4 +151,28 @@ public class Bitwise {
         int val = Short.toUnsignedInt(value);
         return Integer.toHexString(val);
     }
+
+    /**
+     * Convert byte value to binary string. Same as writing
+     * {@code Integer.toBinaryString(Byte.toUnsignedInt(value))}
+     * 
+     * @param value The value to get as hex string.
+     * @return Value in hex as a string.
+     */
+    public static String toBinaryString(byte value) {
+        int val = Byte.toUnsignedInt(value);
+        return Integer.toBinaryString(val);
+    }
+
+    /**
+     * Convert short value to binary string. Same as writing
+     * {@code Integer.toBinaryString(Short.toUnsignedInt(value))}
+     * 
+     * @param value The value to get as hex string.
+     * @return Value in hex as a string.
+     */
+    public static String toBinaryString(short value) {
+        int val = Short.toUnsignedInt(value);
+        return Integer.toBinaryString(val);
+    }
 }
