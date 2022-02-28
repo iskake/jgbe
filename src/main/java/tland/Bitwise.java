@@ -131,8 +131,8 @@ public class Bitwise {
     /**
      * Check if the desired bit in {@code value} is set to 1.
      * 
-     * @param value  The value to flip a bit of.
-     * @param bitNum Bit to flip, from 0 to 7.
+     * @param value  The value to check.
+     * @param bitNum Bit to check, from 0 to 7.
      * @return {@code true} if bit is set, {@code false} otherwise.
      */
     public static boolean isBitSet(byte value, int bitNum) {
