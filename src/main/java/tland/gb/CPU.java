@@ -9,7 +9,8 @@ public class CPU {
 
     public void run() {
         byte lastOpcode = gb.readNextByte();
-        Opcodes.getOpcode(lastOpcode).doOp(gb, gb.readNextByte());
+        System.out.println(Integer.toHexString(Byte.toUnsignedInt(lastOpcode)) + " -> " + Opcodes.getOpcode(lastOpcode).getName());
+        Opcodes.getOpcode(lastOpcode).doOp(gb, lastOpcode);
     }
 
 }
