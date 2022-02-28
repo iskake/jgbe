@@ -95,7 +95,7 @@ public class Bitwise {
      * @param bitNum Bit to set, from 0 to 7.
      * @return {@code value}, with bit {@code bitNum} set.
      */
-    public static byte setBit(byte value, byte bitNum) {
+    public static byte setBit(byte value, int bitNum) {
         byte bit = (byte) (0b1 << bitNum);
         return (byte) (value | bit);
     }
@@ -109,7 +109,7 @@ public class Bitwise {
      * @param bitNum Bit to clear, from 0 to 7.
      * @return {@code value}, with bit {@code bitNum} cleared.
      */
-    public static byte clearBit(byte value, byte bitNum) {
+    public static byte clearBit(byte value, int bitNum) {
         byte bit = (byte) (0b1 << bitNum);
         return (byte) (value & ~bit);
     }
@@ -123,7 +123,7 @@ public class Bitwise {
      * @param bitNum Bit to flip, from 0 to 7.
      * @return {@code value}, with bit {@code bitNum} flipped.
      */
-    public static byte flipBit(byte value, byte bitNum) {
+    public static byte flipBit(byte value, int bitNum) {
         byte bit = (byte) (0b1 << bitNum);
         return (byte) (value ^ bit);
     }
