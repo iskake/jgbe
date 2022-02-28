@@ -85,4 +85,28 @@ public class Bitwise {
     public static int intAsShort(int value) {
         return value & 0xffff;
     }
+
+    /**
+     * Convert byte value to hex string. Same as writing
+     * {@code Integer.toHexString(Byte.toUnsignedInt(value))}
+     * 
+     * @param value The value to get as hex string.
+     * @return Value in hex as a string.
+     */
+    public static String toHexString(byte value) {
+        int val = Byte.toUnsignedInt(value);
+        return Integer.toHexString(val);
+    }
+
+    /**
+     * Convert short value to hex string. Same as writing
+     * {@code Integer.toHexString(Short.toUnsignedInt(value))}
+     * 
+     * @param value The value to get as hex string.
+     * @return Value in hex as a string.
+     */
+    public static String toHexString(short value) {
+        int val = Short.toUnsignedInt(value);
+        return Integer.toHexString(val);
+    }
 }
