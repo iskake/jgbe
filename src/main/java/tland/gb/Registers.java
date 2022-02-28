@@ -31,6 +31,12 @@ public class Registers {
      */
     private byte[] registerValues = new byte[8];
 
+    private final GameBoy gb;
+
+    public Registers(GameBoy gb) {
+        this.gb = gb;
+    }
+
     /**
      * Read the the byte at the given 8-bit register specified
      * by the given register.
@@ -39,27 +45,35 @@ public class Registers {
      * @return The byte value of the given register
      */
     public byte readRegisterByte(RegisterIndex reg) {
-        checkRegisterByte(reg);
+        if (checkRegisterByte(reg) == 1) {
+            return gb.readMemoryAddress(readRegisterShort(reg));
+        }
         return registerValues[reg.val];
     }
 
     /**
-     * Writes the given byte {@code value} to the 8-bit register {@code reg}.
+     * Writes the given byte {@code value} to the register {@code reg} if the
+     * specified register is an 8-bit register. If the specified register is (HL),
+     * then the byte pointed to by (HL) is written to instead.
      * 
      * @param value Value to be written to the given register
-     * @param reg Register to be written to.
+     * @param reg   Register to be written to.
      */
     public void writeRegisterByte(RegisterIndex reg, byte value) {
-        checkRegisterByte(reg);
-        value = Bitwise.toByte(value);
+        if (checkRegisterByte(reg) == 1) {
+            gb.writeMemoryAddress(readRegisterShort(reg), value);
+            return;
+        }
         registerValues[reg.val] = value;
     }
 
     /**
-     * Writes the given byte {@code value} to the 8-bit register {@code reg}.
+     * Writes the given byte {@code value} to the register {@code reg} if the
+     * specified register is an 8-bit register. If the specified register is (HL),
+     * then the byte pointed to by (HL) is written to instead.
      * 
      * @param value Value to be written to the given register
-     * @param reg Register to be written to.
+     * @param reg   Register to be written to.
      */
     public void writeRegisterByte(RegisterIndex reg, int value) {
         writeRegisterByte(reg, Bitwise.toByte(value));
@@ -75,10 +89,10 @@ public class Registers {
         checkRegisterShort(reg);
 
         // Bit level trickery to avoid switch statement:
-        // Get 3 lsb of value of RegisterIndex (e.g. BC = 0b1001 -> 0b001) and store as offset.
-        // Shift offset left by 1 (equivalent to (offset * 2)) to get byte register corresponding
-        // to short register (e.g. 0b001 << 1 -> 0b010 -> B) and take + 1 for next byte
-        // (e.g. B(0b10) -> C(0b11))
+        // Get 3 lsb of value of RegisterIndex (e.g. BC = 0b1001 -> 0b001) and store as
+        // offset. Shift offset left by 1 (equivalent to (offset * 2)) to get byte
+        // register corresponding to short register (e.g. 0b001 << 1 -> 0b010 -> B)
+        // and take + 1 for next byte (e.g. B(0b10) -> C(0b11))
         int offset = (reg.val & 0b111) << 1;
 
         byte hi = registerValues[offset];
@@ -91,16 +105,16 @@ public class Registers {
      * Writes the given {@code value} to the 16-bit register {@code reg}
      * 
      * @param value Value to be written to the given register
-     * @param reg Register to be written to.
+     * @param reg   Register to be written to.
      */
     public void writeRegisterShort(RegisterIndex reg, short value) {
         checkRegisterShort(reg);
 
         // Bit level trickery to avoid switch statement:
-        // Get 3 lsb of value of RegisterIndex (e.g. BC = 0b1001 -> 0b001) and store as offset.
-        // Shift offset left by 1 (equivalent to (offset * 2)) to get byte register corresponding
-        // to short register (e.g. 0b001 << 1 -> 0b010 -> B) and take + 1 for next byte
-        // (e.g. B(0b10) -> C(0b11))
+        // Get 3 lsb of value of RegisterIndex (e.g. BC = 0b1001 -> 0b001) and store as
+        // offset. Shift offset left by 1 (equivalent to (offset * 2)) to get byte
+        // register corresponding to short register (e.g. 0b001 << 1 -> 0b010 -> B)
+        // and take + 1 for next byte (e.g. B(0b10) -> C(0b11))
         int offset = (reg.val & 0b111) << 1;
 
         byte hi = Bitwise.getHighByte(value);
@@ -114,7 +128,7 @@ public class Registers {
      * Writes the given {@code value} to the 16-bit register {@code reg}
      * 
      * @param value Value to be written to the given register
-     * @param reg Register to be written to.
+     * @param reg   Register to be written to.
      */
     public void writeRegisterShort(RegisterIndex reg, int value) {
         writeRegisterShort(reg, Bitwise.toShort(value));
@@ -123,18 +137,21 @@ public class Registers {
     /**
      * Checks if the given register is valid for byte/short read/write operations
      * If it is not, throw exception.
-     * @param reg Register to check.
+     * 
+     * @param reg      Register to check.
      * @param shortReg Check for short register.
      * @throws IndexOutOfBoundsException
      */
     private void checkRegister(RegisterIndex reg, boolean shortReg) throws IndexOutOfBoundsException {
         if (shortReg) {
             if (reg.val < RegisterIndex.AF.val || reg.val > RegisterIndex.HL.val) {
-                throw new IndexOutOfBoundsException(String.format("Register %s is not a valid short register.", reg.name()));
+                throw new IndexOutOfBoundsException(
+                        String.format("Register %s is not a valid short register.", reg.name()));
             }
         } else {
             if (reg.val < RegisterIndex.A.val || reg.val > RegisterIndex.L.val) {
-                throw new IndexOutOfBoundsException(String.format("Register %s is not a valid byte register.", reg.name()));
+                throw new IndexOutOfBoundsException(
+                        String.format("Register %s is not a valid byte register.", reg.name()));
             }
         }
     }
@@ -142,28 +159,36 @@ public class Registers {
     /**
      * Checks if the given register is valid for byte read/write operations.
      * If it is not, throw exception.
+     * 
      * @param reg Register to check.
      * @throws IndexOutOfBoundsException
      */
-    private void checkRegisterByte(RegisterIndex reg) {
+    private int checkRegisterByte(RegisterIndex reg) {
+        if (reg.val == RegisterIndex.HL.val)
+            return 1;
+
         checkRegister(reg, false);
+        return 0;
     }
 
     /**
      * Checks if the given register is valid for short read/write operations.
      * If it is not, throw exception.
+     * 
      * @param reg Register to check.
      * @throws IndexOutOfBoundsException
      */
     private void checkRegisterShort(RegisterIndex reg) {
         checkRegister(reg, true);
     }
-    
+
     /**
      * Checks if the given register is a 8-bit register.
+     * 
      * @param reg
-     * @return {@code true} if the register is either {@code A},{@code F},{@code B},{@code C},
-     * {@code D},{@code E},{@code H} or {@code L}. {@code false} otherwise.
+     * @return {@code true} if the register is either
+     *         {@code A},{@code F},{@code B},{@code C},
+     *         {@code D},{@code E},{@code H} or {@code L}. {@code false} otherwise.
      */
     public boolean isRegisterByte(RegisterIndex reg) {
         return reg.val >= RegisterIndex.A.val && reg.val <= RegisterIndex.L.val;
@@ -172,9 +197,11 @@ public class Registers {
     /**
      * Checks if the given register is a 16-bit register.
      * Note: this does not include {@code SP} and {@code PC}
+     * 
      * @param reg
-     * @return {@code true} if the register is either {@code AF},{@code BC},{@code DE} or {@code HL}.
-     * {@code false} otherwise.
+     * @return {@code true} if the register is either
+     *         {@code AF},{@code BC},{@code DE} or {@code HL}.
+     *         {@code false} otherwise.
      */
     public boolean isRegisterShort(RegisterIndex reg) {
         return reg.val >= RegisterIndex.AF.val && reg.val <= RegisterIndex.HL.val;
