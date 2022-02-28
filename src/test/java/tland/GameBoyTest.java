@@ -1,7 +1,9 @@
 package tland;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import tland.gb.GameBoy;
 import tland.gb.Opcodes;
 import tland.gb.Registers;
+import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.ROMBank;
@@ -73,6 +76,34 @@ public class GameBoyTest {
         reg.writeRegisterShort(HL, 0xc350);
         reg.writeRegisterByte(HL, 0x34);
         assertEquals(readMem(reg.readRegisterShort(HL)), reg.readRegisterByte(HL));
+    }
+
+    @Test
+    void flagTest() {
+        reg.writeRegisterByte(F, (byte) 0b1010_0000);
+        reg.setFlag(Flags.C);
+        assertEquals((byte) 0b1011_0000, reg.readRegisterByte(F));
+        assertTrue(reg.isFlagSet(Flags.C));
+
+        reg.resetFlag(Flags.Z);
+        assertEquals((byte) 0b0011_0000, reg.readRegisterByte(F));
+        assertFalse(reg.isFlagSet(Flags.Z));
+
+        reg.setFlag(Flags.Z);
+        assertTrue(reg.isFlagSet(Flags.Z));
+        reg.setFlag(Flags.N);
+        reg.setFlag(Flags.H);
+        reg.setFlag(Flags.C);
+        assertEquals((byte) 0b1111_0000, reg.readRegisterByte(F));
+
+        reg.resetFlag(Flags.Z);
+        assertFalse(reg.isFlagSet(Flags.Z));
+        assertTrue(reg.isFlagSet(Flags.N));
+        reg.resetFlag(Flags.N);
+        assertFalse(reg.isFlagSet(Flags.N));
+        reg.resetFlag(Flags.H);
+        reg.resetFlag(Flags.C);
+        assertEquals((byte) 0, reg.readRegisterByte(F));
     }
 
     @Test

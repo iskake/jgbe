@@ -25,6 +25,19 @@ public class Registers {
         }
     };
 
+    public enum Flags {
+        C(4),
+        H(5),
+        N(6),
+        Z(7);
+
+        private final int val;
+
+        Flags(int val) {
+            this.val = val;
+        }
+    }
+
     /**
      * The registers' values, with each register having an index
      * of the {@code val} specified in {@code RegisterIndex} (8-bit).
@@ -35,6 +48,21 @@ public class Registers {
 
     public Registers(GameBoy gb) {
         this.gb = gb;
+    }
+
+    public boolean isFlagSet(Flags flag) {
+        int i = RegisterIndex.F.val;
+        return Bitwise.isBitSet(registerValues[i], flag.val);
+    }
+
+    public void setFlag(Flags flag) {
+        int i = RegisterIndex.F.val;
+        registerValues[i] = Bitwise.setBit(registerValues[i], flag.val);
+    }
+
+    public void resetFlag(Flags flag) {
+        int i = RegisterIndex.F.val;
+        registerValues[i] = Bitwise.clearBit(registerValues[i], flag.val);
     }
 
     /**
