@@ -23,14 +23,17 @@ public class LD_ptr_A extends Instruction {
         byte value = gb.reg.readRegisterByte(reg);
         short address;
 
+        // Because the three implemented opcodes (see javadoc above class) all load the
+        // value in the A-register to an address (hence, `LD_ptr_A`), we can use the
+        // same class for all three opcodes.
         switch (opcode) {
             // ldh [$n8], a (a.k.a. `ld [$ff00+n8], a`)
             case 0xF0:
-                address = Bitwise.toShort((byte)0xff, gb.readNextByte());
+                address = Bitwise.toShort((byte) 0xff, gb.readNextByte());
                 break;
             // ld [$c], a (a.k.a. `ld [$ff00+c], a`)
             case 0xF2:
-                address = Bitwise.toShort((byte)0xff, gb.reg.readRegisterByte(RegisterIndex.C));
+                address = Bitwise.toShort((byte) 0xff, gb.reg.readRegisterByte(RegisterIndex.C));
                 break;
             // ld [$n16], a
             default:
