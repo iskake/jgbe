@@ -15,7 +15,7 @@ public class GameBoy {
 
     public GameBoy(CartridgeROM rom) {
         this.rom = rom;
-        memoryMap = new MemoryMap(this);
+        memoryMap = new MemoryMap(rom);
         reg = new Registers(this);
         cpu = new CPU(this);
         pc = Bitwise.toShort(0x100);

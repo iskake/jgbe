@@ -23,8 +23,8 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
 
     private int fixedAddress;
 
-    public MemoryMap(GameBoy gb) {
-        this.rom = gb.getROM();
+    public MemoryMap(CartridgeROM rom) {
+        this.rom = rom;
         bank0 = rom.getBank(0);
         bankX = rom.getBank(1);
         VRAM = new RAM(0x2000);
@@ -109,6 +109,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         } else if (address < 0xFE00) {
             // e000-fdff = 1e00
             // (Mirror of c000-ddff)
+            // System.out.println("Accessing ECHO RAM.");
             fixedAddress -= 0xe000;
             return WRAM1;
         // TODO
