@@ -170,15 +170,10 @@ public class Registers {
     public short readRegisterShort(RegisterIndex reg) {
         checkRegisterShort(reg);
 
-        // Bit level trickery to avoid switch statement:
-        // Get 3 lsb of value of RegisterIndex (e.g. BC = 0b1001 -> 0b001) and store as
-        // offset. Shift offset left by 1 (equivalent to (offset * 2)) to get byte
-        // register corresponding to short register (e.g. 0b001 << 1 -> 0b010 -> B)
-        // and take + 1 for next byte (e.g. B(0b10) -> C(0b11))
-        int offset = (reg.val & 0b111) << 1;
+        int index = getShortRegisterIndex(reg);
 
-        byte hi = registerValues[offset];
-        byte lo = registerValues[offset + 1];
+        byte hi = registerValues[index];
+        byte lo = registerValues[index + 1];
 
         return Bitwise.toShort(hi, lo);
     }
@@ -192,18 +187,13 @@ public class Registers {
     public void writeRegisterShort(RegisterIndex reg, short value) {
         checkRegisterShort(reg);
 
-        // Bit level trickery to avoid switch statement:
-        // Get 3 lsb of value of RegisterIndex (e.g. BC = 0b1001 -> 0b001) and store as
-        // offset. Shift offset left by 1 (equivalent to (offset * 2)) to get byte
-        // register corresponding to short register (e.g. 0b001 << 1 -> 0b010 -> B)
-        // and take + 1 for next byte (e.g. B(0b10) -> C(0b11))
-        int offset = (reg.val & 0b111) << 1;
+        int index = getShortRegisterIndex(reg);
 
         byte hi = Bitwise.getHighByte(value);
         byte lo = Bitwise.getLowByte(value);
 
-        registerValues[offset] = hi;
-        registerValues[offset + 1] = lo;
+        registerValues[index] = hi;
+        registerValues[index + 1] = lo;
     }
 
     /**
@@ -249,6 +239,28 @@ public class Registers {
         if (registerValues[lsbOffset] == 0) {
             registerValues[msbOffset]++;
         }
+    }
+
+    /**
+     * Get the index of the byte register corresponding to the most significant
+     * byte of {@code reg}.
+     * <p>
+     * Use with both {@code registerValues[index]} and
+     * {@code registerValues[index + 1]}.
+     * 
+     * @param reg The register to get
+     * @return The index of the most significant byte of {@code reg} in
+     *         {@code registerValues}
+     */
+    private int getShortRegisterIndex(RegisterIndex reg) {
+        // Bit level trickery to get correct index:
+        // Get 3 least significant bits of value of RegisterIndex (e.g. BC = 0b1001 ->
+        // 0b001) and store as
+        // index. Shift index left by 1 (equivalent to (index * 2)) to get byte
+        // register corresponding to short register (e.g. (0b001 << 1) = 0b010 = B).
+        // Note: to get the next register, take index + 1 (e.g. B(0b10) -> C(0b11))
+        int offset = (reg.val & 0b111) << 1;
+        return offset;
     }
 
     /**
@@ -326,5 +338,7 @@ public class Registers {
         System.out.printf("BC: %04x\n", readRegisterShort(RegisterIndex.BC));
         System.out.printf("DE: %04x\n", readRegisterShort(RegisterIndex.DE));
         System.out.printf("HL: %04x\n", readRegisterShort(RegisterIndex.HL));
+        System.out.printf("SP: %04x\n", gb.getSP());
+        System.out.printf("PC: %04x\n", gb.getPC());
     }
 }
