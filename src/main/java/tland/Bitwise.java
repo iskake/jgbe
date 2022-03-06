@@ -32,7 +32,7 @@ public class Bitwise {
      * @return A new short constructed from the two parameters.
      */
     public static short toShort(byte hi, byte lo) {
-        short value = (short) ((hi << 8) | lo);
+        short value = (short)((hi << 8) | Byte.toUnsignedInt(lo));
         return value;
     }
 
