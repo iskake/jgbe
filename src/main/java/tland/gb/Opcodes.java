@@ -86,7 +86,7 @@ public class Opcodes {
 /* 0x34 */ new IllegalInst("illegal, 0x34"),
 /* 0x35 */ new IllegalInst("illegal, 0x35"),
 
-/* 0x36 */ new LD_rr_nn("ld [hl], %02x", RegisterIndex.HL), // ld [hl], n8
+/* 0x36 */ new LD_rr_nn("ld [hl], %02x", RegisterIndex.HL),
 
 /* 0x37 */ new IllegalInst("illegal, 0x37"),
 /* 0x38 */ new IllegalInst("illegal, 0x38"),
