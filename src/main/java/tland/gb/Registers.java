@@ -217,6 +217,41 @@ public class Registers {
     }
 
     /**
+     * Increment the value stored in the 8-bit register {@code reg}.
+     * 
+     * @param reg The register to increment the value of.
+     */
+    public void incRegisterByte(RegisterIndex reg) {
+        if (isRegisterShort(reg)) {
+            if (reg.val == RegisterIndex.HL.val) {
+
+            } else {
+                // There are no `INC` instructions for incrementing the address stored in a
+                // short register other than HL (opcode 0x34).
+                checkRegisterByte(reg);
+            }
+        }
+        registerValues[reg.val]++;
+    }
+
+    /**
+     * Increment the value stored in the 16-bit register {@code reg}.
+     * 
+     * @param reg The register to increment the value of.
+     */
+    public void incRegisterShort(RegisterIndex reg) {
+        checkRegisterShort(reg);
+
+        int msbOffset = getShortRegisterIndex(reg);
+        int lsbOffset = msbOffset + 1;
+
+        registerValues[lsbOffset]++;
+        if (registerValues[lsbOffset] == 0) {
+            registerValues[msbOffset]++;
+        }
+    }
+
+    /**
      * Checks if the given register is valid for byte/short read/write operations
      * If it is not, throw exception.
      * 
