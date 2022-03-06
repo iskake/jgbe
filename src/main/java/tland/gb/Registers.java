@@ -26,9 +26,21 @@ public class Registers {
     };
 
     public enum Flags {
+        /**
+         * Carry flag, bit 4 of the F register.
+         */
         C(4),
+        /**
+         * Half carry flag, bit 5 of the F register.
+         */
         H(5),
+        /**
+         * Subtraction flag, bit 6 of the F register.
+         */
         N(6),
+        /**
+         * Zero flag, bit 7 of the F register.
+         */
         Z(7);
 
         private final int val;
@@ -50,16 +62,34 @@ public class Registers {
         this.gb = gb;
     }
 
+    /**
+     * Check if the specified flag is set in the F register.
+     * 
+     * @param flag The falg to check.
+     * @return {@code true} if the flag is set, {@code false} otherwise.
+     */
     public boolean isFlagSet(Flags flag) {
         int i = RegisterIndex.F.val;
         return Bitwise.isBitSet(registerValues[i], flag.val);
     }
 
+    /**
+     * Check if the specified flag is set in the F register.
+     * 
+     * @param flag The falg to check.
+     * @return {@code true} if the flag is set, {@code false} otherwise.
+     */
     public void setFlag(Flags flag) {
         int i = RegisterIndex.F.val;
         registerValues[i] = Bitwise.setBit(registerValues[i], flag.val);
     }
 
+    /**
+     * Check if the specified flag is set in the F register.
+     * 
+     * @param flag The falg to check.
+     * @return {@code true} if the flag is set, {@code false} otherwise.
+     */
     public void resetFlag(Flags flag) {
         int i = RegisterIndex.F.val;
         registerValues[i] = Bitwise.clearBit(registerValues[i], flag.val);
