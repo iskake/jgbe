@@ -7,10 +7,11 @@ public class CPU {
         this.gb = gameBoy;
     }
 
-    public void run() {
+    public void step() {
         byte lastOpcode = gb.readNextByte();
-        System.out.println(Integer.toHexString(Byte.toUnsignedInt(lastOpcode)) + " -> " + Opcodes.getOpcode(lastOpcode).getName());
-        Opcodes.getOpcode(lastOpcode).doOp(gb, lastOpcode);
+        System.out.printf("%02x -> %s\n", Byte.toUnsignedInt(lastOpcode), String.format(Opcodes.getOpcode(lastOpcode).getName(), gb.readMemoryAddress(gb.getPC()), gb.readMemoryAddress((short)(gb.getPC() + 1))));
+        Opcodes.getOpcode(lastOpcode).doOp(gb, Byte.toUnsignedInt(lastOpcode));
+        gb.reg.printRegisters();
     }
 
 }

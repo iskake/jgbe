@@ -53,7 +53,7 @@ public class GameBoy {
 
     public void run() {
         while (true) {
-            cpu.run();
+            cpu.step();
         }
     }
 
