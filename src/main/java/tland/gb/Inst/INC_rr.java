@@ -23,21 +23,22 @@ public class INC_rr extends Instruction {
     public void doOp(GameBoy gb, int opcode) {
         // 0x34 -> inc [hl]
         if (Registers.isRegisterByte(reg) || opcode == 0x34) {
-            int oldVal = gb.reg.readRegisterByte(reg);
-
             gb.reg.incRegisterByte(reg);
 
-            int newVal = gb.reg.readRegisterByte(reg);
+            byte value = gb.reg.readRegisterByte(reg);
 
-            if (newVal == 0) {
+            if (value == 0) {
                 gb.reg.setFlag(Flags.Z);
+            } else {
+                gb.reg.resetFlag(Flags.Z);
             }
 
             gb.reg.resetFlag(Flags.N);
 
-            // TODO: Test if this works correctly.
-            if ((oldVal & (byte) 0b1111) == (byte) 0b1111 && ((newVal & (byte) 0b1111) > 0b1111)) {
+            if (Byte.toUnsignedInt(value) == 0) {
                 gb.reg.setFlag(Flags.H);
+            } else {
+                gb.reg.resetFlag(Flags.H);
             }
 
         } else {
