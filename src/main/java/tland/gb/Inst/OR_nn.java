@@ -5,7 +5,7 @@ import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
 /**
- * Logical OR instruction.
+ * Logical OR instruction. Takes A OR the register/value nn ({@code a | nn})
  * 
  * <p>
  * Implements opcodes: {@code or r8} and {@code or $n8}
@@ -21,8 +21,8 @@ public class OR_nn extends Instruction {
     @Override
     public void doOp(GameBoy gb, int opcode) {
         byte value;
-        
-        if (reg.equals(null)) {
+
+        if (reg == null) {
             value = gb.readNextByte();
         } else {
             value = gb.reg.readRegisterByte(reg);
@@ -34,6 +34,8 @@ public class OR_nn extends Instruction {
 
         if ((a | value) == 0) {
             gb.reg.setFlag(Flags.Z);
+        } else {
+            gb.reg.resetFlag(Flags.Z);
         }
 
         gb.reg.resetFlag(Flags.N);

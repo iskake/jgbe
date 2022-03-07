@@ -23,7 +23,7 @@ public class CP_nn extends Instruction {
     public void doOp(GameBoy gb, int opcode) {
         byte value;
 
-        if (reg.equals(null)) {
+        if (reg == null) {
             value = gb.readNextByte();
         } else {
             value = gb.reg.readRegisterByte(reg);
@@ -33,16 +33,22 @@ public class CP_nn extends Instruction {
 
         if (a - value == 0) {
             gb.reg.setFlag(Flags.Z);
+        } else {
+            gb.reg.resetFlag(Flags.Z);
         }
 
         gb.reg.setFlag(Flags.N);
 
-        if ((int) (a & (byte) 0b1111) < (int) (value & (byte) 0b1111)) {
+        if ((Byte.toUnsignedInt(a) & 0b1111) < (Byte.toUnsignedInt(value) & 0b1111)) {
             gb.reg.setFlag(Flags.H);
+        } else {
+            gb.reg.resetFlag(Flags.H);
         }
 
-        if ((int) a < (int) value) {
+        if (Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value)) {
             gb.reg.setFlag(Flags.C);
+        } else {
+            gb.reg.resetFlag(Flags.C);
         }
     }
 
