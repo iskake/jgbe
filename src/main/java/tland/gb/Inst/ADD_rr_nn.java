@@ -27,10 +27,13 @@ public class ADD_rr_nn extends Instruction {
 
     @Override
     public void doOp(GameBoy gb, int opcode) {
-        if (Registers.isRegisterByte(r1)) {
+        if (Registers.isRegisterByte(r1) || opcode == 0x86) {
+            if (opcode == 0x86) {
+                System.out.println("HL!");
+            }
             byte value;
 
-            if (r2.equals(null)) {
+            if (r2 == null) {
                 value = gb.readNextByte();
             } else {
                 value = gb.reg.readRegisterByte(r2);
@@ -47,16 +50,22 @@ public class ADD_rr_nn extends Instruction {
 
             if (a + value == 0) {
                 gb.reg.setFlag(Flags.Z);
+            } else {
+                gb.reg.resetFlag(Flags.Z);
             }
 
             gb.reg.resetFlag(Flags.N);
 
             if ((a & (byte) 0b1111) + (value & (byte) 0b1111) > 0b1111) {
                 gb.reg.setFlag(Flags.H);
+            } else {
+                gb.reg.resetFlag(Flags.H);
             }
 
-            if ((int) a + (int) value > 0xff) {
+            if (Byte.toUnsignedInt(a) + Byte.toUnsignedInt(value) > 0xff) {
                 gb.reg.setFlag(Flags.C);
+            } else {
+                gb.reg.resetFlag(Flags.C);
             }
         } else {
             // TODO
