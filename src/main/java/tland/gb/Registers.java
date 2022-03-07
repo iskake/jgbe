@@ -214,7 +214,11 @@ public class Registers {
     public void incRegisterByte(RegisterIndex reg) {
         if (isRegisterShort(reg)) {
             if (reg.val == RegisterIndex.HL.val) {
-
+                byte val = readRegisterByte(RegisterIndex.HL);
+                System.out.println(gb.readMemoryAddress((short) 0xc000));
+                writeRegisterByte(reg, ++val);
+                System.out.println(gb.readMemoryAddress((short) 0xc000));
+                return;
             } else {
                 // There are no `INC` instructions for incrementing the address stored in a
                 // short register other than HL (opcode 0x34).
