@@ -18,6 +18,11 @@ public class ADD_rr_nn extends Instruction {
     private final RegisterIndex r2;
     public final boolean carry;
 
+    public ADD_rr_nn(String name, RegisterIndex r1, RegisterIndex r2) {
+        // ld hl, r16 cannot use carry, so we can set `carry` to false.
+        this(name, r1, r2, false);
+    }
+
     public ADD_rr_nn(String name, RegisterIndex r1, RegisterIndex r2, boolean carry) {
         super(name);
         this.r1 = r1;
@@ -27,10 +32,8 @@ public class ADD_rr_nn extends Instruction {
 
     @Override
     public void doOp(GameBoy gb, int opcode) {
+        // TODO: handle `add hl, sp` and `add sp, e8`
         if (Registers.isRegisterByte(r1) || opcode == 0x86) {
-            if (opcode == 0x86) {
-                System.out.println("HL!");
-            }
             byte value;
 
             if (r2 == null) {
@@ -39,16 +42,18 @@ public class ADD_rr_nn extends Instruction {
                 value = gb.reg.readRegisterByte(r2);
             }
 
+            byte carryVal = 0;
+
             if (carry) {
                 // adc rr, nn
-                value += gb.reg.isFlagSet(Flags.C) ? 1 : 0;
+                carryVal = gb.reg.isFlagSet(Flags.C) ? (byte)1 : (byte)0;
             }
 
-            byte a = gb.reg.readRegisterByte(r1);
+            byte regVal = gb.reg.readRegisterByte(r1);
 
-            gb.reg.writeRegisterByte(r1, a + value);
+            gb.reg.writeRegisterByte(r1, regVal + value + carryVal);
 
-            if (a + value == 0) {
+            if (regVal + value + carryVal == 0) {
                 gb.reg.setFlag(Flags.Z);
             } else {
                 gb.reg.resetFlag(Flags.Z);
@@ -56,19 +61,36 @@ public class ADD_rr_nn extends Instruction {
 
             gb.reg.resetFlag(Flags.N);
 
-            if ((a & (byte) 0b1111) + (value & (byte) 0b1111) > 0b1111) {
+            if (((Byte.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111) + carryVal) > 0b1111) {
                 gb.reg.setFlag(Flags.H);
             } else {
                 gb.reg.resetFlag(Flags.H);
             }
 
-            if (Byte.toUnsignedInt(a) + Byte.toUnsignedInt(value) > 0xff) {
+            if (Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) > 0xff) {
                 gb.reg.setFlag(Flags.C);
             } else {
                 gb.reg.resetFlag(Flags.C);
             }
         } else {
-            // TODO
+            short r1Val = gb.reg.readRegisterShort(r1);
+            short r2Val = gb.reg.readRegisterShort(r2);
+
+            gb.reg.writeRegisterShort(r1, r1Val + r2Val);
+
+            gb.reg.resetFlag(Flags.N);
+
+            if ((Short.toUnsignedInt(r1Val) & 0b11111111111) + (Short.toUnsignedInt(r2Val) & 0b11111111111) > 0b11111111111) {
+                gb.reg.setFlag(Flags.H);
+            } else {
+                gb.reg.resetFlag(Flags.H);
+            }
+
+            if (Short.toUnsignedInt(r1Val) + Short.toUnsignedInt(r2Val) > 0xffff) {
+                gb.reg.setFlag(Flags.C);
+            } else {
+                gb.reg.resetFlag(Flags.C);
+            }
         }
     }
 
