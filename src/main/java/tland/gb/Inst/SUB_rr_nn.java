@@ -29,7 +29,7 @@ public class SUB_rr_nn extends Instruction {
         if (Registers.isRegisterByte(r1)) {
             byte value;
 
-            if (r2.equals(null)) {
+            if (r2 == null) {
                 value = gb.readNextByte();
             } else {
                 value = gb.reg.readRegisterByte(r2);
@@ -46,16 +46,22 @@ public class SUB_rr_nn extends Instruction {
 
             if (a - value == 0) {
                 gb.reg.setFlag(Flags.Z);
+            } else {
+                gb.reg.resetFlag(Flags.Z);
             }
 
             gb.reg.setFlag(Flags.N);
 
-            if ((int) (a & (byte) 0b1111) < (int) (value & (byte) 0b1111)) {
+            if ((a & (byte) 0b1111) < (value & (byte) 0b1111)) {
                 gb.reg.setFlag(Flags.H);
+            } else {
+                gb.reg.resetFlag(Flags.H);
             }
 
-            if ((int) a < (int) value) {
+            if (Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value)) {
                 gb.reg.setFlag(Flags.C);
+            } else {
+                gb.reg.resetFlag(Flags.C);
             }
         } else {
             // TODO
