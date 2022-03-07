@@ -334,7 +334,12 @@ public class Registers {
     }
 
     public void printRegisters() {
-        System.out.printf("AF: %04x\n", readRegisterShort(RegisterIndex.AF));
+        System.out.printf("AF: %04x  ", readRegisterShort(RegisterIndex.AF));
+        char Z = isFlagSet(Flags.Z) ? 'Z' : '-';
+        char N = isFlagSet(Flags.N) ? 'N' : '-';
+        char H = isFlagSet(Flags.H) ? 'H' : '-';
+        char C = isFlagSet(Flags.C) ? 'C' : '-';
+        System.out.printf("Flags: %c%c%c%c\n", Z, N, H, C);
         System.out.printf("BC: %04x\n", readRegisterShort(RegisterIndex.BC));
         System.out.printf("DE: %04x\n", readRegisterShort(RegisterIndex.DE));
         System.out.printf("HL: %04x\n", readRegisterShort(RegisterIndex.HL));
