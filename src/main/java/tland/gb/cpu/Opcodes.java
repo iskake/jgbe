@@ -1,7 +1,9 @@
-package tland.gb;
+package tland.gb.cpu;
 
-import tland.gb.Inst.*;
 import static tland.gb.Registers.RegisterIndex;
+
+import tland.gb.Registers.RegisterIndex;
+import tland.gb.cpu.Inst.*;
 
 public class Opcodes {
     // TODO: Fix pointer instructions (e.g. ld b, [hl])

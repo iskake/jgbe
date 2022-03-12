@@ -3,6 +3,7 @@ package tland.gb;
 import tland.Bitwise;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
+import tland.gb.cpu.CPU;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
 

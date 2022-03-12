@@ -1,4 +1,4 @@
-package tland.gb.Inst;
+package tland.gb.cpu.Inst;
 
 import tland.gb.GameBoy;
 import tland.gb.Registers;

@@ -1,4 +1,6 @@
-package tland.gb;
+package tland.gb.cpu;
+
+import tland.gb.GameBoy;
 
 public class CPU {
     private final GameBoy gb;

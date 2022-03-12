@@ -1,19 +1,19 @@
-package tland.gb.Inst;
+package tland.gb.cpu.Inst;
 
 import tland.gb.GameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
 /**
- * Logical XOR instruction. Takes A XOR the register/value nn ({@code a ^ nn})
+ * Logical AND instruction. Takes A AND the register/value nn ({@code a & nn})
  * 
  * <p>
- * Implements opcodes: {@code xor r8} and {@code xor $n8}
+ * Implements opcodes: {@code and r8} and {@code and $n8}
  */
-public class XOR_nn extends Instruction {
-    public final RegisterIndex reg;
+public class AND_nn extends Instruction {
+    private final RegisterIndex reg;
 
-    public XOR_nn(String name, RegisterIndex reg) {
+    public AND_nn(String name, RegisterIndex reg) {
         super(name);
         this.reg = reg;
     }
@@ -21,7 +21,7 @@ public class XOR_nn extends Instruction {
     @Override
     public void doOp(GameBoy gb, int opcode) {
         byte value;
-        
+
         if (reg == null) {
             value = gb.readNextByte();
         } else {
@@ -30,17 +30,17 @@ public class XOR_nn extends Instruction {
 
         byte a = gb.reg.readRegisterByte(RegisterIndex.A);
 
-        gb.reg.writeRegisterByte(RegisterIndex.A, a ^ value);
+        gb.reg.writeRegisterByte(RegisterIndex.A, a & value);
 
-        if ((a ^ value) == 0) {
+        if ((a & value) == 0) {
             gb.reg.setFlag(Flags.Z);
         } else {
-            gb.reg.resetFlag(Flags.Z);
+            gb.reg.resetFlag(Flags.Z);;
         }
 
         gb.reg.resetFlag(Flags.N);
 
-        gb.reg.resetFlag(Flags.H);
+        gb.reg.setFlag(Flags.H);
 
         gb.reg.resetFlag(Flags.C);
     }
