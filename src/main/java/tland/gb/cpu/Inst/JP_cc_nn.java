@@ -1,6 +1,7 @@
 package tland.gb.cpu.Inst;
 
 import tland.gb.GameBoy;
+import tland.gb.Registers.RegisterIndex;
 
 /**
  * Jump to address (set PC), with optional condition.
@@ -11,21 +12,25 @@ import tland.gb.GameBoy;
  * {@code jp hl}
  */
 public class JP_cc_nn extends Instruction {
+    private final Conditions condition;
 
-    public JP_cc_nn(String name) {
+    public JP_cc_nn(String name, Conditions condition) {
         super(name);
+        this.condition = condition;
     }
 
     @Override
     public void doOp(GameBoy gb, int opcode) {
-        switch (opcode) {
-            case 0xc3:
-                short address = gb.readNextShort();
-                gb.setPC(address);
-                break;
-            default:
-                // TODO
-                throw new IllegalInstructionException();
+        short address;
+
+        if (opcode == 0xe9) {
+            address = gb.reg.readRegisterShort(RegisterIndex.HL);
+        } else {
+            address = gb.readNextShort();
+        }
+
+        if (Conditions.conditionSatisfied(gb.reg, condition)) {
+            gb.setPC(address);
         }
     }
 
