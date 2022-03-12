@@ -96,7 +96,8 @@ public class Opcodes {
 
 /* 0x36 */ new LD_rr_nn("ld [hl], %02x", RegisterIndex.HL),
 
-/* 0x37 */ new IllegalInst("unimplemented, 0x37"), // scf
+/* 0x37 */ new SCF(),
+
 /* 0x38 */ new IllegalInst("unimplemented, 0x38"), // jr c, r8
 /* 0x39 */ new IllegalInst("unimplemented, 0x39"), // add hl, sp
 /* 0x3a */ new IllegalInst("unimplemented, 0x3a"), // ld a, [hl-]
@@ -107,7 +108,7 @@ public class Opcodes {
 
 /* 0x3e */ new LD_rr_nn("ld a, $%02x", RegisterIndex.A),
 
-/* 0x3f */ new IllegalInst("unimplemented, 0x3f"), // ccf
+/* 0x3f */ new CCF(),
 
 /* 0x40 */ new LD_r8_r8("ld b, b", RegisterIndex.B, RegisterIndex.B),
 /* 0x41 */ new LD_r8_r8("ld b, c", RegisterIndex.B, RegisterIndex.C),
@@ -258,8 +259,8 @@ public class Opcodes {
 /* 0xc0 */ new IllegalInst("unimplemented, 0xc0"), // ret nz
 /* 0xc1 */ new IllegalInst("unimplemented, 0xc1"), // pop bc
 
-/* 0xc2 */ new JP_cc_nn("jp nz, $%02x%02x", Conditional.NZ),
-/* 0xc3 */ new JP_cc_nn("jp $%02x%02x", Conditional.NONE),
+/* 0xc2 */ new JP_cc_nn("jp nz, $%02x%02x", Conditions.NZ),
+/* 0xc3 */ new JP_cc_nn("jp $%02x%02x", Conditions.NONE),
 
 /* 0xc4 */ new IllegalInst("unimplemented, 0xc4"), // call nz, $n16
 /* 0xc5 */ new IllegalInst("unimplemented, 0xc5"), // push bc
@@ -270,7 +271,7 @@ public class Opcodes {
 /* 0xc8 */ new IllegalInst("unimplemented, 0xc8"), // ret z
 /* 0xc9 */ new IllegalInst("unimplemented, 0xc9"), // ret
 
-/* 0xca */ new JP_cc_nn("jp z, $%02x%02x", Conditional.Z),
+/* 0xca */ new JP_cc_nn("jp z, $%02x%02x", Conditions.Z),
 
 /* 0xcb */ new Prefixed(),
 
@@ -283,7 +284,7 @@ public class Opcodes {
 /* 0xd0 */ new IllegalInst("unimplemented, 0xd0"), // ret nc
 /* 0xd1 */ new IllegalInst("unimplemented, 0xd1"), // pop de
 
-/* 0xd2 */ new JP_cc_nn("jp nc, $%02x%02x", Conditional.NC),
+/* 0xd2 */ new JP_cc_nn("jp nc, $%02x%02x", Conditions.NC),
 
 /* 0xd3 */ new IllegalInst("illegal $d3"), // illegal
 
@@ -296,7 +297,7 @@ public class Opcodes {
 /* 0xd8 */ new IllegalInst("unimplemented, 0xd8"), // ret c
 /* 0xd9 */ new IllegalInst("unimplemented, 0xd9"), // reti
 
-/* 0xda */ new JP_cc_nn("jp c, $%02x%02x", Conditional.C),
+/* 0xda */ new JP_cc_nn("jp c, $%02x%02x", Conditions.C),
 
 /* 0xdb */ new IllegalInst("illegal $db"), // illegal
 /* 0xdc */ new IllegalInst("unimplemented, 0xdc"), // call c, $n16
@@ -321,7 +322,7 @@ public class Opcodes {
 /* 0xe7 */ new IllegalInst("unimplemented, 0xe7"), // rst $20
 /* 0xe8 */ new IllegalInst("unimplemented, 0xe8"), // add sp, r8
 
-/* 0xe9 */ new JP_cc_nn("jp hl", Conditional.NONE),
+/* 0xe9 */ new JP_cc_nn("jp hl", Conditions.NONE),
 
 /* 0xea */ new LD_ptr_A("ld [$%04x], a"),
 

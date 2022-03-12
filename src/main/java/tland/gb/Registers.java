@@ -26,21 +26,13 @@ public class Registers {
     };
 
     public enum Flags {
-        /**
-         * Carry flag, bit 4 of the F register.
-         */
+        /** Carry flag, bit 4 of the F register. */
         C(4),
-        /**
-         * Half carry flag, bit 5 of the F register.
-         */
+        /** Half carry flag, bit 5 of the F register. */
         H(5),
-        /**
-         * Subtraction flag, bit 6 of the F register.
-         */
+        /** Subtraction flag, bit 6 of the F register. */
         N(6),
-        /**
-         * Zero flag, bit 7 of the F register.
-         */
+        /** Zero flag, bit 7 of the F register. */
         Z(7);
 
         private final int val;
@@ -65,7 +57,7 @@ public class Registers {
     /**
      * Check if the specified flag is set in the F register.
      * 
-     * @param flag The falg to check.
+     * @param flag The flag to check.
      * @return {@code true} if the flag is set, {@code false} otherwise.
      */
     public boolean isFlagSet(Flags flag) {
@@ -74,10 +66,9 @@ public class Registers {
     }
 
     /**
-     * Check if the specified flag is set in the F register.
+     * Set the specified flag (set the corresponding bit) in the F register.
      * 
-     * @param flag The falg to check.
-     * @return {@code true} if the flag is set, {@code false} otherwise.
+     * @param flag The flag to set.
      */
     public void setFlag(Flags flag) {
         int i = RegisterIndex.F.val;
@@ -85,14 +76,23 @@ public class Registers {
     }
 
     /**
-     * Check if the specified flag is set in the F register.
+     * Reset the specified flag (clear the corresponding bit) in the F register.
      * 
-     * @param flag The falg to check.
-     * @return {@code true} if the flag is set, {@code false} otherwise.
+     * @param flag The flag to reset.
      */
     public void resetFlag(Flags flag) {
         int i = RegisterIndex.F.val;
         registerValues[i] = Bitwise.clearBit(registerValues[i], flag.val);
+    }
+
+    /**
+     * Complement the specified flag (flip the corresponding bit) in the F register.
+     * 
+     * @param flag The flag to complement.
+     */
+    public void complementFlag(Flags flag) {
+        int i = RegisterIndex.F.val;
+        registerValues[i] = Bitwise.flipBit(registerValues[i], flag.val);
     }
 
     /**
@@ -275,7 +275,7 @@ public class Registers {
         int lsbOffset = msbOffset + 1;
 
         registerValues[lsbOffset]--;
-        if (registerValues[lsbOffset] == (byte)0xff) {
+        if (registerValues[lsbOffset] == (byte) 0xff) {
             registerValues[msbOffset]--;
         }
     }
