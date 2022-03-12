@@ -35,7 +35,7 @@ public class INC_rr extends Instruction {
 
             gb.reg.resetFlag(Flags.N);
 
-            if (Byte.toUnsignedInt(value) == 0) {
+            if ((Byte.toUnsignedInt(value) & 0b1111) == 0) {
                 gb.reg.setFlag(Flags.H);
             } else {
                 gb.reg.resetFlag(Flags.H);
