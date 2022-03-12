@@ -215,9 +215,7 @@ public class Registers {
         if (isRegisterShort(reg)) {
             if (reg.val == RegisterIndex.HL.val) {
                 byte val = readRegisterByte(RegisterIndex.HL);
-                System.out.println(gb.readMemoryAddress((short) 0xc000));
                 writeRegisterByte(reg, ++val);
-                System.out.println(gb.readMemoryAddress((short) 0xc000));
                 return;
             } else {
                 // There are no `INC` instructions for incrementing the address stored in a
@@ -242,6 +240,43 @@ public class Registers {
         registerValues[lsbOffset]++;
         if (registerValues[lsbOffset] == 0) {
             registerValues[msbOffset]++;
+        }
+    }
+
+    /**
+     * Decrement the value stored in the 8-bit register {@code reg}.
+     * 
+     * @param reg The register to decrement the value of.
+     */
+    public void decRegisterByte(RegisterIndex reg) {
+        if (isRegisterShort(reg)) {
+            if (reg.val == RegisterIndex.HL.val) {
+                byte val = readRegisterByte(RegisterIndex.HL);
+                writeRegisterByte(reg, --val);
+                return;
+            } else {
+                // There are no `DEC` instructions for decrementing the address stored in a
+                // short register other than HL (opcode 0x35).
+                checkRegisterByte(reg);
+            }
+        }
+        registerValues[reg.val]--;
+    }
+
+    /**
+     * Decrement the value stored in the 16-bit register {@code reg}.
+     * 
+     * @param reg The register to decrement the value of.
+     */
+    public void decRegisterShort(RegisterIndex reg) {
+        checkRegisterShort(reg);
+
+        int msbOffset = getShortRegisterIndex(reg);
+        int lsbOffset = msbOffset + 1;
+
+        registerValues[lsbOffset]--;
+        if (registerValues[lsbOffset] == (byte)0xff) {
+            registerValues[msbOffset]--;
         }
     }
 
