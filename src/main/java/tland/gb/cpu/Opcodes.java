@@ -15,8 +15,7 @@ public class Opcodes {
 
 /* 0x03 */ new INC_rr("inc bc", RegisterIndex.BC),
 /* 0x04 */ new INC_rr("inc b", RegisterIndex.B),
-
-/* 0x05 */ new IllegalInst("unimplemented, 0x05"), // dec b
+/* 0x05 */ new DEC_rr("dec b", RegisterIndex.B),
 
 /* 0x06 */ new LD_rr_nn("ld b, $%02x", RegisterIndex.B),
 
@@ -27,11 +26,9 @@ public class Opcodes {
 
 /* 0x0a */ new LD_r8_r8("ld a, [bc]", RegisterIndex.A, RegisterIndex.BC),
 
-/* 0x0b */ new IllegalInst("unimplemented, 0x0b"), // dec bc
-
+/* 0x0b */ new DEC_rr("dec bc", RegisterIndex.BC),
 /* 0x0c */ new INC_rr("inc c", RegisterIndex.C),
-
-/* 0x0d */ new IllegalInst("unimplemented, 0x0d"), // dec c
+/* 0x0d */ new DEC_rr("dec c", RegisterIndex.C),
 
 /* 0x0e */ new LD_rr_nn("ld c, $%02x", RegisterIndex.C),
 
@@ -44,8 +41,7 @@ public class Opcodes {
 
 /* 0x13 */ new INC_rr("inc de", RegisterIndex.DE),
 /* 0x14 */ new INC_rr("inc d", RegisterIndex.D),
-
-/* 0x15 */ new IllegalInst("unimplemented, 0x15"), // dec d
+/* 0x15 */ new DEC_rr("dec d", RegisterIndex.D),
 
 /* 0x16 */ new LD_rr_nn("ld d, $%02x", RegisterIndex.D),
 
@@ -56,11 +52,9 @@ public class Opcodes {
 
 /* 0x1a */ new LD_r8_r8("ld a, [de]", RegisterIndex.A, RegisterIndex.DE),
 
-/* 0x1b */ new IllegalInst("unimplemented, 0x1b"), // dec de
-
+/* 0x1b */ new DEC_rr("dec de", RegisterIndex.DE),
 /* 0x1c */ new INC_rr("inc e", RegisterIndex.E),
-
-/* 0x1d */ new IllegalInst("unimplemented, 0x1d"), // dec e
+/* 0x1d */ new DEC_rr("dec e", RegisterIndex.E),
 
 /* 0x1e */ new LD_rr_nn("ld e, $%02x", RegisterIndex.E),
 
@@ -73,8 +67,7 @@ public class Opcodes {
 
 /* 0x23 */ new INC_rr("inc hl", RegisterIndex.HL),
 /* 0x24 */ new INC_rr("inc h", RegisterIndex.H),
-
-/* 0x25 */ new IllegalInst("unimplemented, 0x25"), // dec [hl]
+/* 0x25 */ new DEC_rr("dec h", RegisterIndex.H),
 
 /* 0x26 */ new LD_rr_nn("ld h, $%02x", RegisterIndex.H),
 
@@ -84,11 +77,10 @@ public class Opcodes {
 /* 0x29 */ new ADD_rr_nn("add hl, hl", RegisterIndex.HL, RegisterIndex.HL),
 
 /* 0x2a */ new IllegalInst("unimplemented, 0x2a"), // ld a [hl+]
-/* 0x2b */ new IllegalInst("unimplemented, 0x2b"), // dec hl
 
+/* 0x2b */ new DEC_rr("dec hl", RegisterIndex.HL),
 /* 0x2c */ new INC_rr("inc l", RegisterIndex.L),
-
-/* 0x2d */ new IllegalInst("unimplemented, 0x2d"), // dec l
+/* 0x2d */ new DEC_rr("dec l", RegisterIndex.L),
 
 /* 0x2e */ new LD_rr_nn("ld l, $%02x", RegisterIndex.L),
 
@@ -100,8 +92,7 @@ public class Opcodes {
 
 /* 0x33 */ new INC_rr("inc sp", RegisterIndex.SP), // inc sp
 /* 0x34 */ new INC_rr("inc [hl]", RegisterIndex.HL),
-
-/* 0x35 */ new IllegalInst("unimplemented, 0x35"), // dec [hl]
+/* 0x35 */ new DEC_rr("dec [hl]", RegisterIndex.HL),
 
 /* 0x36 */ new LD_rr_nn("ld [hl], %02x", RegisterIndex.HL),
 
@@ -109,11 +100,10 @@ public class Opcodes {
 /* 0x38 */ new IllegalInst("unimplemented, 0x38"), // jr c, r8
 /* 0x39 */ new IllegalInst("unimplemented, 0x39"), // add hl, sp
 /* 0x3a */ new IllegalInst("unimplemented, 0x3a"), // ld a, [hl-]
-/* 0x3b */ new IllegalInst("unimplemented, 0x3b"), // dec sp
 
+/* 0x3b */ new DEC_rr("dec sp", RegisterIndex.SP),
 /* 0x3c */ new INC_rr("inc a", RegisterIndex.A),
-
-/* 0x3d */ new IllegalInst("unimplemented, 0x3d"), // dec a
+/* 0x3d */ new DEC_rr("dec a", RegisterIndex.A),
 
 /* 0x3e */ new LD_rr_nn("ld a, $%02x", RegisterIndex.A),
 
