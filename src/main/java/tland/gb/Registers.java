@@ -2,20 +2,39 @@ package tland.gb;
 
 import tland.Bitwise;
 
+/**
+ * The CPU registers in the Sharp SM83 processor.
+ */
 public class Registers {
+    /**
+     * CPU Registers.
+     */
     public enum RegisterIndex {
-        // 8-bit byte registers
-        A(0), F(1),
+        // 8-bit registers. Made up of a half of each 16-bit register.
+
+        /** Accumulator, used as a general register and for arithmetic operations. */
+        A(0),
+        /** Flags register, holds flags from various operations. */
+        F(1),
         B(2), C(3),
         D(4), E(5),
         H(6), L(7),
-        // 16-bit short registers
+
+        // 16-bit registers. Made up of pairs of the 8-bit registers.
         AF(0x8),
         BC(0x9),
         DE(0xA),
+        /**  */
         HL(0xB),
 
+        // 'Special' 16-bit registers.
+
+        /** Stack Pointer. Holds the current memory address of the stack. */
         SP(0xC),
+        /**
+         * Program Counter (a.k.a. instruction pointer, etc.).
+         * Points to the next instruction to be fetched.
+         */
         PC(0xD);
 
         private final int val;
@@ -25,6 +44,14 @@ public class Registers {
         }
     };
 
+    /**
+     * Flags for the Flags register ({@code Registers.F}).
+     * 
+     * <p>
+     * Flags are stored as the 4 most significant bits of the F register.
+     * 
+     * @see RegisterIndex
+     */
     public enum Flags {
         /** Carry flag, bit 4 of the F register. */
         C(4),
