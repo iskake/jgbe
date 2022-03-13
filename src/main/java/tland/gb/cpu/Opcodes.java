@@ -4,8 +4,6 @@ import tland.gb.Registers.RegisterIndex;
 import tland.gb.cpu.Inst.*;
 
 public class Opcodes {
-    // TODO: Fix pointer instructions (e.g. ld b, [hl])
-
     private final static Instruction[] opcodes = {
 /* 0x00 */ new NOP(),
 
@@ -46,7 +44,8 @@ public class Opcodes {
 /* 0x16 */ new LD_rr_nn("ld d, $%02x", RegisterIndex.D),
 
 /* 0x17 */ new IllegalInst("unimplemented, 0x17"), // rla
-/* 0x18 */ new IllegalInst("unimplemented, 0x18"), // jr r8
+
+/* 0x18 */ new JR_cc_e8("jr $%02x", Conditions.NONE),
 
 /* 0x19 */ new ADD_rr_nn("add hl, de", RegisterIndex.HL, RegisterIndex.DE),
 
@@ -59,7 +58,8 @@ public class Opcodes {
 /* 0x1e */ new LD_rr_nn("ld e, $%02x", RegisterIndex.E),
 
 /* 0x1f */ new IllegalInst("unimplemented, 0x1f"), // rra
-/* 0x20 */ new IllegalInst("unimplemented, 0x20"), // jr nz, r8
+
+/* 0x20 */ new JR_cc_e8("jr nz, $%02x", Conditions.NZ),
 
 /* 0x21 */ new LD_rr_nn("ld hl, $%04x", RegisterIndex.HL),
 
@@ -72,7 +72,7 @@ public class Opcodes {
 /* 0x26 */ new LD_rr_nn("ld h, $%02x", RegisterIndex.H),
 
 /* 0x27 */ new IllegalInst("unimplemented, 0x27"), // daa
-/* 0x28 */ new IllegalInst("unimplemented, 0x28"), // jr z, r8
+/* 0x28 */ new JR_cc_e8("jr z, $%02x", Conditions.Z),
 
 /* 0x29 */ new ADD_rr_nn("add hl, hl", RegisterIndex.HL, RegisterIndex.HL),
 
@@ -85,7 +85,9 @@ public class Opcodes {
 /* 0x2e */ new LD_rr_nn("ld l, $%02x", RegisterIndex.L),
 
 /* 0x2f */ new IllegalInst("unimplemented, 0x2f"), // cpl
-/* 0x30 */ new IllegalInst("unimplemented, 0x30"), // jr nc, r8
+
+/* 0x30 */ new JR_cc_e8("jr nc, $%02x", Conditions.NC),
+
 /* 0x31 */ new IllegalInst("unimplemented, 0x31"), // ld sp, $n16
 
 /* 0x32 */ new IllegalInst("unimplemented, 0x32"), // ld [hl-], a
@@ -98,7 +100,8 @@ public class Opcodes {
 
 /* 0x37 */ new SCF(),
 
-/* 0x38 */ new IllegalInst("unimplemented, 0x38"), // jr c, r8
+/* 0x38 */ new JR_cc_e8("jr c, $%02x", Conditions.C),
+
 /* 0x39 */ new IllegalInst("unimplemented, 0x39"), // add hl, sp
 /* 0x3a */ new IllegalInst("unimplemented, 0x3a"), // ld a, [hl-]
 
