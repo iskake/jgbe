@@ -220,7 +220,12 @@ public class Registers {
         byte lo = Bitwise.getLowByte(value);
 
         registerValues[index] = hi;
-        registerValues[index + 1] = lo;
+        if ((index + 1) == 1) {
+            // Used in `pop af` only
+            registerValues[index + 1] = Bitwise.toByte(lo & 0b11110000);
+        } else {
+            registerValues[index + 1] = lo;
+        }
     }
 
     /**

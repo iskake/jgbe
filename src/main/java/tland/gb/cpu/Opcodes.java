@@ -260,13 +260,15 @@ public class Opcodes {
 /* 0xbf */ new CP_nn("cp a", RegisterIndex.A),
 
 /* 0xc0 */ new IllegalInst("unimplemented, 0xc0"), // ret nz
-/* 0xc1 */ new IllegalInst("unimplemented, 0xc1"), // pop bc
+
+/* 0xc1 */ new POP_r16("pop bc", RegisterIndex.BC),
 
 /* 0xc2 */ new JP_cc_nn("jp nz, $%02x%02x", Conditions.NZ),
 /* 0xc3 */ new JP_cc_nn("jp $%02x%02x", Conditions.NONE),
 
 /* 0xc4 */ new IllegalInst("unimplemented, 0xc4"), // call nz, $n16
-/* 0xc5 */ new IllegalInst("unimplemented, 0xc5"), // push bc
+
+/* 0xc5 */ new PUSH_r16("push bc", RegisterIndex.BC),
 
 /* 0xc6 */ new ADD_rr_nn("add a, $%02x", RegisterIndex.A, null, false),
 
@@ -285,14 +287,16 @@ public class Opcodes {
 
 /* 0xcf */ new IllegalInst("unimplemented, 0xcf"), // rst $08
 /* 0xd0 */ new IllegalInst("unimplemented, 0xd0"), // ret nc
-/* 0xd1 */ new IllegalInst("unimplemented, 0xd1"), // pop de
+
+/* 0xd1 */ new POP_r16("pop de", RegisterIndex.DE),
 
 /* 0xd2 */ new JP_cc_nn("jp nc, $%02x%02x", Conditions.NC),
 
 /* 0xd3 */ new IllegalInst("illegal $d3"), // illegal
 
 /* 0xd4 */ new IllegalInst("unimplemented, 0xd4"), // call nc, $n16
-/* 0xd5 */ new IllegalInst("unimplemented, 0xd5"), // push de
+
+/* 0xd5 */ new PUSH_r16("push de", RegisterIndex.DE),
 
 /* 0xd6 */ new SUB_rr_nn("sub $%02x", RegisterIndex.A, null, false),
 
@@ -312,13 +316,14 @@ public class Opcodes {
 
 /* 0xe0 */ new LD_ptr_A("ldh a, [$%02x]"),
 
-/* 0xe1 */ new IllegalInst("unimplemented, 0xe1"), // pop
+/* 0xe1 */ new POP_r16("pop hl", RegisterIndex.HL),
 
 /* 0xe2 */ new LD_ptr_A("ld [c], a"),
 
 /* 0xe3 */ new IllegalInst("illegal $e3"), // illegal
 /* 0xe4 */ new IllegalInst("illegal $e4"), // illegal
-/* 0xe5 */ new IllegalInst("unimplemented, 0xe5"), // push hl
+
+/* 0xe5 */ new PUSH_r16("push hl", RegisterIndex.HL),
 
 /* 0xe6 */ new AND_nn("and $%02x", null),
 
@@ -339,13 +344,14 @@ public class Opcodes {
 
 /* 0xf0 */ new LD_A_ptr("ld a, [$%02x]"),
 
-/* 0xf1 */ new IllegalInst("unimplemented, 0xf1"), // pop af
+/* 0xf1 */ new POP_r16("pop af", RegisterIndex.AF),
 
 /* 0xf2 */ new LD_A_ptr("ld a, [c]"),
 
 /* 0xf3 */ new IllegalInst("unimplemented, 0xf3"), // di
 /* 0xf4 */ new IllegalInst("illegal $f4"), // illegal
-/* 0xf5 */ new IllegalInst("unimplemented, 0xf5"), // push af
+
+/* 0xf5 */ new PUSH_r16("push af", RegisterIndex.AF),
 
 /* 0xf6 */ new OR_nn("or $%02x", null),
 
