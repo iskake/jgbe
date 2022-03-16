@@ -17,7 +17,7 @@ public class Opcodes {
 
 /* 0x06 */ new LD_rr_nn("ld b, $%02x", RegisterIndex.B),
 
-/* 0x07 */ new IllegalInst("unimplemented, 0x07"), // rcla
+/* 0x07 */ new IllegalInst("unimplemented, 0x07"), // rlca
 /* 0x08 */ new IllegalInst("unimplemented, 0x08"), // ld [$n16], sp
 
 /* 0x09 */ new ADD_rr_nn("add hl, bc", RegisterIndex.HL, RegisterIndex.BC),
@@ -259,34 +259,34 @@ public class Opcodes {
 /* 0xbe */ new CP_nn("cp [hl]", RegisterIndex.HL),
 /* 0xbf */ new CP_nn("cp a", RegisterIndex.A),
 
-/* 0xc0 */ new IllegalInst("unimplemented, 0xc0"), // ret nz
+/* 0xc0 */ new RET_cc("ret nz", Conditions.NZ),
 
 /* 0xc1 */ new POP_r16("pop bc", RegisterIndex.BC),
 
 /* 0xc2 */ new JP_cc_nn("jp nz, $%02x%02x", Conditions.NZ),
 /* 0xc3 */ new JP_cc_nn("jp $%02x%02x", Conditions.NONE),
 
-/* 0xc4 */ new IllegalInst("unimplemented, 0xc4"), // call nz, $n16
+/* 0xc4 */ new CALL_cc_n16("call nz, $%02x%02x", Conditions.NZ),
 
 /* 0xc5 */ new PUSH_r16("push bc", RegisterIndex.BC),
 
 /* 0xc6 */ new ADD_rr_nn("add a, $%02x", RegisterIndex.A, null, false),
 
 /* 0xc7 */ new IllegalInst("unimplemented, 0xc7"), // rst $00
-/* 0xc8 */ new IllegalInst("unimplemented, 0xc8"), // ret z
-/* 0xc9 */ new IllegalInst("unimplemented, 0xc9"), // ret
+/* 0xc8 */ new RET_cc("ret z", Conditions.Z),
+/* 0xc9 */ new RET_cc("ret", Conditions.NONE),
 
 /* 0xca */ new JP_cc_nn("jp z, $%02x%02x", Conditions.Z),
 
 /* 0xcb */ new Prefixed(),
 
-/* 0xcc */ new IllegalInst("unimplemented, 0xcc"), // call z, $n16
-/* 0xcd */ new IllegalInst("unimplemented, 0xcd"), // call $n16
+/* 0xcc */ new CALL_cc_n16("call z, $%02x%02x", Conditions.Z),
+/* 0xcd */ new CALL_cc_n16("call $%02x%02x", Conditions.NONE),
 
 /* 0xce */ new ADD_rr_nn("adc a, $%02x", RegisterIndex.A, null, true),
 
 /* 0xcf */ new IllegalInst("unimplemented, 0xcf"), // rst $08
-/* 0xd0 */ new IllegalInst("unimplemented, 0xd0"), // ret nc
+/* 0xd0 */ new RET_cc("ret nc", Conditions.NC),
 
 /* 0xd1 */ new POP_r16("pop de", RegisterIndex.DE),
 
@@ -294,20 +294,22 @@ public class Opcodes {
 
 /* 0xd3 */ new IllegalInst("illegal $d3"), // illegal
 
-/* 0xd4 */ new IllegalInst("unimplemented, 0xd4"), // call nc, $n16
+/* 0xd4 */ new CALL_cc_n16("call nc, $%02x%02x", Conditions.NC),
 
 /* 0xd5 */ new PUSH_r16("push de", RegisterIndex.DE),
 
 /* 0xd6 */ new SUB_rr_nn("sub $%02x", RegisterIndex.A, null, false),
 
 /* 0xd7 */ new IllegalInst("unimplemented, 0xd7"), // rst $10
-/* 0xd8 */ new IllegalInst("unimplemented, 0xd8"), // ret c
-/* 0xd9 */ new IllegalInst("unimplemented, 0xd9"), // reti
+/* 0xd8 */ new RET_cc("ret c", Conditions.C),
+/* 0xd9 */ new RET_cc("reti", Conditions.NONE),
 
 /* 0xda */ new JP_cc_nn("jp c, $%02x%02x", Conditions.C),
 
 /* 0xdb */ new IllegalInst("illegal $db"), // illegal
-/* 0xdc */ new IllegalInst("unimplemented, 0xdc"), // call c, $n16
+
+/* 0xdc */ new CALL_cc_n16("call c, $%02x%02x", Conditions.C),
+
 /* 0xdd */ new IllegalInst("illegal $dd"), // illegal
 
 /* 0xde */ new SUB_rr_nn("sbc $%02x", RegisterIndex.A, null, true),
