@@ -316,11 +316,11 @@ public class Opcodes {
 
 /* 0xdf */ new IllegalInst("unimplemented, 0xdf"), // rst $18
 
-/* 0xe0 */ new LD_ptr_A("ldh a, [$%02x]"),
+/* 0xe0 */ new LD_ptr_A("ldh [$ff%02x], a"),
 
 /* 0xe1 */ new POP_r16("pop hl", RegisterIndex.HL),
 
-/* 0xe2 */ new LD_ptr_A("ld [c], a"),
+/* 0xe2 */ new LD_ptr_A("ldh [c], a"),
 
 /* 0xe3 */ new IllegalInst("illegal $e3"), // illegal
 /* 0xe4 */ new IllegalInst("illegal $e4"), // illegal
@@ -334,7 +334,7 @@ public class Opcodes {
 
 /* 0xe9 */ new JP_cc_nn("jp hl", Conditions.NONE),
 
-/* 0xea */ new LD_ptr_A("ld [$%04x], a"),
+/* 0xea */ new LD_ptr_A("ld [$%02x%02x], a"),
 
 /* 0xeb */ new IllegalInst("illegal $eb"), // illegal
 /* 0xec */ new IllegalInst("illegal $ec"), // illegal
@@ -344,11 +344,11 @@ public class Opcodes {
 
 /* 0xef */ new IllegalInst("unimplemented, 0xef"), // rst $28
 
-/* 0xf0 */ new LD_A_ptr("ld a, [$%02x]"),
+/* 0xf0 */ new LD_A_ptr("ldh a, [$ff%02x]"),
 
 /* 0xf1 */ new POP_r16("pop af", RegisterIndex.AF),
 
-/* 0xf2 */ new LD_A_ptr("ld a, [c]"),
+/* 0xf2 */ new LD_A_ptr("ldh a, [c]"),
 
 /* 0xf3 */ new IllegalInst("unimplemented, 0xf3"), // di
 /* 0xf4 */ new IllegalInst("illegal $f4"), // illegal
@@ -361,7 +361,7 @@ public class Opcodes {
 /* 0xf8 */ new IllegalInst("unimplemented, 0xf8"), // ld hl, sp+$s8 (signed)
 /* 0xf9 */ new IllegalInst("unimplemented, 0xf9"), // ld sp, hl
 
-/* 0xfa */ new LD_A_ptr("ld a, [$%04x]"),
+/* 0xfa */ new LD_A_ptr("ld a, [$%02x%02x]"),
 
 /* 0xfb */ new IllegalInst("unimplemented, 0xfb"), // ei
 /* 0xfc */ new IllegalInst("illegal $fc"), // illegal
