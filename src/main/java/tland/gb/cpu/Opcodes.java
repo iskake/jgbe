@@ -15,7 +15,7 @@ public class Opcodes {
 /* 0x04 */ new INC_rr("inc b", RegisterIndex.B),
 /* 0x05 */ new DEC_rr("dec b", RegisterIndex.B),
 
-/* 0x06 */ new LD_rr_nn("ld b, $%02x", RegisterIndex.B),
+/* 0x06 */ new LD_rr_nn("ld b, $_N8", RegisterIndex.B),
 
 /* 0x07 */ new IllegalInst("unimplemented, 0x07"), // rlca
 /* 0x08 */ new IllegalInst("unimplemented, 0x08"), // ld [$n16], sp
@@ -28,7 +28,7 @@ public class Opcodes {
 /* 0x0c */ new INC_rr("inc c", RegisterIndex.C),
 /* 0x0d */ new DEC_rr("dec c", RegisterIndex.C),
 
-/* 0x0e */ new LD_rr_nn("ld c, $%02x", RegisterIndex.C),
+/* 0x0e */ new LD_rr_nn("ld c, $_N8", RegisterIndex.C),
 
 /* 0x0f */ new IllegalInst("unimplemented, 0x0f"), // rrca
 /* 0x10 */ new IllegalInst("unimplemented, 0x10"), // stop $n8
@@ -41,11 +41,11 @@ public class Opcodes {
 /* 0x14 */ new INC_rr("inc d", RegisterIndex.D),
 /* 0x15 */ new DEC_rr("dec d", RegisterIndex.D),
 
-/* 0x16 */ new LD_rr_nn("ld d, $%02x", RegisterIndex.D),
+/* 0x16 */ new LD_rr_nn("ld d, $_N8", RegisterIndex.D),
 
 /* 0x17 */ new IllegalInst("unimplemented, 0x17"), // rla
 
-/* 0x18 */ new JR_cc_e8("jr $%02x", Conditions.NONE),
+/* 0x18 */ new JR_cc_e8("jr $_N8", Conditions.NONE),
 
 /* 0x19 */ new ADD_rr_nn("add hl, de", RegisterIndex.HL, RegisterIndex.DE),
 
@@ -55,13 +55,13 @@ public class Opcodes {
 /* 0x1c */ new INC_rr("inc e", RegisterIndex.E),
 /* 0x1d */ new DEC_rr("dec e", RegisterIndex.E),
 
-/* 0x1e */ new LD_rr_nn("ld e, $%02x", RegisterIndex.E),
+/* 0x1e */ new LD_rr_nn("ld e, $_N8", RegisterIndex.E),
 
 /* 0x1f */ new IllegalInst("unimplemented, 0x1f"), // rra
 
-/* 0x20 */ new JR_cc_e8("jr nz, $%02x", Conditions.NZ),
+/* 0x20 */ new JR_cc_e8("jr nz, $_N8", Conditions.NZ),
 
-/* 0x21 */ new LD_rr_nn("ld hl, $%04x", RegisterIndex.HL),
+/* 0x21 */ new LD_rr_nn("ld hl, $_N16", RegisterIndex.HL),
 
 /* 0x22 */ new LD_r8_r8("ld [hli], a", RegisterIndex.HL, RegisterIndex.A),
 
@@ -69,10 +69,10 @@ public class Opcodes {
 /* 0x24 */ new INC_rr("inc h", RegisterIndex.H),
 /* 0x25 */ new DEC_rr("dec h", RegisterIndex.H),
 
-/* 0x26 */ new LD_rr_nn("ld h, $%02x", RegisterIndex.H),
+/* 0x26 */ new LD_rr_nn("ld h, $_N8", RegisterIndex.H),
 
 /* 0x27 */ new IllegalInst("unimplemented, 0x27"), // daa
-/* 0x28 */ new JR_cc_e8("jr z, $%02x", Conditions.Z),
+/* 0x28 */ new JR_cc_e8("jr z, $_N8", Conditions.Z),
 
 /* 0x29 */ new ADD_rr_nn("add hl, hl", RegisterIndex.HL, RegisterIndex.HL),
 
@@ -82,11 +82,11 @@ public class Opcodes {
 /* 0x2c */ new INC_rr("inc l", RegisterIndex.L),
 /* 0x2d */ new DEC_rr("dec l", RegisterIndex.L),
 
-/* 0x2e */ new LD_rr_nn("ld l, $%02x", RegisterIndex.L),
+/* 0x2e */ new LD_rr_nn("ld l, $_N8", RegisterIndex.L),
 
 /* 0x2f */ new IllegalInst("unimplemented, 0x2f"), // cpl
 
-/* 0x30 */ new JR_cc_e8("jr nc, $%02x", Conditions.NC),
+/* 0x30 */ new JR_cc_e8("jr nc, $_N8", Conditions.NC),
 
 /* 0x31 */ new IllegalInst("unimplemented, 0x31"), // ld sp, $n16
 
@@ -96,11 +96,11 @@ public class Opcodes {
 /* 0x34 */ new INC_rr("inc [hl]", RegisterIndex.HL),
 /* 0x35 */ new DEC_rr("dec [hl]", RegisterIndex.HL),
 
-/* 0x36 */ new LD_rr_nn("ld [hl], %02x", RegisterIndex.HL),
+/* 0x36 */ new LD_rr_nn("ld [hl], _N8", RegisterIndex.HL),
 
 /* 0x37 */ new SCF(),
 
-/* 0x38 */ new JR_cc_e8("jr c, $%02x", Conditions.C),
+/* 0x38 */ new JR_cc_e8("jr c, $_N8", Conditions.C),
 
 /* 0x39 */ new IllegalInst("unimplemented, 0x39"), // add hl, sp
 
@@ -110,7 +110,7 @@ public class Opcodes {
 /* 0x3c */ new INC_rr("inc a", RegisterIndex.A),
 /* 0x3d */ new DEC_rr("dec a", RegisterIndex.A),
 
-/* 0x3e */ new LD_rr_nn("ld a, $%02x", RegisterIndex.A),
+/* 0x3e */ new LD_rr_nn("ld a, $_N8", RegisterIndex.A),
 
 /* 0x3f */ new CCF(),
 
@@ -264,60 +264,60 @@ public class Opcodes {
 
 /* 0xc1 */ new POP_r16("pop bc", RegisterIndex.BC),
 
-/* 0xc2 */ new JP_cc_nn("jp nz, $%02x%02x", Conditions.NZ),
-/* 0xc3 */ new JP_cc_nn("jp $%02x%02x", Conditions.NONE),
+/* 0xc2 */ new JP_cc_nn("jp nz, $_N16", Conditions.NZ),
+/* 0xc3 */ new JP_cc_nn("jp $_N16", Conditions.NONE),
 
-/* 0xc4 */ new CALL_cc_n16("call nz, $%02x%02x", Conditions.NZ),
+/* 0xc4 */ new CALL_cc_n16("call nz, $_N16", Conditions.NZ),
 
 /* 0xc5 */ new PUSH_r16("push bc", RegisterIndex.BC),
 
-/* 0xc6 */ new ADD_rr_nn("add a, $%02x", RegisterIndex.A, null, false),
+/* 0xc6 */ new ADD_rr_nn("add a, $_N8", RegisterIndex.A, null, false),
 
 /* 0xc7 */ new IllegalInst("unimplemented, 0xc7"), // rst $00
 /* 0xc8 */ new RET_cc("ret z", Conditions.Z),
 /* 0xc9 */ new RET_cc("ret", Conditions.NONE),
 
-/* 0xca */ new JP_cc_nn("jp z, $%02x%02x", Conditions.Z),
+/* 0xca */ new JP_cc_nn("jp z, $_N16", Conditions.Z),
 
 /* 0xcb */ new Prefixed(),
 
-/* 0xcc */ new CALL_cc_n16("call z, $%02x%02x", Conditions.Z),
-/* 0xcd */ new CALL_cc_n16("call $%02x%02x", Conditions.NONE),
+/* 0xcc */ new CALL_cc_n16("call z, $_N16", Conditions.Z),
+/* 0xcd */ new CALL_cc_n16("call $_N16", Conditions.NONE),
 
-/* 0xce */ new ADD_rr_nn("adc a, $%02x", RegisterIndex.A, null, true),
+/* 0xce */ new ADD_rr_nn("adc a, $_N8", RegisterIndex.A, null, true),
 
 /* 0xcf */ new IllegalInst("unimplemented, 0xcf"), // rst $08
 /* 0xd0 */ new RET_cc("ret nc", Conditions.NC),
 
 /* 0xd1 */ new POP_r16("pop de", RegisterIndex.DE),
 
-/* 0xd2 */ new JP_cc_nn("jp nc, $%02x%02x", Conditions.NC),
+/* 0xd2 */ new JP_cc_nn("jp nc, $_N16", Conditions.NC),
 
 /* 0xd3 */ new IllegalInst("illegal $d3"), // illegal
 
-/* 0xd4 */ new CALL_cc_n16("call nc, $%02x%02x", Conditions.NC),
+/* 0xd4 */ new CALL_cc_n16("call nc, $_N16", Conditions.NC),
 
 /* 0xd5 */ new PUSH_r16("push de", RegisterIndex.DE),
 
-/* 0xd6 */ new SUB_rr_nn("sub $%02x", RegisterIndex.A, null, false),
+/* 0xd6 */ new SUB_rr_nn("sub $_N8", RegisterIndex.A, null, false),
 
 /* 0xd7 */ new IllegalInst("unimplemented, 0xd7"), // rst $10
 /* 0xd8 */ new RET_cc("ret c", Conditions.C),
 /* 0xd9 */ new RET_cc("reti", Conditions.NONE),
 
-/* 0xda */ new JP_cc_nn("jp c, $%02x%02x", Conditions.C),
+/* 0xda */ new JP_cc_nn("jp c, $_N16", Conditions.C),
 
 /* 0xdb */ new IllegalInst("illegal $db"), // illegal
 
-/* 0xdc */ new CALL_cc_n16("call c, $%02x%02x", Conditions.C),
+/* 0xdc */ new CALL_cc_n16("call c, $_N16", Conditions.C),
 
 /* 0xdd */ new IllegalInst("illegal $dd"), // illegal
 
-/* 0xde */ new SUB_rr_nn("sbc $%02x", RegisterIndex.A, null, true),
+/* 0xde */ new SUB_rr_nn("sbc $_N8", RegisterIndex.A, null, true),
 
 /* 0xdf */ new IllegalInst("unimplemented, 0xdf"), // rst $18
 
-/* 0xe0 */ new LD_ptr_A("ldh [$ff%02x], a"),
+/* 0xe0 */ new LD_ptr_A("ldh [$ff_N8], a"),
 
 /* 0xe1 */ new POP_r16("pop hl", RegisterIndex.HL),
 
@@ -328,24 +328,24 @@ public class Opcodes {
 
 /* 0xe5 */ new PUSH_r16("push hl", RegisterIndex.HL),
 
-/* 0xe6 */ new AND_nn("and $%02x", null),
+/* 0xe6 */ new AND_nn("and $_N8", null),
 
 /* 0xe7 */ new IllegalInst("unimplemented, 0xe7"), // rst $20
 /* 0xe8 */ new IllegalInst("unimplemented, 0xe8"), // add sp, r8
 
 /* 0xe9 */ new JP_cc_nn("jp hl", Conditions.NONE),
 
-/* 0xea */ new LD_ptr_A("ld [$%02x%02x], a"),
+/* 0xea */ new LD_ptr_A("ld [$_N16], a"),
 
 /* 0xeb */ new IllegalInst("illegal $eb"), // illegal
 /* 0xec */ new IllegalInst("illegal $ec"), // illegal
 /* 0xed */ new IllegalInst("illegal $ed"), // illegal
 
-/* 0xee */ new XOR_nn("xor $%02x", null),
+/* 0xee */ new XOR_nn("xor $_N8", null),
 
 /* 0xef */ new IllegalInst("unimplemented, 0xef"), // rst $28
 
-/* 0xf0 */ new LD_A_ptr("ldh a, [$ff%02x]"),
+/* 0xf0 */ new LD_A_ptr("ldh a, [$ff_N8]"),
 
 /* 0xf1 */ new POP_r16("pop af", RegisterIndex.AF),
 
@@ -356,19 +356,19 @@ public class Opcodes {
 
 /* 0xf5 */ new PUSH_r16("push af", RegisterIndex.AF),
 
-/* 0xf6 */ new OR_nn("or $%02x", null),
+/* 0xf6 */ new OR_nn("or $_N8", null),
 
 /* 0xf7 */ new IllegalInst("unimplemented, 0xf7"), // rst $30
 /* 0xf8 */ new IllegalInst("unimplemented, 0xf8"), // ld hl, sp+$s8 (signed)
 /* 0xf9 */ new IllegalInst("unimplemented, 0xf9"), // ld sp, hl
 
-/* 0xfa */ new LD_A_ptr("ld a, [$%02x%02x]"),
+/* 0xfa */ new LD_A_ptr("ld a, [$_N16]"),
 
 /* 0xfb */ new IllegalInst("unimplemented, 0xfb"), // ei
 /* 0xfc */ new IllegalInst("illegal $fc"), // illegal
 /* 0xfd */ new IllegalInst("illegal $fd"), // illegal
 
-/* 0xfe */ new CP_nn("cp $%02x", null),
+/* 0xfe */ new CP_nn("cp $_N8", null),
 
 /* 0xff */ new IllegalInst("unimplemented, 0xff"), // rst $38
     };
