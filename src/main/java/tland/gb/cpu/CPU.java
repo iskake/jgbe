@@ -30,6 +30,15 @@ public class CPU {
     }
 
     /**
+     * Print the name of the next instruction to be extecuted.
+     */
+    public void printNextInstruction() {
+        short address = gb.getPC();
+        byte opcode = gb.readMemoryAddress(address);
+        System.out.printf("%02x -> %s\n", opcode, getInstructionName(address));
+    }
+
+    /**
      * Get the name of the instruction based on the opcode at the specified memory
      * address.
      * 
