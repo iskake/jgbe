@@ -148,4 +148,35 @@ public class GameBoy {
     public byte readMemoryAddress(short address) {
         return memoryMap.readByte(address);
     }
+
+    /**
+     * Print the HRAM ($ff80-$ffff)
+     */
+    public void printHRAM() {
+        printMemoryRegion(0xff80, 0xffff);
+    }
+
+    /**
+     * Print the contents at the memory region from {@code start} including
+     * {@code end}.
+     * <p>
+     * Each line is formatted into 16 bytes (if applicable).
+     * 
+     * @param start The starting memory address to read from.
+     * @param end   The memory address to read to and from.
+     */
+    public void printMemoryRegion(int start, int end) {
+        int c = 0;
+        for (int i = start; i <= end; i++) {
+            if (c % 16 == 0) {
+                System.out.printf("\n%04x  ", (short) i);
+            }
+            System.out.printf("%02x ", readMemoryAddress((short) i));
+            c++;
+        }
+        System.out.println("\n");
+    }
+
+    public void incCycles() {
+    }
 }
