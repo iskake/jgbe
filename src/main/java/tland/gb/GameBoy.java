@@ -1,5 +1,7 @@
 package tland.gb;
 
+import java.util.Scanner;
+
 import tland.Bitwise;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
@@ -124,6 +126,87 @@ public class GameBoy {
         while (true) {
             cpu.step();
         }
+    }
+
+    // Simple debugger
+    // TODO: Create dedicated debugger class?
+    public void runDebugger() {
+        reg.printRegisters();
+        cpu.printNextInstruction();
+
+        Scanner sc = new Scanner(System.in);
+        boolean running = true;
+        String[] input;
+        String[] lastInput = {"c"};
+        int breakPoint = 0x10000;
+        boolean print = false;
+
+        while (running) {
+            System.out.printf("> ");
+            input = sc.nextLine().split(" ");
+
+            if (input[0].length() == 0) {
+                input = lastInput;
+            }
+            lastInput = input;
+
+            switch (input[0]) {
+                case "q":
+                    running = false;
+                    break;
+                case "n":
+                    cpu.step();
+                    reg.printRegisters();
+                    cpu.printNextInstruction();
+                    break;
+                case "c":
+                    cpu.step();
+                    while (pc != Bitwise.toShort(breakPoint)) {
+                        cpu.step();
+                        if (print) {
+                            reg.printRegisters();
+                            cpu.printNextInstruction();
+                        }
+                    }
+                    System.out.printf("Hit breakpoint at $%04x\n", breakPoint);
+                    break;
+                case "b":
+                    try {
+                        if (input[1].charAt(0) == '$') {
+                            input[1] = input[1].replace("$", "0x");
+                        } else if (input[1].charAt(0) == '%') {
+                            input[1] = input[1].replace("%", "0b");
+                        }
+                        breakPoint = Integer.decode(input[1]);
+                        System.out.printf("Set breakpoint at $%04x\n", breakPoint);
+                    } catch (Exception e) {
+                        System.err.println("Invalid syntax. Usage: `b [ |$|0x|%|0b]{MEM_ADDR}`");
+                    }
+                    break;
+                case "d":
+                    try {
+                        if (input[1].charAt(0) == '$') {
+                            input[1] = input[1].replace("$", "0x");
+                        } else if (input[1].charAt(0) == '%') {
+                            input[1] = input[1].replace("%", "0b");
+                        }
+                        int addr = Integer.decode(input[1]);
+                        addr &= 0xfff0;
+                        printMemoryRegion(addr, addr + 47);
+                    } catch (Exception e) {
+                        System.err.println("Invalid syntax. Usage: `d [ |$|0x|%|0b]{MEM_ADDR}`");
+                    }
+                    break;
+                case "p":
+                    print = !print;
+                    System.out.println("Print after every step: " + print);
+                    break;
+                default:
+                    System.err.println("Unknown command: " + input[0]);
+                    break;
+            }
+        }
+        sc.close();
     }
 
     public CartridgeROM getROM() {
