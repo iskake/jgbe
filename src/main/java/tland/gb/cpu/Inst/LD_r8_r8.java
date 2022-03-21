@@ -5,7 +5,10 @@ import tland.gb.Registers.*;
 
 /**
  * Load byte from register2 into register1.
- * Implements opcodes: {@code ld r1, r2}
+ * 
+ * <p>
+ * Implements opcodes: {@code ld r1, r2}, {@code ld [hli], a},
+ * {@code ld [hld], a}, {@code ld a, [hli]} and {@code ld a, [hld]}
  */
 public final class LD_r8_r8 extends Instruction {
     private final RegisterIndex r1;
@@ -21,6 +24,15 @@ public final class LD_r8_r8 extends Instruction {
     @Override
     public void doOp(GameBoy gb, int opcode) {
         gb.reg.writeRegisterByte(r1, gb.reg.readRegisterByte(r2));
+
+        // Handle HLI and HLD opcodes
+        if (opcode == 0x22 || opcode == 0x2a) {
+            // HLI
+            gb.reg.incRegisterShort(RegisterIndex.HL);
+        } else if (opcode == 0x32 || opcode == 0x3a) {
+            // HLD
+            gb.reg.decRegisterShort(RegisterIndex.HL);
+        }
     }
-    
+
 }
