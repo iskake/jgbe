@@ -2,6 +2,7 @@ package tland.gb.cpu;
 
 import tland.Bitwise;
 import tland.gb.GameBoy;
+import tland.gb.cpu.Inst.Prefixed;
 
 public class CPU {
     private final GameBoy gb;
@@ -48,7 +49,15 @@ public class CPU {
     public String getInstructionName(short address) {
         byte opcode = gb.readMemoryAddress(address);
 
-        String opcodeName = Opcodes.getOpcode(opcode).getName();
+        String opcodeName;
+
+        if (Opcodes.getOpcode(opcode) instanceof Prefixed o) {
+            opcode = gb.readMemoryAddress(Bitwise.toShort(address + 1));
+            opcodeName = o.getPrefixedName(Byte.toUnsignedInt(opcode));
+        } else {
+            opcodeName = Opcodes.getOpcode(opcode).getName();
+        }
+
         opcodeName = opcodeName.replace("_N8", "%02x");
         opcodeName = opcodeName.replace("_N16", "%2$02x%1$02x");
 
