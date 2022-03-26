@@ -1,16 +1,23 @@
 package tland.gb.cpu.Inst;
 
+import tland.Bitwise;
 import tland.gb.GameBoy;
+import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
 /**
- * BIT instructions.
+ * Bitwise check/set/reset instructions.
  * 
- * Implements opcodes: {@code bit b, r8}, {@code res b, r8} and
- * {@code set b, r8}
+ * Implements opcodes: {@code bit u3, r8}, {@code res u3, r8} and
+ * {@code set u3, r8}
  */
 public class BIT extends Instruction {
     public int opcode;
+
+    // Values from bit 7-6 from opcode
+    private final int BIT_VAL = 0b01;
+    private final int RES_VAL = 0b10;
+    private final int SET_VAL = 0b11;
 
     public BIT() {
         super("BIT_INST");
@@ -21,41 +28,83 @@ public class BIT extends Instruction {
         /*
          * The prefixed Bitwise opcodes can be indexed like so:
          * 40-ff => Bitwise instructions
-         *     40-7f => BIT b, r8
-         *         40-47 => BIT 0, r8
-         *         48-4f => BIT 1, r8
-         *         50-57 => BIT 2, r8
-         *         58-5f => BIT 3, r8
-         *         60-67 => BIT 4, r8
-         *         68-6f => BIT 5, r8
-         *         70-77 => BIT 6, r8
-         *         78-7f => BIT 7, r8
-         *     80-bf => RES b, r8
-         *         80-87 => RES 0, r8
-         *         88-8f => RES 1, r8
-         *         90-97 => RES 2, r8
-         *         98-9f => RES 3, r8
-         *         a0-a7 => RES 4, r8
-         *         a8-af => RES 5, r8
-         *         b0-b7 => RES 6, r8
-         *         b8-bf => RES 7, r8
-         *     c0-ff => SET b, r8
-         *         c0-c7 => SET 0, r8
-         *         c8-cf => SET 1, r8
-         *         d0-d7 => SET 2, r8
-         *         d8-df => SET 3, r8
-         *         e0-e7 => SET 4, r8
-         *         e8-ef => SET 5, r8
-         *         f0-f7 => SET 6, r8
-         *         f8-ff => SET 7, r8
+         * 40-7f => BIT u3, r8
+         * 80-bf => RES u3, r8
+         * c0-ff => SET u3, r8
          */
+
+        // Make sure opcode only occupies 8 bits.
+        opcode = Bitwise.intAsByte(opcode);
+
         int opcodeType = (opcode >> 6);
         int bitNum = (opcode >> 3) & 0b111;
         int regNum = opcode & 0b111;
-        System.out.printf("OPCODE: %02x\nInstruction: %s %d, %s\n", opcode,
-                opcodeType == 1 ? "bit" : (opcodeType == 2 ? "res" : "set"), bitNum,
-                RegisterIndex.values()[(regNum + 2) % 8]);
+        RegisterIndex reg = RegisterIndex.tableIndex[regNum];
 
+        switch (opcodeType) {
+            case BIT_VAL:
+                boolean bitIsSet = gb.reg.isBitSet(reg, bitNum);
+
+                if (!bitIsSet) {
+                    gb.reg.setFlag(Flags.Z);
+                } else {
+                    gb.reg.resetFlag(Flags.Z);
+                }
+                gb.reg.resetFlag(Flags.N);
+                gb.reg.setFlag(Flags.H);
+                break;
+            case RES_VAL:
+                gb.reg.resetBit(reg, bitNum);
+                break;
+            case SET_VAL:
+                gb.reg.setBit(reg, bitNum);
+                break;
+            default:
+                throw new IllegalInstructionException(
+                        "Value %d is not a valid bitwise instruction.".formatted(opcodeType));
+        }
+
+        System.out.println("Ran '" + getFixedName(opcode) + "'");
+    }
+
+    /**
+     * Unsupported, use {@code getFixedName} instead.
+     * 
+     * @throws IllegalInstructionException
+     * @return Nothing, will throw an exception instead.
+     */
+    @Override
+    public String getName() {
+        throw new IllegalInstructionException("getName is not supported, use getFixedName instead.");
+    }
+
+    /**
+     * Get the correct instruction name.
+     * 
+     * @param opcode The opcode to get the correct name from. Needs to be specified
+     *               because of how the opcodes are set up.
+     * @return The correct name of the instruction, based on the value in
+     *         {@code opcode}.
+     */
+    public String getFixedName(int opcode) {
+        int opcodeType = (opcode >> 6);
+        int bitNum = (opcode >> 3) & 0b111;
+        int regNum = opcode & 0b111;
+
+        String opcodeName = switch (opcodeType) {
+            case BIT_VAL -> "bit";
+            case RES_VAL -> "res";
+            case SET_VAL -> "set";
+            default -> "invalid";
+        };
+
+        RegisterIndex r = RegisterIndex.tableIndex[regNum];
+        String regName = switch (r) {
+            case HL -> "[hl]";
+            default -> r.name().toLowerCase();
+        };
+
+        return String.format("%s %d, %s", opcodeName, bitNum, regName);
     }
 
 }

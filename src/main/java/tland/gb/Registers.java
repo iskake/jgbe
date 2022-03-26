@@ -24,7 +24,7 @@ public class Registers {
         AF(0x8),
         BC(0x9),
         DE(0xA),
-        /**  */
+        /** Also used in special cases of 8-bit instructions */
         HL(0xB),
 
         // 'Special' 16-bit registers.
@@ -42,6 +42,24 @@ public class Registers {
         RegisterIndex(int val) {
             this.val = val;
         }
+
+        /**
+         * The index of the values based on the 3 lsb of the opcodes.
+         * <p>
+         * For example, an opcode with the lower 3 bits being $4 corresponds to
+         * {@code RegisterIndex.H}, such as $44 ({@code ld b, h}) and $ac
+         * ({@code xor h})
+         */
+        public static final RegisterIndex[] tableIndex = {
+                RegisterIndex.B,
+                RegisterIndex.C,
+                RegisterIndex.D,
+                RegisterIndex.E,
+                RegisterIndex.H,
+                RegisterIndex.L,
+                RegisterIndex.HL,
+                RegisterIndex.A,
+        };
     };
 
     /**
