@@ -63,8 +63,6 @@ public class BIT extends Instruction {
                 throw new IllegalInstructionException(
                         "Value %d is not a valid bitwise instruction.".formatted(opcodeType));
         }
-
-        System.out.println("Ran '" + getFixedName(opcode) + "'");
     }
 
     /**
