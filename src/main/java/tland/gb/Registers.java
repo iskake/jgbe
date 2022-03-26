@@ -167,6 +167,107 @@ public class Registers {
     }
 
     /**
+     * Helper method for left bit shifting.
+     * 
+     * @param reg   The register to shift the value of.
+     * @param shift If the bit shifting should be a (arithmetic) shift or rotation.
+     * @param carry If the bit shifting should use carry.
+     * @return The overflow bit for carry.
+     */
+    private int bitShiftLeft(RegisterIndex reg, boolean shift, boolean carry) {
+        int oldValue = Byte.toUnsignedInt(readRegisterByte(reg));
+        int c;
+        if (carry) {
+            c = isFlagSet(Flags.C) ? 1 : 0;
+        } else if (shift) {
+            c = 0;
+        } else {
+            c = oldValue >> 7;
+        }
+        byte newValue = Bitwise.toByte((oldValue << 1) | c);
+        writeRegisterByte(reg, newValue);
+        return oldValue >> 7;
+    }
+
+    /**
+     * Helper method for right bit shifting.
+     * 
+     * @param reg     The register to shift the value of.
+     * @param shift   If the bit shifting should be a shift or rotation.
+     * @param logical If the bit shifting should be a logical shift or arithmetic.
+     * @param carry   If the bit shifting should use carry.
+     * @return The overflow bit for carry.
+     */
+    private int bitShiftRight(RegisterIndex reg, boolean shift, boolean logical, boolean carry) {
+        int oldValue = Byte.toUnsignedInt(readRegisterByte(reg));
+        int c;
+        if (carry) {
+            c = isFlagSet(Flags.C) ? 1 : 0;
+        } else if (shift) {
+            c = logical ? 0 : oldValue >> 7;
+        } else {
+            c = oldValue & 1;
+        }
+        byte newValue = Bitwise.toByte((oldValue >> 1) | (c << 7));
+        writeRegisterByte(reg, newValue);
+        return oldValue & 1;
+    }
+
+    /**
+     * Rotate the bits in the specified register left by 1.
+     * 
+     * @param reg   The register to rotate left.
+     * @param carry Wether to rotate thought carry or not.
+     * @return The overflow bit for carry.
+     */
+    public int rotateLeft(RegisterIndex reg, boolean carry) {
+        return bitShiftLeft(reg, false, carry);
+    }
+
+    /**
+     * Rotate the bits in the specified register right by 1.
+     * 
+     * @param reg   The register to rotate right.
+     * @param carry Wether to rotate thought carry or not.
+     * @return The overflow bit for carry.
+     */
+    public int rotateRight(RegisterIndex reg, boolean carry) {
+        return bitShiftRight(reg, false, false, carry);
+    }
+
+    /**
+     * Shift (arithmetic) the bits in the specified register left by 1.
+     * 
+     * @param reg The register to shift left.
+     * @return The overflow bit for carry.
+     */
+    public int shiftLeft(RegisterIndex reg) {
+        return bitShiftLeft(reg, true, false);
+    }
+
+    /**
+     * Shift the bits in the specified register right by 1.
+     * 
+     * @param reg     The register to shift right.
+     * @param logical Wether to use logical shifting or not.
+     * @return The overflow bit for carry.
+     */
+    public int shiftRight(RegisterIndex reg, boolean logical) {
+        return bitShiftRight(reg, true, logical, false);
+    }
+
+    /**
+     * Swap the higher and lower 4 bits in the specified register.
+     * 
+     * @param reg The register to swap the bits in.
+     * @return 0 (Note: this is used in the bitwise rotation instructions)
+     */
+    public int swap(RegisterIndex reg) {
+        writeRegisterByte(reg, Bitwise.swapBits(readRegisterByte(reg)));
+        return 0;
+    }
+
+    /**
      * Read value at address pointed to by the value in {@code reg}.
      * 
      * @param reg Register to be read from
