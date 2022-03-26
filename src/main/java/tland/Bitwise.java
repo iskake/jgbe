@@ -32,7 +32,7 @@ public class Bitwise {
      * @return A new short constructed from the two parameters.
      */
     public static short toShort(byte hi, byte lo) {
-        short value = (short)((hi << 8) | Byte.toUnsignedInt(lo));
+        short value = (short) ((hi << 8) | Byte.toUnsignedInt(lo));
         return value;
     }
 
@@ -138,6 +138,18 @@ public class Bitwise {
     public static boolean isBitSet(byte value, int bitNum) {
         byte bit = (byte) (0b1 << bitNum);
         return (value & bit) != 0;
+    }
+
+    /**
+     * Swap the 4 higher and 4 lower bits in the specified byte.
+     * 
+     * @param value The byte to swap the bits of.
+     * @return The byte with the bits swapped.
+     */
+    public static byte swapBits(byte value) {
+        int hi = Byte.toUnsignedInt(value) >> 4;
+        int lo = Byte.toUnsignedInt(value) & 0b00001111;
+        return (byte) ((lo << 4) | (hi));
     }
 
     /**
