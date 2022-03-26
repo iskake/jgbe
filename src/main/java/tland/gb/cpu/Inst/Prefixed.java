@@ -8,9 +8,8 @@ import tland.gb.GameBoy;
  * Implements opcodes: {@code $CB $xx}
  */
 public class Prefixed extends Instruction {
-    private final static Instruction ROT_INST = new ROT();
-    private final static Instruction BIT_INST = new BIT();
-    private int storedOpcode;
+    private final static ROT ROT_INST = new ROT();
+    private final static BIT BIT_INST = new BIT();
 
     public Prefixed() {
         super("PREFIXED");
@@ -29,20 +28,15 @@ public class Prefixed extends Instruction {
          * 
          * [1] https://gbdev.io/gb-opcodes/optables/#prefixed
          */
-        opcode = gb.readNextByte();
-        System.out.printf("OPCODE: %02x\n", (byte)opcode);
-        storedOpcode = opcode;
+        opcode = Byte.toUnsignedInt(gb.cycleReadNextByte());
         Instruction inst;
 
         inst = (opcode >> 6 == 0) ? ROT_INST : BIT_INST;
         inst.doOp(gb, opcode);
-        // prefixedOpcodes[(opcode >> 6) == 0 ? 0 : 1].doOp(gb, opcode);
     }
 
-    @Override
-    public String getName() {
-        // TODO
-        return "prefixed_inst";
+    public String getPrefixedName(int opcode) {
+        return (opcode >> 6 == 0) ? ROT_INST.getFixedName(opcode) : BIT_INST.getFixedName(opcode);
     }
 
 }

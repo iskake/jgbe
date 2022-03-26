@@ -17,8 +17,8 @@ public class Opcodes {
 
 /* 0x06 */ new LD_rr_nn("ld b, $_N8", RegisterIndex.B),
 
-/* 0x07 */ new IllegalInst("unimplemented, 0x07"), // rlca
-/* 0x08 */ new IllegalInst("unimplemented, 0x08"), // ld [$n16], sp
+/* 0x07 */ new ROT("rlca"),
+
 
 /* 0x09 */ new ADD_rr_nn("add hl, bc", RegisterIndex.HL, RegisterIndex.BC),
 
@@ -30,7 +30,8 @@ public class Opcodes {
 
 /* 0x0e */ new LD_rr_nn("ld c, $_N8", RegisterIndex.C),
 
-/* 0x0f */ new IllegalInst("unimplemented, 0x0f"), // rrca
+/* 0x0f */ new ROT("rrca"),
+
 /* 0x10 */ new IllegalInst("unimplemented, 0x10"), // stop $n8
 
 /* 0x11 */ new LD_rr_nn("ld de, $%04x", RegisterIndex.DE),
@@ -43,7 +44,7 @@ public class Opcodes {
 
 /* 0x16 */ new LD_rr_nn("ld d, $_N8", RegisterIndex.D),
 
-/* 0x17 */ new IllegalInst("unimplemented, 0x17"), // rla
+/* 0x17 */ new ROT("rla"),
 
 /* 0x18 */ new JR_cc_e8("jr $_N8", Conditions.NONE),
 
@@ -57,7 +58,7 @@ public class Opcodes {
 
 /* 0x1e */ new LD_rr_nn("ld e, $_N8", RegisterIndex.E),
 
-/* 0x1f */ new IllegalInst("unimplemented, 0x1f"), // rra
+/* 0x1f */ new ROT("rra"),
 
 /* 0x20 */ new JR_cc_e8("jr nz, $_N8", Conditions.NZ),
 
