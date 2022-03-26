@@ -82,14 +82,42 @@ public class Registers {
     }
 
     /**
+     * Check if the specified bit is set in the register {@code reg}.
+     * 
+     * @param reg    The register to to check the bit of.
+     * @param bitNum The bit to check.
+     * @return {@code true} if the bit is set, {@code false} otherwise.
+     */
+    public boolean isBitSet(RegisterIndex reg, int bitNum) {
+        return Bitwise.isBitSet(readRegisterByte(reg), bitNum);
+    }
+
+    /**
+     * Set the specified bit in the register {@code reg} (set bit to 1).
+     * 
+     * @param bitNum The bit to set.
+     */
+    public void setBit(RegisterIndex reg, int bitNum) {
+        writeRegisterByte(reg, Bitwise.setBit(readRegisterByte(reg), bitNum));
+    }
+
+    /**
+     * Reset (clear) the specified bit in the register {@code reg} (set bit to 0).
+     * 
+     * @param bitNum The bit to reset.
+     */
+    public void resetBit(RegisterIndex reg, int bitNum) {
+        writeRegisterByte(reg, Bitwise.clearBit(readRegisterByte(reg), bitNum));
+    }
+
+    /**
      * Check if the specified flag is set in the F register.
      * 
      * @param flag The flag to check.
      * @return {@code true} if the flag is set, {@code false} otherwise.
      */
     public boolean isFlagSet(Flags flag) {
-        int i = RegisterIndex.F.val;
-        return Bitwise.isBitSet(registerValues[i], flag.val);
+        return isBitSet(RegisterIndex.F, flag.val);
     }
 
     /**
@@ -98,8 +126,7 @@ public class Registers {
      * @param flag The flag to set.
      */
     public void setFlag(Flags flag) {
-        int i = RegisterIndex.F.val;
-        registerValues[i] = Bitwise.setBit(registerValues[i], flag.val);
+        setBit(RegisterIndex.F, flag.val);
     }
 
     /**
@@ -108,8 +135,7 @@ public class Registers {
      * @param flag The flag to reset.
      */
     public void resetFlag(Flags flag) {
-        int i = RegisterIndex.F.val;
-        registerValues[i] = Bitwise.clearBit(registerValues[i], flag.val);
+        resetBit(RegisterIndex.F, flag.val);
     }
 
     /**
@@ -319,7 +345,7 @@ public class Registers {
      * Use with both {@code registerValues[index]} and
      * {@code registerValues[index + 1]}.
      * 
-     * @param reg The register to get
+     * @param reg The register to get the correct index from.
      * @return The index of the most significant byte of {@code reg} in
      *         {@code registerValues}
      */
