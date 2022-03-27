@@ -85,7 +85,7 @@ public class Opcodes {
 
 /* 0x2e */ new LD_rr_nn("ld l, $_N8", RegisterIndex.L),
 
-/* 0x2f */ new IllegalInst("unimplemented, 0x2f"), // cpl
+/* 0x2f */ new CPL(),
 
 /* 0x30 */ new JR_cc_e8("jr nc, $_N8", Conditions.NC),
 
