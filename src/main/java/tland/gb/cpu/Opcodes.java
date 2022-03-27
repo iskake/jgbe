@@ -72,7 +72,8 @@ public class Opcodes {
 
 /* 0x26 */ new LD_rr_nn("ld h, $_N8", RegisterIndex.H),
 
-/* 0x27 */ new IllegalInst("unimplemented, 0x27"), // daa
+/* 0x27 */ new DAA(),
+
 /* 0x28 */ new JR_cc_e8("jr z, $_N8", Conditions.Z),
 
 /* 0x29 */ new ADD_rr_nn("add hl, hl", RegisterIndex.HL, RegisterIndex.HL),
