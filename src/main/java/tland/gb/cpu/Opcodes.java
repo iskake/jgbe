@@ -267,14 +267,13 @@ public class Opcodes {
 
 /* 0xc2 */ new JP_cc_nn("jp nz, $_N16", Conditions.NZ),
 /* 0xc3 */ new JP_cc_nn("jp $_N16", Conditions.NONE),
-
 /* 0xc4 */ new CALL_cc_n16("call nz, $_N16", Conditions.NZ),
 
 /* 0xc5 */ new PUSH_r16("push bc", RegisterIndex.BC),
 
 /* 0xc6 */ new ADD_rr_nn("add a, $_N8", RegisterIndex.A, null, false),
 
-/* 0xc7 */ new IllegalInst("unimplemented, 0xc7"), // rst $00
+/* 0xc7 */ new RST_vec("rst $00"),
 /* 0xc8 */ new RET_cc("ret z", Conditions.Z),
 /* 0xc9 */ new RET_cc("ret", Conditions.NONE),
 
@@ -287,7 +286,7 @@ public class Opcodes {
 
 /* 0xce */ new ADD_rr_nn("adc a, $_N8", RegisterIndex.A, null, true),
 
-/* 0xcf */ new IllegalInst("unimplemented, 0xcf"), // rst $08
+/* 0xcf */ new RST_vec("rst $08"),
 /* 0xd0 */ new RET_cc("ret nc", Conditions.NC),
 
 /* 0xd1 */ new POP_r16("pop de", RegisterIndex.DE),
@@ -302,10 +301,9 @@ public class Opcodes {
 
 /* 0xd6 */ new SUB_rr_nn("sub $_N8", RegisterIndex.A, null, false),
 
-/* 0xd7 */ new IllegalInst("unimplemented, 0xd7"), // rst $10
+/* 0xd7 */ new RST_vec("rst $10"),
 /* 0xd8 */ new RET_cc("ret c", Conditions.C),
 /* 0xd9 */ new RET_cc("reti", Conditions.NONE),
-
 /* 0xda */ new JP_cc_nn("jp c, $_N16", Conditions.C),
 
 /* 0xdb */ new IllegalInst("illegal $db"), // illegal
@@ -316,7 +314,7 @@ public class Opcodes {
 
 /* 0xde */ new SUB_rr_nn("sbc $_N8", RegisterIndex.A, null, true),
 
-/* 0xdf */ new IllegalInst("unimplemented, 0xdf"), // rst $18
+/* 0xdf */ new RST_vec("rst $18"),
 
 /* 0xe0 */ new LD_ptr_A("ldh [$ff_N8], a"),
 
@@ -331,8 +329,8 @@ public class Opcodes {
 
 /* 0xe6 */ new AND_nn("and $_N8", null),
 
-/* 0xe7 */ new IllegalInst("unimplemented, 0xe7"), // rst $20
-/* 0xe8 */ new IllegalInst("unimplemented, 0xe8"), // add sp, r8
+/* 0xe7 */ new RST_vec("rst $20"),
+
 
 /* 0xe9 */ new JP_cc_nn("jp hl", Conditions.NONE),
 
@@ -344,7 +342,7 @@ public class Opcodes {
 
 /* 0xee */ new XOR_nn("xor $_N8", null),
 
-/* 0xef */ new IllegalInst("unimplemented, 0xef"), // rst $28
+/* 0xef */ new RST_vec("rst $28"),
 
 /* 0xf0 */ new LD_A_ptr("ldh a, [$ff_N8]"),
 
@@ -359,9 +357,8 @@ public class Opcodes {
 
 /* 0xf6 */ new OR_nn("or $_N8", null),
 
-/* 0xf7 */ new IllegalInst("unimplemented, 0xf7"), // rst $30
-/* 0xf8 */ new IllegalInst("unimplemented, 0xf8"), // ld hl, sp+$s8 (signed)
-/* 0xf9 */ new IllegalInst("unimplemented, 0xf9"), // ld sp, hl
+/* 0xf7 */ new RST_vec("rst $30"),
+
 
 /* 0xfa */ new LD_A_ptr("ld a, [$_N16]"),
 
@@ -371,7 +368,7 @@ public class Opcodes {
 
 /* 0xfe */ new CP_nn("cp $_N8", null),
 
-/* 0xff */ new IllegalInst("unimplemented, 0xff"), // rst $38
+/* 0xff */ new RST_vec("rst $38"),
     };
 
     public static Instruction getOpcode(byte index) {
