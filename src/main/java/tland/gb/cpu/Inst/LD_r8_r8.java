@@ -8,7 +8,7 @@ import tland.gb.Registers.*;
  * 
  * <p>
  * Implements opcodes: {@code ld r1, r2}, {@code ld [hli], a},
- * {@code ld [hld], a}, {@code ld a, [hli]} and {@code ld a, [hld]}
+ * {@code ld [hld], a}, {@code ld a, [hli]}, {@code ld a, [hld]} and {@code ld sp, hl}
  */
 public final class LD_r8_r8 extends Instruction {
     private final RegisterIndex r1;

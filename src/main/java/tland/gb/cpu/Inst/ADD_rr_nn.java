@@ -11,7 +11,8 @@ import tland.gb.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code add a, r8}, {@code add a, $n8},
- * {@code add hl, r16}, {@code adc a, r8} and {@code adc a, $n8}
+ * {@code add hl, r16}, {@code add sp, $e8}, {@code adc a, r8} and
+ * {@code adc a, $n8}
  */
 public class ADD_rr_nn extends Instruction {
     private final RegisterIndex r1;
@@ -46,7 +47,7 @@ public class ADD_rr_nn extends Instruction {
 
             if (carry) {
                 // adc rr, nn
-                carryVal = gb.reg.isFlagSet(Flags.C) ? (byte)1 : (byte)0;
+                carryVal = gb.reg.isFlagSet(Flags.C) ? (byte) 1 : (byte) 0;
             }
 
             byte regVal = gb.reg.readRegisterByte(r1);
@@ -72,6 +73,26 @@ public class ADD_rr_nn extends Instruction {
             } else {
                 gb.reg.resetFlag(Flags.C);
             }
+        } else if (opcode == 0xe8) {
+            // add sp, $e8
+            byte value = gb.readNextByte();
+            short regVal = gb.getSP();
+            gb.setSP((short) (regVal + value));
+
+            gb.reg.resetFlag(Flags.Z);
+            gb.reg.resetFlag(Flags.N);
+
+            if (((Short.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111)) > 0b1111) {
+                gb.reg.setFlag(Flags.H);
+            } else {
+                gb.reg.resetFlag(Flags.H);
+            }
+
+            if ((Short.toUnsignedInt(regVal) & 0xff) + Byte.toUnsignedInt(value) > 0xff) {
+                gb.reg.setFlag(Flags.C);
+            } else {
+                gb.reg.resetFlag(Flags.C);
+            }
         } else {
             short r1Val = gb.reg.readRegisterShort(r1);
             short r2Val = gb.reg.readRegisterShort(r2);
@@ -80,7 +101,8 @@ public class ADD_rr_nn extends Instruction {
 
             gb.reg.resetFlag(Flags.N);
 
-            if ((Short.toUnsignedInt(r1Val) & 0b11111111111) + (Short.toUnsignedInt(r2Val) & 0b11111111111) > 0b11111111111) {
+            if ((Short.toUnsignedInt(r1Val) & 0xfff) + (Short.toUnsignedInt(r2Val) & 0xfff) > 0xfff) {
+                // fff -> 0b111111111111
                 gb.reg.setFlag(Flags.H);
             } else {
                 gb.reg.resetFlag(Flags.H);
