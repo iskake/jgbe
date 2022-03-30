@@ -7,7 +7,7 @@ public class Opcodes {
     private final static Instruction[] opcodes = {
 /* 0x00 */ new NOP(),
 
-/* 0x01 */ new LD_rr_nn("ld bc, $%04x", RegisterIndex.BC),
+/* 0x01 */ new LD_rr_nn("ld bc, $_N16", RegisterIndex.BC),
 
 /* 0x02 */ new LD_r8_r8("ld [bc], a", RegisterIndex.BC, RegisterIndex.A),
 
@@ -34,7 +34,7 @@ public class Opcodes {
 
 /* 0x10 */ new IllegalInst("unimplemented, 0x10"), // stop $n8
 
-/* 0x11 */ new LD_rr_nn("ld de, $%04x", RegisterIndex.DE),
+/* 0x11 */ new LD_rr_nn("ld de, $_N16", RegisterIndex.DE),
 
 /* 0x12 */ new LD_r8_r8("ld [de], a", RegisterIndex.DE, RegisterIndex.A),
 
