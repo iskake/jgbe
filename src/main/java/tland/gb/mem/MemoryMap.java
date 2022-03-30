@@ -1,7 +1,6 @@
 package tland.gb.mem;
 
 import tland.Bitwise;
-import tland.gb.GameBoy;
 
 /**
  * Game boy memory map.
@@ -9,10 +8,7 @@ import tland.gb.GameBoy;
 public class MemoryMap implements WritableMemory, ReadableMemory {
     private final CartridgeROM rom;
 
-    private final ROMBank bank0;
-    private ROMBank bankX;
     private RAM VRAM;
-    private RAM ExtRAM;
     private RAM WRAM1;
     private RAM WRAM2;
     // private RAM OAM;
@@ -25,10 +21,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
 
     public MemoryMap(CartridgeROM rom) {
         this.rom = rom;
-        bank0 = rom.getBank(0);
-        bankX = rom.getBank(1);
         VRAM = new RAM(0x2000);
-        ExtRAM = rom.getRAMBank(0);
         WRAM1 = new RAM(0x1000);
         WRAM2 = new RAM(0x1000);
         // OAM = new RAM(0xa0);
@@ -38,36 +31,32 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
 
     @Override
     public byte readByte(int address) {
-        ReadableMemory memory = getMemoryIndex(address);
+        ReadableMemory memory = (ReadableMemory)getMemoryIndex(address);
         return memory.readByte(fixedAddress);
     }
 
     @Override
     public void writeByte(int address, byte value) {
-        if (writableAddress(address)) {
-            WritableMemory memory = (WritableMemory)getMemoryIndex(address);
-            memory.writeByte(fixedAddress, value);
-        } else {
-            throw new IndexOutOfBoundsException("Attempting to write to ROM.");
-        }
+        WritableMemory memory = (WritableMemory)getMemoryIndex(address);
+        memory.writeByte(fixedAddress, value);
     }
 
-
-    public void mapRomBank(int index) {
-        bankX = rom.getBank(index);
-    }
-
-    private ReadableMemory getMemoryIndex(int address) {
+    /**
+     * Get the 'correct memory' mapped based on the specified address.
+     * <p>
+     * Note that this will also set {@code fixedAddress} to the correct relative
+     * address for indexing the mapped memory.
+     * 
+     * @param address The address to get the memory from.
+     * @return The correct memory at the specified address.
+     */
+    private Object getMemoryIndex(int address) {
         address = Bitwise.intAsShort(address);
         fixedAddress = address;
-        if (address >= 0 && address < 0x4000) {
+        if (address >= 0 && address < 0x8000) {
             // 0000-3fff = 4000
-            // Bank 0 of ROM
-            return bank0;
-        } else if (address < 0x8000) {
-            // 4000-7fff = 4000
-            // Bank 1-n of ROM
-            return bankX;
+            // ROM bank0-n, (note that MBC will control )
+            return rom;
         } else if (address < 0xA000) {
             // 8000-9fff = 2000
             // VRAM 
@@ -77,7 +66,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             // a000-bfff = 2000
             // Optional switchable bank from Cartridge
             fixedAddress -= 0xa000;
-            return ExtRAM;
+            return rom.getRAMBank();
         } else if (address < 0xD000) {
             // c000-cfff = 1000
             fixedAddress -= 0xc000;
@@ -115,14 +104,5 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             fixedAddress -= 0xfe00;
             return HRAM;
         }
-    }
-
-    // TODO MBCs allow writing?
-    private boolean writableAddress(int address) {
-        address = Bitwise.intAsShort(address);
-        if (address < 0x8000) {
-            return false;
-        }
-        return true;
     }
 }
