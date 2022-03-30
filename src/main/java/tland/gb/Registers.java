@@ -3,7 +3,7 @@ package tland.gb;
 import tland.Bitwise;
 
 /**
- * The CPU registers in the Sharp SM83 processor.
+ * The CPU registers in the Game Boy processor.
  */
 public class Registers {
     /**
@@ -50,16 +50,7 @@ public class Registers {
          * {@code RegisterIndex.H}, such as $44 ({@code ld b, h}) and $ac
          * ({@code xor h})
          */
-        public static final RegisterIndex[] tableIndex = {
-                RegisterIndex.B,
-                RegisterIndex.C,
-                RegisterIndex.D,
-                RegisterIndex.E,
-                RegisterIndex.H,
-                RegisterIndex.L,
-                RegisterIndex.HL,
-                RegisterIndex.A,
-        };
+        public static final RegisterIndex[] tableIndex = { B, C, D, E, H, L, HL, A };
     };
 
     /**
@@ -342,6 +333,10 @@ public class Registers {
     public short readRegisterShort(RegisterIndex reg) {
         checkRegisterShort(reg);
 
+        if (reg.val == RegisterIndex.SP.val) {
+            return gb.getSP();
+        }
+
         int index = getShortRegisterIndex(reg);
 
         byte hi = registerValues[index];
@@ -358,6 +353,11 @@ public class Registers {
      */
     public void writeRegisterShort(RegisterIndex reg, short value) {
         checkRegisterShort(reg);
+
+        if (reg.val == RegisterIndex.SP.val) {
+            gb.setSP(value);
+            return;
+        }
 
         int index = getShortRegisterIndex(reg);
 
@@ -411,6 +411,11 @@ public class Registers {
     public void incRegisterShort(RegisterIndex reg) {
         checkRegisterShort(reg);
 
+        if (reg.val == RegisterIndex.SP.val) {
+            gb.incSP();
+            return;
+        }
+
         int msbOffset = getShortRegisterIndex(reg);
         int lsbOffset = msbOffset + 1;
 
@@ -447,6 +452,11 @@ public class Registers {
      */
     public void decRegisterShort(RegisterIndex reg) {
         checkRegisterShort(reg);
+
+        if (reg.val == RegisterIndex.SP.val) {
+            gb.decSP();
+            return;
+        }
 
         int msbOffset = getShortRegisterIndex(reg);
         int lsbOffset = msbOffset + 1;
@@ -487,9 +497,9 @@ public class Registers {
      * @param shortReg Check for short register.
      * @throws IndexOutOfBoundsException
      */
-    private void checkRegister(RegisterIndex reg, boolean shortReg) throws IndexOutOfBoundsException {
+    private void checkRegister(RegisterIndex reg, boolean shortReg) {
         if (shortReg) {
-            if (reg.val < RegisterIndex.AF.val || reg.val > RegisterIndex.HL.val) {
+            if (reg.val < RegisterIndex.AF.val || reg.val > RegisterIndex.SP.val) {
                 throw new IndexOutOfBoundsException(
                         String.format("Register %s is not a valid short register.", reg.name()));
             }
@@ -546,7 +556,7 @@ public class Registers {
      *         {@code false} otherwise.
      */
     public static boolean isRegisterShort(RegisterIndex reg) {
-        return reg.val >= RegisterIndex.AF.val && reg.val <= RegisterIndex.HL.val;
+        return reg.val >= RegisterIndex.AF.val && reg.val <= RegisterIndex.SP.val;
     }
 
     public void printRegisters() {
