@@ -19,6 +19,7 @@ public class Opcodes {
 
 /* 0x07 */ new ROT("rlca"),
 
+/* 0x08 */ new LD_ptr_rr("ld [$_N16], sp"),
 
 /* 0x09 */ new ADD_rr_nn("add hl, bc", RegisterIndex.HL, RegisterIndex.BC),
 
@@ -317,11 +318,11 @@ public class Opcodes {
 
 /* 0xdf */ new RST_vec("rst $18"),
 
-/* 0xe0 */ new LD_ptr_A("ldh [$ff_N8], a"),
+/* 0xe0 */ new LD_ptr_rr("ldh [$ff_N8], a"),
 
 /* 0xe1 */ new POP_r16("pop hl", RegisterIndex.HL),
 
-/* 0xe2 */ new LD_ptr_A("ldh [c], a"),
+/* 0xe2 */ new LD_ptr_rr("ldh [c], a"),
 
 /* 0xe3 */ new IllegalInst("illegal $e3"), // illegal
 /* 0xe4 */ new IllegalInst("illegal $e4"), // illegal
@@ -335,7 +336,7 @@ public class Opcodes {
 
 /* 0xe9 */ new JP_cc_nn("jp hl", Conditions.NONE),
 
-/* 0xea */ new LD_ptr_A("ld [$_N16], a"),
+/* 0xea */ new LD_ptr_rr("ld [$_N16], a"),
 
 /* 0xeb */ new IllegalInst("illegal $eb"), // illegal
 /* 0xec */ new IllegalInst("illegal $ec"), // illegal
