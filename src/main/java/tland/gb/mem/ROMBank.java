@@ -1,7 +1,5 @@
 package tland.gb.mem;
 
-import java.util.Arrays;
-
 import tland.Bitwise;
 
 /**
@@ -19,14 +17,6 @@ public class ROMBank implements ReadableMemory {
     public byte readByte(int address) {
         address = Bitwise.intAsShort(address);
         return bytes[address];
-    }
-
-    @Override
-    public short readShort(int address) {
-        address = Bitwise.intAsShort(address);
-        byte lo = readByte(address);
-        byte hi = readByte(address + 1);
-        return Bitwise.toShort(hi, lo);
     }
 
 }

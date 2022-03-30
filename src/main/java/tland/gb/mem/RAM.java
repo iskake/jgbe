@@ -21,23 +21,8 @@ public class RAM implements WritableMemory, ReadableMemory {
     }
 
     @Override
-    public short readShort(int address) throws IndexOutOfBoundsException {
-        byte lo = readByte(address);
-        byte hi = readByte(address + 1);
-        return Bitwise.toShort(hi, lo);
-    }
-
-    @Override
     public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
         bytes[address] = value;
-    }
-
-    @Override
-    public void writeShort(int address, short value) throws IndexOutOfBoundsException {
-        byte lo = Bitwise.getLowByte(value);
-        byte hi = Bitwise.getHighByte(value);
-        writeByte(address, lo);
-        writeByte(address + 1, hi);
     }
 
 }

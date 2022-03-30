@@ -52,26 +52,6 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         }
     }
 
-    @Override
-    public short readShort(int address) {
-        address = Bitwise.intAsShort(address);
-
-        byte lo = readByte(address);
-        byte hi = readByte(address + 1);
-
-        return Bitwise.toShort(hi, lo);
-    }
-
-    @Override
-    public void writeShort(int address, short value) {
-        address = Bitwise.intAsShort(address);
-
-        byte lo = Bitwise.getLowByte(value);
-        byte hi = Bitwise.getHighByte(value);
-
-        writeByte(address, lo);
-        writeByte(address + 1, hi);
-    }
 
     public void mapRomBank(int index) {
         bankX = rom.getBank(index);
