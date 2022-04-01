@@ -1,11 +1,13 @@
 package tland.gb;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import tland.Bitwise;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 import tland.gb.cpu.CPU;
+import tland.gb.cpu.Opcodes;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
 
@@ -137,8 +139,8 @@ public class GameBoy {
         Scanner sc = new Scanner(System.in);
         boolean running = true;
         String[] input;
-        String[] lastInput = {"c"};
-        int breakPoint = 0x10000;
+        String[] lastInput = { "c" };
+        ArrayList<Integer> breakPoints = new ArrayList<>();
         boolean print = false;
 
         while (running) {
@@ -154,31 +156,75 @@ public class GameBoy {
                 case "q":
                     running = false;
                     break;
-                case "n":
+                case "s":
                     cpu.step();
+                    reg.printRegisters();
+                    cpu.printNextInstruction();
+                    break;
+                case "n":
+                    byte opcode = readMemoryAddress(pc);
+                    String name = Opcodes.getOpcode(opcode).getName();
+                    cpu.step();
+                    if (name.startsWith("call") || name.startsWith("rst")) {
+                        while (true) {
+                            opcode = readMemoryAddress(pc);
+                            name = Opcodes.getOpcode(opcode).getName();
+                            if (name.startsWith("ret")) {
+                                short oldPC = getPC();
+                                cpu.step();
+                                short newPC = getPC();
+
+                                if ((short) (oldPC + 1) != newPC) {
+                                    break;
+                                }
+                            } else {
+                                cpu.step();
+                            }
+                        }
+                    }
                     reg.printRegisters();
                     cpu.printNextInstruction();
                     break;
                 case "c":
                     cpu.step();
-                    while (pc != Bitwise.toShort(breakPoint)) {
-                        cpu.step();
-                        if (print) {
-                            reg.printRegisters();
-                            cpu.printNextInstruction();
+
+                    boolean run = true;
+                    while (run) {
+                        for (Integer breakPoint : breakPoints) {
+                            if (pc == Bitwise.toShort(breakPoint)) {
+                                System.out.printf("Hit breakpoint at $%04x\n", breakPoint);
+                                run = false;
+                            }
+                        }
+                        if (run) {
+                            cpu.step();
+                            if (print) {
+                                reg.printRegisters();
+                                cpu.printNextInstruction();
+                            }
                         }
                     }
-                    System.out.printf("Hit breakpoint at $%04x\n", breakPoint);
+                    reg.printRegisters();
+                    cpu.printNextInstruction();
                     break;
                 case "b":
+                    if (input.length == 1) {
+                        System.out.println("Breakpoints: ");
+                        int i = 1;
+                        for (Integer b : breakPoints) {
+                            System.out.printf("%d: %04x\n", i, b);
+                            i++;
+                        }
+                        break;
+                    }
                     try {
                         if (input[1].charAt(0) == '$') {
                             input[1] = input[1].replace("$", "0x");
                         } else if (input[1].charAt(0) == '%') {
                             input[1] = input[1].replace("%", "0b");
                         }
-                        breakPoint = Integer.decode(input[1]);
-                        System.out.printf("Set breakpoint at $%04x\n", breakPoint);
+                        breakPoints.add(Integer.decode(input[1]));
+                        System.out.printf("Set breakpoint at $%04x\n", breakPoints.get(breakPoints.size() - 1));
                     } catch (Exception e) {
                         System.err.println("Invalid syntax. Usage: `b [ |$|0x|%|0b]{MEM_ADDR}`");
                     }
@@ -258,8 +304,5 @@ public class GameBoy {
             c++;
         }
         System.out.println("\n");
-    }
-
-    public void incCycles() {
     }
 }

@@ -28,7 +28,7 @@ public class Prefixed extends Instruction {
          * 
          * [1] https://gbdev.io/gb-opcodes/optables/#prefixed
          */
-        opcode = Byte.toUnsignedInt(gb.cycleReadNextByte());
+        opcode = Byte.toUnsignedInt(gb.readNextByte());
         Instruction inst;
 
         inst = (opcode >> 6 == 0) ? ROT_INST : BIT_INST;
