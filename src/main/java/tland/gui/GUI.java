@@ -90,7 +90,9 @@ public class GUI {
         rom = new CartridgeROM(romFile);
         GameBoy gb = new GameBoy(rom);
 
-        gb.runDebugger();
+        gb.enableDebugger();
+
+        gb.run();
 
     }
 }
