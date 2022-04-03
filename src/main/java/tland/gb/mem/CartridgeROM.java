@@ -21,7 +21,7 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
             tempBanks.add(new ROMBank(Arrays.copyOfRange(bytes, offset, offset + ROMBank.BANK_SIZE)));
         }
 
-        ROMBanks = tempBanks.toArray(new ROMBank[tempBanks.size()]);
+        ROMBanks = tempBanks.toArray(new ROMBank[0]);
         mbc = new NoMBC(); // Temp.
     }
 

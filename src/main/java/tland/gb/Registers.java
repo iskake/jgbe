@@ -281,7 +281,7 @@ public class Registers {
     }
 
     /**
-     * Read the the byte at the given register {@ reg} if the specified register is
+     * Read the the byte at the given register {@code reg} if the specified register is
      * an 8-bit register. If the specified register is a 16-bit register, the byte
      * pointed to by that register is is read instead.
      * 
@@ -479,14 +479,12 @@ public class Registers {
      *         {@code registerValues}
      */
     private int getShortRegisterIndex(RegisterIndex reg) {
-        // Bit level trickery to get correct index:
-        // Get 3 least significant bits of value of RegisterIndex (e.g. BC = 0b1001 ->
-        // 0b001) and store as
-        // index. Shift index left by 1 (equivalent to (index * 2)) to get byte
+        // Get 3 least significant bits of value of RegisterIndex
+        // (e.g. BC = 0b1001 -> 0b001) and store as index.
+        // Shift index left by 1 (equivalent to (index * 2)) to get byte
         // register corresponding to short register (e.g. (0b001 << 1) = 0b010 = B).
         // Note: to get the next register, take index + 1 (e.g. B(0b10) -> C(0b11))
-        int offset = (reg.val & 0b111) << 1;
-        return offset;
+        return (reg.val & 0b111) << 1;
     }
 
     /**
@@ -495,7 +493,7 @@ public class Registers {
      * 
      * @param reg      Register to check.
      * @param shortReg Check for short register.
-     * @throws IndexOutOfBoundsException
+     * @throws IndexOutOfBoundsException if the register is not the correct format (8/16-bit).
      */
     private void checkRegister(RegisterIndex reg, boolean shortReg) {
         if (shortReg) {
@@ -516,7 +514,7 @@ public class Registers {
      * If it is not, throw exception.
      * 
      * @param reg Register to check.
-     * @throws IndexOutOfBoundsException
+     * @throws IndexOutOfBoundsException if the register is not an 8-bit register.
      */
     private int checkRegisterByte(RegisterIndex reg) {
         checkRegister(reg, false);
@@ -528,7 +526,7 @@ public class Registers {
      * If it is not, throw exception.
      * 
      * @param reg Register to check.
-     * @throws IndexOutOfBoundsException
+     * @throws IndexOutOfBoundsException if the register is not an 16-bit register.
      */
     private void checkRegisterShort(RegisterIndex reg) {
         checkRegister(reg, true);
@@ -537,7 +535,7 @@ public class Registers {
     /**
      * Checks if the given register is a 8-bit register.
      * 
-     * @param reg
+     * @param reg The register to check.
      * @return {@code true} if the register is either
      *         {@code A},{@code F},{@code B},{@code C},
      *         {@code D},{@code E},{@code H} or {@code L}. {@code false} otherwise.
@@ -550,7 +548,7 @@ public class Registers {
      * Checks if the given register is a 16-bit register.
      * Note: this does not include {@code SP} and {@code PC}
      * 
-     * @param reg
+     * @param reg The register to check.
      * @return {@code true} if the register is either
      *         {@code AF},{@code BC},{@code DE} or {@code HL}.
      *         {@code false} otherwise.

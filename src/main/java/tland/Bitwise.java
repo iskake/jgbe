@@ -7,8 +7,8 @@ public class Bitwise {
     /**
      * Get the High byte from a short.
      * 
-     * @param value
-     * @return the high byte of the specified short.
+     * @param value The short to get the high byte from.
+     * @return The high byte of the specified short.
      */
     public static byte getHighByte(short value) {
         return (byte) (value >> 8);
@@ -17,8 +17,8 @@ public class Bitwise {
     /**
      * Get the Low byte from a short.
      * 
-     * @param value
-     * @return the low byte of the specified short.
+     * @param value The short to get the low byte from.
+     * @return The low byte of the specified short.
      */
     public static byte getLowByte(short value) {
         return (byte) (value & 0xff);
@@ -32,8 +32,7 @@ public class Bitwise {
      * @return A new short constructed from the two parameters.
      */
     public static short toShort(byte hi, byte lo) {
-        short value = (short) ((hi << 8) | Byte.toUnsignedInt(lo));
-        return value;
+        return (short) ((hi << 8) | Byte.toUnsignedInt(lo));
     }
 
     /**

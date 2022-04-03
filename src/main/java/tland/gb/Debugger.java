@@ -12,8 +12,8 @@ import tland.gb.cpu.Opcodes;
  */
 public class Debugger {
 
-    private GameBoy gb;
-    private CPU cpu;
+    private final GameBoy gb;
+    private final CPU cpu;
 
     public Debugger(GameBoy gb, CPU cpu) {
         this.gb = gb;
@@ -35,7 +35,7 @@ public class Debugger {
         boolean print = false;
 
         while (running) {
-            System.out.printf("> ");
+            System.out.print("> ");
             input = sc.nextLine().split(" ");
 
             if (input[0].length() == 0) {
@@ -145,5 +145,5 @@ public class Debugger {
         }
         sc.close();
     }
-    
+
 }

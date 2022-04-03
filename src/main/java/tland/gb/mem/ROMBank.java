@@ -7,7 +7,7 @@ import tland.Bitwise;
  */
 public class ROMBank implements ReadableMemory {
     public final static int BANK_SIZE = 0x4000;
-    final byte[] bytes;
+    private final byte[] bytes;
 
     public ROMBank(byte[] bytes) {
         this.bytes = bytes;
