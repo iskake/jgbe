@@ -19,9 +19,7 @@ public class CCF extends Instruction {
     @Override
     public void doOp(GameBoy gb, int opcode) {
         gb.reg.resetFlag(Flags.N);
-
         gb.reg.resetFlag(Flags.H);
-
         gb.reg.complementFlag(Flags.C);
     }
 

@@ -42,26 +42,17 @@ public class BIT extends Instruction {
         RegisterIndex reg = RegisterIndex.tableIndex[regNum];
 
         switch (opcodeType) {
-            case BIT_VAL:
+            case BIT_VAL -> {
                 boolean bitIsSet = gb.reg.isBitSet(reg, bitNum);
 
-                if (!bitIsSet) {
-                    gb.reg.setFlag(Flags.Z);
-                } else {
-                    gb.reg.resetFlag(Flags.Z);
-                }
+                gb.reg.setFlagConditional(Flags.Z, !bitIsSet);
                 gb.reg.resetFlag(Flags.N);
                 gb.reg.setFlag(Flags.H);
-                break;
-            case RES_VAL:
-                gb.reg.resetBit(reg, bitNum);
-                break;
-            case SET_VAL:
-                gb.reg.setBit(reg, bitNum);
-                break;
-            default:
-                throw new IllegalInstructionException(
-                        "Value %d is not a valid bitwise instruction.".formatted(opcodeType));
+            }
+            case RES_VAL -> gb.reg.resetBit(reg, bitNum);
+            case SET_VAL -> gb.reg.setBit(reg, bitNum);
+            default -> throw new IllegalInstructionException(
+                    "Value %02x is not a valid bitwise instruction.".formatted(opcodeType));
         }
     }
 

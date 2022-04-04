@@ -67,23 +67,14 @@ public class ROT extends Instruction {
         };
 
         if (prefixed) {
-            if (gb.reg.readRegisterByte(reg) == 0) {
-                gb.reg.setFlag(Flags.Z);
-            } else {
-                gb.reg.resetFlag(Flags.Z);
-            }
+            gb.reg.setFlagConditional(Flags.Z, gb.reg.readRegisterByte(reg) == 0);
         } else {
             gb.reg.resetFlag(Flags.Z);
         }
 
         gb.reg.resetFlag(Flags.N);
         gb.reg.resetFlag(Flags.H);
-
-        if (result == 1) {
-            gb.reg.setFlag(Flags.C);
-        } else {
-            gb.reg.resetFlag(Flags.C);
-        }
+        gb.reg.setFlagConditional(Flags.C, result == 1);
     }
 
     public String getFixedName(int opcode) {

@@ -1,6 +1,5 @@
 package tland.gb.cpu.Inst;
 
-import tland.Bitwise;
 import tland.gb.GameBoy;
 import tland.gb.Registers;
 import tland.gb.Registers.Flags;
@@ -33,7 +32,6 @@ public class ADD_rr_nn extends Instruction {
 
     @Override
     public void doOp(GameBoy gb, int opcode) {
-        // TODO: handle `add hl, sp` and `add sp, e8`
         if (Registers.isRegisterByte(r1) || opcode == 0x86) {
             byte value;
 
@@ -43,36 +41,21 @@ public class ADD_rr_nn extends Instruction {
                 value = gb.reg.readRegisterByte(r2);
             }
 
-            byte carryVal = 0;
-
+            byte c = 0;
             if (carry) {
                 // adc rr, nn
-                carryVal = gb.reg.isFlagSet(Flags.C) ? (byte) 1 : (byte) 0;
+                c += gb.reg.isFlagSet(Flags.C) ? 1 : 0;
             }
 
             byte regVal = gb.reg.readRegisterByte(r1);
 
-            gb.reg.writeRegisterByte(r1, regVal + value + carryVal);
-
-            if (regVal + value + carryVal == 0) {
-                gb.reg.setFlag(Flags.Z);
-            } else {
-                gb.reg.resetFlag(Flags.Z);
-            }
-
+            gb.reg.writeRegisterByte(r1, regVal + value + c);
+            gb.reg.setFlagConditional(Flags.Z, (regVal + value + c == 0));
             gb.reg.resetFlag(Flags.N);
+            gb.reg.setFlagConditional(Flags.H, (((Byte.toUnsignedInt(regVal) & 0b1111)
+                    + (Byte.toUnsignedInt(value) & 0b1111) + c) > 0b1111));
 
-            if (((Byte.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111) + carryVal) > 0b1111) {
-                gb.reg.setFlag(Flags.H);
-            } else {
-                gb.reg.resetFlag(Flags.H);
-            }
-
-            if (Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) > 0xff) {
-                gb.reg.setFlag(Flags.C);
-            } else {
-                gb.reg.resetFlag(Flags.C);
-            }
+            gb.reg.setFlagConditional(Flags.C, (Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) > 0xff));
         } else if (opcode == 0xe8) {
             // add sp, $e8
             byte value = gb.readNextByte();
@@ -81,38 +64,18 @@ public class ADD_rr_nn extends Instruction {
 
             gb.reg.resetFlag(Flags.Z);
             gb.reg.resetFlag(Flags.N);
-
-            if (((Short.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111)) > 0b1111) {
-                gb.reg.setFlag(Flags.H);
-            } else {
-                gb.reg.resetFlag(Flags.H);
-            }
-
-            if ((Short.toUnsignedInt(regVal) & 0xff) + Byte.toUnsignedInt(value) > 0xff) {
-                gb.reg.setFlag(Flags.C);
-            } else {
-                gb.reg.resetFlag(Flags.C);
-            }
+            gb.reg.setFlagConditional(Flags.H,
+                    ((Short.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111)) > 0b1111);
+            gb.reg.setFlagConditional(Flags.C, (Short.toUnsignedInt(regVal) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
             short r1Val = gb.reg.readRegisterShort(r1);
             short r2Val = gb.reg.readRegisterShort(r2);
 
             gb.reg.writeRegisterShort(r1, r1Val + r2Val);
-
             gb.reg.resetFlag(Flags.N);
-
-            if ((Short.toUnsignedInt(r1Val) & 0xfff) + (Short.toUnsignedInt(r2Val) & 0xfff) > 0xfff) {
-                // fff -> 0b111111111111
-                gb.reg.setFlag(Flags.H);
-            } else {
-                gb.reg.resetFlag(Flags.H);
-            }
-
-            if (Short.toUnsignedInt(r1Val) + Short.toUnsignedInt(r2Val) > 0xffff) {
-                gb.reg.setFlag(Flags.C);
-            } else {
-                gb.reg.resetFlag(Flags.C);
-            }
+            gb.reg.setFlagConditional(Flags.H,
+                    ((Short.toUnsignedInt(r1Val) & 0xfff) + (Short.toUnsignedInt(r2Val) & 0xfff) > 0xfff));
+            gb.reg.setFlagConditional(Flags.C, Short.toUnsignedInt(r1Val) + Short.toUnsignedInt(r2Val) > 0xffff);
         }
     }
 

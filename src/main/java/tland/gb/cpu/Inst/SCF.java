@@ -19,9 +19,7 @@ public class SCF extends Instruction {
     @Override
     public void doOp(GameBoy gb, int opcode) {
         gb.reg.resetFlag(Flags.N);
-
         gb.reg.resetFlag(Flags.H);
-
         gb.reg.setFlag(Flags.C);
     }
 

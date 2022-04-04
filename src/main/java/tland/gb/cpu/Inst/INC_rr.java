@@ -27,19 +27,9 @@ public class INC_rr extends Instruction {
 
             byte value = gb.reg.readRegisterByte(reg);
 
-            if (value == 0) {
-                gb.reg.setFlag(Flags.Z);
-            } else {
-                gb.reg.resetFlag(Flags.Z);
-            }
-
+            gb.reg.setFlagConditional(Flags.Z, value == 0);
             gb.reg.resetFlag(Flags.N);
-
-            if ((Byte.toUnsignedInt(value) & 0b1111) == 0) {
-                gb.reg.setFlag(Flags.H);
-            } else {
-                gb.reg.resetFlag(Flags.H);
-            }
+            gb.reg.setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0);
 
         } else {
             gb.reg.incRegisterShort(reg);

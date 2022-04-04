@@ -34,7 +34,7 @@ public class SUB_rr_nn extends Instruction {
         }
 
         if (carry) {
-            // sbc a, r8
+            // sbc a, nn
             value += gb.reg.isFlagSet(Flags.C) ? 1 : 0;
         }
 
@@ -42,25 +42,10 @@ public class SUB_rr_nn extends Instruction {
 
         gb.reg.writeRegisterByte(r1, a - value);
 
-        if (a - value == 0) {
-            gb.reg.setFlag(Flags.Z);
-        } else {
-            gb.reg.resetFlag(Flags.Z);
-        }
-
+        gb.reg.setFlagConditional(Flags.Z, a - value == 0);
         gb.reg.setFlag(Flags.N);
-
-        if ((a & (byte) 0b1111) < (value & (byte) 0b1111)) {
-            gb.reg.setFlag(Flags.H);
-        } else {
-            gb.reg.resetFlag(Flags.H);
-        }
-
-        if (Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value)) {
-            gb.reg.setFlag(Flags.C);
-        } else {
-            gb.reg.resetFlag(Flags.C);
-        }
+        gb.reg.setFlagConditional(Flags.H, (a & (byte) 0b1111) < (value & (byte) 0b1111));
+        gb.reg.setFlagConditional(Flags.C, Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value));
     }
 
 }

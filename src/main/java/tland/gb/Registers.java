@@ -148,6 +148,21 @@ public class Registers {
     }
 
     /**
+     * Set the specified flag in the F register if the condition returns
+     * {@code true}, otherwise reset the flag.
+     * 
+     * @param flag      The flag to set or reset.
+     * @param condition The condition to set the flag based on.
+     */
+    public void setFlagConditional(Flags flag, boolean condition) {
+        if (condition) {
+            gb.reg.setFlag(flag);
+        } else {
+            gb.reg.resetFlag(flag);
+        }
+    }
+
+    /**
      * Complement the specified flag (flip the corresponding bit) in the F register.
      * 
      * @param flag The flag to complement.
@@ -281,9 +296,9 @@ public class Registers {
     }
 
     /**
-     * Read the the byte at the given register {@code reg} if the specified register is
-     * an 8-bit register. If the specified register is a 16-bit register, the byte
-     * pointed to by that register is is read instead.
+     * Read the the byte at the given register {@code reg} if the specified register
+     * is an 8-bit register. If the specified register is a 16-bit register, the
+     * byte pointed to by that register is is read instead.
      * 
      * @param reg Register to be read from
      * @return The byte value of the given register
@@ -493,7 +508,8 @@ public class Registers {
      * 
      * @param reg      Register to check.
      * @param shortReg Check for short register.
-     * @throws IndexOutOfBoundsException if the register is not the correct format (8/16-bit).
+     * @throws IndexOutOfBoundsException if the register is not the correct format
+     *                                   (8/16-bit).
      */
     private void checkRegister(RegisterIndex reg, boolean shortReg) {
         if (shortReg) {

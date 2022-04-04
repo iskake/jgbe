@@ -32,16 +32,9 @@ public class OR_nn extends Instruction {
 
         gb.reg.writeRegisterByte(RegisterIndex.A, a | value);
 
-        if ((a | value) == 0) {
-            gb.reg.setFlag(Flags.Z);
-        } else {
-            gb.reg.resetFlag(Flags.Z);
-        }
-
+        gb.reg.setFlagConditional(Flags.Z, (a | value) == 0);
         gb.reg.resetFlag(Flags.N);
-
         gb.reg.resetFlag(Flags.H);
-
         gb.reg.resetFlag(Flags.C);
     }
 
