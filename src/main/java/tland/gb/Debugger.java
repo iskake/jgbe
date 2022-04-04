@@ -54,7 +54,7 @@ public class Debugger {
                 case "s", "step" -> stepInto();
                 case "n", "next" -> stepOver();
                 case "b", "break" -> handleBreakpoints(input);
-                case "x" -> dissassemble(input);
+                case "x" -> examine(input);
                 case "p", "print" -> enablePrinting();
                 case "reg" -> printCPUInfo();
                 default -> System.err.println("Unknown command: " + input[0]);
@@ -74,7 +74,7 @@ public class Debugger {
     /**
      * Breakpoint handling. Handles creation of new breakpoints and
      * 
-     * @param in
+     * @param in The input to read the address from.
      */
     private void handleBreakpoints(String[] in) {
         if (in.length == 1) {
@@ -179,7 +179,12 @@ public class Debugger {
         printCPUInfo();
     }
 
-    private void dissassemble(String[] in) {
+    /**
+     * Examine data at the specified address.
+     * 
+     * @param in The input to read the address from.
+     */
+    private void examine(String[] in) {
         try {
             if (in[1].charAt(0) == '$') {
                 in[1] = in[1].replace("$", "0x");
@@ -190,10 +195,13 @@ public class Debugger {
             addr &= 0xfff0;
             gb.printMemoryRegion(addr, addr + 47);
         } catch (Exception e) {
-            System.err.println("Invalid syntax. Usage: `d [ |$|0x|%|0b]{MEM_ADDR}`");
+            System.err.println("Invalid syntax. Usage: `x [ |$|0x|%|0b]{MEM_ADDR}`");
         }
     }
 
+    /**
+     * Enable printing after every instruction (for 'continue').
+     */
     private void enablePrinting() {
         print = !print;
         System.out.println("Print after every step: " + print);
