@@ -33,19 +33,20 @@ public class SUB_rr_nn extends Instruction {
             value = gb.reg.readRegisterByte(r2);
         }
 
+        byte c = 0;
         if (carry) {
             // sbc a, nn
-            value += gb.reg.isFlagSet(Flags.C) ? 1 : 0;
+            c += gb.reg.isFlagSet(Flags.C) ? 1 : 0;
         }
 
         byte a = gb.reg.readRegisterByte(r1);
 
-        gb.reg.writeRegisterByte(r1, a - value);
+        gb.reg.writeRegisterByte(r1, a - value - c);
 
-        gb.reg.setFlagConditional(Flags.Z, a - value == 0);
+        gb.reg.setFlagConditional(Flags.Z, (byte) (a - value - c) == 0);
         gb.reg.setFlag(Flags.N);
-        gb.reg.setFlagConditional(Flags.H, (a & (byte) 0b1111) < (value & (byte) 0b1111));
-        gb.reg.setFlagConditional(Flags.C, Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value));
+        gb.reg.setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < ((Byte.toUnsignedInt(value) & 0b1111) + c));
+        gb.reg.setFlagConditional(Flags.C, ((Byte.toUnsignedInt(a) - Byte.toUnsignedInt(value) - c) & 0xfff) > 0xff);
     }
 
 }
