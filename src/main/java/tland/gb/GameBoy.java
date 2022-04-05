@@ -13,6 +13,7 @@ public class GameBoy {
     private short pc;
     public final StackPointer sp;
     public final Registers reg;
+    public final HardwareRegisters hwReg;
     public final MemoryMap memoryMap;
 
     private boolean debuggerEnabled;
@@ -22,6 +23,7 @@ public class GameBoy {
         this.rom = rom;
         memoryMap = new MemoryMap(rom);
         reg = new Registers(this);
+        hwReg = new HardwareRegisters();
         cpu = new CPU(this);
 
         // TODO: use BootROM instead of hardcoded values, as this may depend on
