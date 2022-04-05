@@ -1,13 +1,9 @@
 package tland.gb;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import tland.Bitwise;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 import tland.gb.cpu.CPU;
-import tland.gb.cpu.Opcodes;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
 
@@ -15,7 +11,7 @@ public class GameBoy {
     private CartridgeROM rom;
     private CPU cpu;
     private short pc;
-    private short sp;
+    public final StackPointer sp;
     public final Registers reg;
     public final MemoryMap memoryMap;
 
@@ -28,7 +24,7 @@ public class GameBoy {
         // TODO: use BootROM instead of hardcoded values, as this may depend on
         // revisions. In this case, the values are for the DMG (NOT the DMG0)
         pc = Bitwise.toShort(0x100);
-        sp = Bitwise.toShort(0xfffe);
+        sp = new StackPointer(this, (short) 0xfffe);
         reg.writeRegisterByte(RegisterIndex.A, 0x01);
         reg.setFlag(Flags.Z);
         reg.resetFlag(Flags.N);
@@ -54,74 +50,9 @@ public class GameBoy {
      * Set the program counter to point at the specified address.
      * <p>
      * Used for jump instructions.
-     * 
-     * @return The address to set the program counter to.
      */
     public void setPC(short address) {
         pc = address;
-    }
-
-    /**
-     * Get the memory address currently pointed to by the stack pointer.
-     * 
-     * @return The address of the stack pointer.
-     */
-    public short getSP() {
-        return sp;
-    }
-
-    /**
-     * Set the stack pointer to point at the the specified address.
-     * 
-     * @param address The address to set the stack pointer to.
-     */
-    public void setSP(short address) {
-        sp = address;
-    }
-
-    /**
-     * Decrement the stack pointer by one.
-     */
-    public void decSP() {
-        sp--;
-    }
-
-    /**
-     * Increment the stack pointer by one.
-     */
-    public void incSP() {
-        sp++;
-    }
-
-    /**
-     * 'Push' the value {@code value} onto the stack.
-     * <p>
-     * Writes the value to the memory location pointed to by the stack pointer and
-     * decrements the stack pointer.
-     * 
-     * @param value The value to push onto the stack.
-     */
-    public void pushSP(short value) {
-        decSP();
-        writeMemoryAddress(sp, Bitwise.getHighByte(value));
-        decSP();
-        writeMemoryAddress(sp, Bitwise.getLowByte(value));
-    }
-
-    /**
-     * 'Pop' the value at the stack pointer from the stack.
-     * <p>
-     * Gets the value at the memory location pointed to by the stack pointer and
-     * increments the stack pointer.
-     * 
-     * @return The value 'popped' off the stack.
-     */
-    public short popSP() {
-        byte lo = readMemoryAddress(sp);
-        incSP();
-        byte hi = readMemoryAddress(sp);
-        incSP();
-        return Bitwise.toShort(hi, lo);
     }
 
     public void enableDebugger() {

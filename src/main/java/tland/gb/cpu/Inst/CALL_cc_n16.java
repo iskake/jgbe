@@ -22,7 +22,7 @@ public class CALL_cc_n16 extends Instruction {
         short address = gb.readNextShort();
 
         if (Conditions.conditionSatisfied(gb.reg, condition)) {
-            gb.pushSP(gb.getPC());
+            gb.sp.push(gb.getPC());
             gb.setPC(address);
         }
     }

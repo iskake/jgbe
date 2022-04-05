@@ -36,7 +36,7 @@ public class LD_ptr_rr extends Instruction {
 
         if (opcode == 0x08) {
             // ld [$n16], sp
-            short sp = gb.getSP();
+            short sp = gb.sp.get();
             gb.writeMemoryAddress(address, Bitwise.getLowByte(sp));
             gb.writeMemoryAddress((short)(address + 1), Bitwise.getHighByte(sp));
         } else {

@@ -24,7 +24,7 @@ public class RET_cc extends Instruction {
                 // TODO: Need to implement `ei` and `di` first!
                 throw new IllegalInstructionException();
             }
-            gb.setPC(gb.popSP());
+            gb.setPC(gb.sp.pop());
         }
     }
 

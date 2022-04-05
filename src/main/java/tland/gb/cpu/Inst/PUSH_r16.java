@@ -20,7 +20,7 @@ public class PUSH_r16 extends Instruction {
 
     @Override
     public void doOp(GameBoy gb, int opcode) {
-        gb.pushSP(gb.reg.readRegisterShort(reg));
+        gb.sp.push(gb.reg.readRegisterShort(reg));
     }
 
 }

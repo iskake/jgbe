@@ -20,7 +20,7 @@ public class LD_SP extends Instruction {
     public void doOp(GameBoy gb, int opcode) {
         if (opcode == 0xf8) {
             // ld hl, sp+$e8
-            short sp = gb.getSP();
+            short sp = gb.sp.get();
             byte value = gb.readNextByte();
 
             gb.reg.writeRegisterShort(RegisterIndex.HL, sp + value);
@@ -32,7 +32,7 @@ public class LD_SP extends Instruction {
             gb.reg.setFlagConditional(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
             // ld sp, hl
-            gb.setSP(gb.reg.readRegisterShort(RegisterIndex.HL));
+            gb.sp.set(gb.reg.readRegisterShort(RegisterIndex.HL));
         }
     }
 

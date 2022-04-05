@@ -59,8 +59,8 @@ public class ADD_rr_nn extends Instruction {
         } else if (opcode == 0xe8) {
             // add sp, $e8
             byte value = gb.readNextByte();
-            short regVal = gb.getSP();
-            gb.setSP((short) (regVal + value));
+            short regVal = gb.sp.get();
+            gb.sp.set((short) (regVal + value));
 
             gb.reg.resetFlag(Flags.Z);
             gb.reg.resetFlag(Flags.N);

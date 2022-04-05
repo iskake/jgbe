@@ -349,7 +349,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.val == RegisterIndex.SP.val) {
-            return gb.getSP();
+            return gb.sp.get();
         }
 
         int index = getShortRegisterIndex(reg);
@@ -370,7 +370,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.val == RegisterIndex.SP.val) {
-            gb.setSP(value);
+            gb.sp.set(value);
             return;
         }
 
@@ -427,7 +427,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.val == RegisterIndex.SP.val) {
-            gb.incSP();
+            gb.sp.inc();
             return;
         }
 
@@ -469,7 +469,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.val == RegisterIndex.SP.val) {
-            gb.decSP();
+            gb.sp.dec();
             return;
         }
 
@@ -583,7 +583,7 @@ public class Registers {
         System.out.printf("BC: %04x\n", readRegisterShort(RegisterIndex.BC));
         System.out.printf("DE: %04x\n", readRegisterShort(RegisterIndex.DE));
         System.out.printf("HL: %04x\n", readRegisterShort(RegisterIndex.HL));
-        System.out.printf("SP: %04x\n", gb.getSP());
+        System.out.printf("SP: %04x\n", gb.sp.get());
         System.out.printf("PC: %04x\n", gb.getPC());
     }
 }
