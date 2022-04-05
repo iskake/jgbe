@@ -157,8 +157,10 @@ public class GameBoy {
     /**
      * Enables all interrupts enabled in the IE hardware register by setting the IME
      * flag to 1.
+     * 
+     * @param wait If interrupts should be enabled after waiting one M-cycle.
      */
-    public void enableInterrupts() {
+    public void enableInterrupts(boolean wait) {
         // TODO
     }
 }

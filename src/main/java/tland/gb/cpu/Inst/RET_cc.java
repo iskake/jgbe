@@ -21,8 +21,7 @@ public class RET_cc extends Instruction {
         if (Conditions.conditionSatisfied(gb.reg, condition)) {
             if (opcode == 0xd9) {
                 // reti
-                // TODO: Need to implement `ei` and `di` first!
-                throw new IllegalInstructionException();
+                gb.enableInterrupts(false);
             }
             gb.setPC(gb.sp.pop());
         }

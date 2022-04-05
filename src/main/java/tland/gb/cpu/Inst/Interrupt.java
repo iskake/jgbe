@@ -19,7 +19,7 @@ public class Interrupt extends Instruction {
     public void doOp(GameBoy gb, int opcode) {
         switch (opcode) {
             case 0xf3 -> gb.disableInterrupts();
-            case 0xfb -> gb.enableInterrupts();
+            case 0xfb -> gb.enableInterrupts(true);
             default -> throw new IllegalInstructionException();
         }
     }
