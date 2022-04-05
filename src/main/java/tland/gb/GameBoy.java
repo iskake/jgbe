@@ -124,4 +124,39 @@ public class GameBoy {
         }
         System.out.println("\n");
     }
+
+    /**
+     * Halt ('stop') all operations of the Game Boy until the system is reset or any
+     * input is pressed.
+     * <p>
+     * Note that the stop instruction is actually 2 bytes long, with the second byte
+     * being ignored.
+     */
+    public void stop() {
+        // TODO
+        pc++; // stop ignores the next instruction, so
+
+    }
+
+    /**
+     * Halt CPU instruction execution
+     */
+    public void halt() {
+        // TODO
+    }
+
+    /**
+     * Disables all interrupts by setting the IME flag to 0.
+     */
+    public void disableInterrupts() {
+        // TODO
+    }
+
+    /**
+     * Enables all interrupts enabled in the IE hardware register by setting the IME
+     * flag to 1.
+     */
+    public void enableInterrupts() {
+        // TODO
+    }
 }

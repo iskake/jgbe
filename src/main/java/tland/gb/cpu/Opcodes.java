@@ -33,7 +33,7 @@ public class Opcodes {
 
 /* 0x0f */ new ROT("rrca"),
 
-/* 0x10 */ new IllegalInst("unimplemented, 0x10"), // stop $n8
+/* 0x10 */ new Halt("stop"),
 
 /* 0x11 */ new LD_rr_nn("ld de, $_N16", RegisterIndex.DE),
 
@@ -178,7 +178,7 @@ public class Opcodes {
 /* 0x74 */ new LD_r8_r8("ld [hl], h", RegisterIndex.HL, RegisterIndex.H),
 /* 0x75 */ new LD_r8_r8("ld [hl], l", RegisterIndex.HL, RegisterIndex.L),
 
-/* 0x76 */ new IllegalInst("HALT"), // TODO
+/* 0x76 */ new Halt("halt"),
 
 /* 0x77 */ new LD_r8_r8("ld [hl], a", RegisterIndex.HL, RegisterIndex.A),
 
@@ -353,7 +353,8 @@ public class Opcodes {
 
 /* 0xf2 */ new LD_A_ptr("ldh a, [c]"),
 
-/* 0xf3 */ new IllegalInst("unimplemented, 0xf3"), // di
+/* 0xf3 */ new Interrupt("di"),
+
 /* 0xf4 */ new IllegalInst("illegal $f4"), // illegal
 
 /* 0xf5 */ new PUSH_r16("push af", RegisterIndex.AF),
@@ -366,7 +367,8 @@ public class Opcodes {
 /* 0xf9 */ new LD_SP("ld sp, hl"),
 /* 0xfa */ new LD_A_ptr("ld a, [$_N16]"),
 
-/* 0xfb */ new IllegalInst("unimplemented, 0xfb"), // ei
+/* 0xfb */ new Interrupt("ei"),
+
 /* 0xfc */ new IllegalInst("illegal $fc"), // illegal
 /* 0xfd */ new IllegalInst("illegal $fd"), // illegal
 
