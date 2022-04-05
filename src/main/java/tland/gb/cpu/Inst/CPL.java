@@ -1,6 +1,5 @@
 package tland.gb.cpu.Inst;
 
-import tland.Bitwise;
 import tland.gb.GameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;

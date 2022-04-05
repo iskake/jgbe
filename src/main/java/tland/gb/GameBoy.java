@@ -15,7 +15,10 @@ public class GameBoy {
     public final Registers reg;
     public final MemoryMap memoryMap;
 
+    private boolean debuggerEnabled;
+
     public GameBoy(CartridgeROM rom) {
+        debuggerEnabled = true;
         this.rom = rom;
         memoryMap = new MemoryMap(rom);
         reg = new Registers(this);
@@ -77,8 +80,7 @@ public class GameBoy {
     }
 
     public byte readNextByte() {
-        byte val = memoryMap.readByte(pc++);
-        return val;
+        return memoryMap.readByte(pc++);
     }
 
     public short readNextShort() {

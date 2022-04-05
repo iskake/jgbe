@@ -1,7 +1,5 @@
 package tland.gb.mem;
 
-import tland.Bitwise;
-
 /**
  * Random Access Memory. Implementation of memory that can be both read and
  * written to.
