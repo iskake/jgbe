@@ -21,10 +21,10 @@ public class GameBoy {
     public GameBoy(CartridgeROM rom) {
         debuggerEnabled = true;
         this.rom = rom;
-        memoryMap = new MemoryMap(rom);
         reg = new Registers(this);
         hwReg = new HardwareRegisters();
         cpu = new CPU(this);
+        memoryMap = new MemoryMap(rom, hwReg);
 
         // TODO: use BootROM instead of hardcoded values, as this may depend on
         // revisions. In this case, the values are for the DMG (NOT the DMG0)

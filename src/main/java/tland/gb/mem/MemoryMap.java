@@ -1,6 +1,7 @@
 package tland.gb.mem;
 
 import tland.Bitwise;
+import tland.gb.HardwareRegisters;
 
 /**
  * Game boy memory map.
@@ -11,21 +12,20 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     private RAM VRAM;
     private RAM WRAM1;
     private RAM WRAM2;
-    // private RAM OAM;
-    // private RAM prohibited;
-    // private RAM IO;
+    private RAM OAM;
+    private RAM prohibited;
+    private HardwareRegisterMap IO;
     private RAM HRAM;
-    // private RAM IE;
 
     private int fixedAddress;
 
-    public MemoryMap(CartridgeROM rom) {
+    public MemoryMap(CartridgeROM rom, HardwareRegisters hwreg) {
         this.rom = rom;
         VRAM = new RAM(0x2000);
         WRAM1 = new RAM(0x1000);
         WRAM2 = new RAM(0x1000);
-        // OAM = new RAM(0xa0);
-        // IO = new RAM(0x80);
+        OAM = new RAM(40*4);
+        IO = new HardwareRegisterMap(hwreg);
         HRAM = new RAM(0x200);
     }
 
@@ -81,8 +81,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             // System.out.println("Accessing ECHO RAM.");
             fixedAddress -= 0xe000;
             return WRAM1;
-        // TODO
-        /* } else if (address < 0xFEA0) {
+        } else if (address < 0xFEA0) {
             // fe00-fe9f = a0
             fixedAddress -= 0xfe00;
             return OAM;
@@ -91,17 +90,12 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             // ('prohibited access')
             fixedAddress -= 0xfea0;
             return prohibited;
-        } else if (address < 0xFF80) {
+        } else if (address < 0xFF80 || address == 0xFFFF) {
             // ff00-ff7f = 80
-            fixedAddress -= 0xff00;
             return IO;
-        } else if (address < 0xFFFF) {
-            // ff80-fffe
-            fixedAddress -= 0xff80;
-            return HRAM; */
         } else {
-            // fe00-ffff
-            fixedAddress -= 0xfe00;
+            // ff80-fffe (HRAM)
+            fixedAddress -= 0xff80;
             return HRAM;
         }
     }
