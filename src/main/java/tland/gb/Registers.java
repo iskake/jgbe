@@ -348,7 +348,7 @@ public class Registers {
     public short readRegisterShort(RegisterIndex reg) {
         checkRegisterShort(reg);
 
-        if (reg.val == RegisterIndex.SP.val) {
+        if (reg.equals(RegisterIndex.SP)) {
             return gb.sp.get();
         }
 
@@ -369,7 +369,7 @@ public class Registers {
     public void writeRegisterShort(RegisterIndex reg, short value) {
         checkRegisterShort(reg);
 
-        if (reg.val == RegisterIndex.SP.val) {
+        if (reg.equals(RegisterIndex.SP)) {
             gb.sp.set(value);
             return;
         }
@@ -405,7 +405,7 @@ public class Registers {
      */
     public void incRegisterByte(RegisterIndex reg) {
         if (isRegisterShort(reg)) {
-            if (reg.val == RegisterIndex.HL.val) {
+            if (reg.equals(RegisterIndex.HL)) {
                 byte val = readRegisterByte(RegisterIndex.HL);
                 writeRegisterByte(reg, ++val);
                 return;
@@ -426,7 +426,7 @@ public class Registers {
     public void incRegisterShort(RegisterIndex reg) {
         checkRegisterShort(reg);
 
-        if (reg.val == RegisterIndex.SP.val) {
+        if (reg.equals(RegisterIndex.SP)) {
             gb.sp.inc();
             return;
         }
@@ -447,7 +447,7 @@ public class Registers {
      */
     public void decRegisterByte(RegisterIndex reg) {
         if (isRegisterShort(reg)) {
-            if (reg.val == RegisterIndex.HL.val) {
+            if (reg.equals(RegisterIndex.HL)) {
                 byte val = readRegisterByte(RegisterIndex.HL);
                 writeRegisterByte(reg, --val);
                 return;
@@ -468,7 +468,7 @@ public class Registers {
     public void decRegisterShort(RegisterIndex reg) {
         checkRegisterShort(reg);
 
-        if (reg.val == RegisterIndex.SP.val) {
+        if (reg.equals(RegisterIndex.SP)) {
             gb.sp.dec();
             return;
         }
