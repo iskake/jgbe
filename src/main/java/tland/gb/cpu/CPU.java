@@ -2,13 +2,16 @@ package tland.gb.cpu;
 
 import tland.Bitwise;
 import tland.gb.GameBoy;
+import tland.gb.InterruptHandler;
 import tland.gb.cpu.Inst.Prefixed;
 
 public class CPU {
     private final GameBoy gb;
+    private final InterruptHandler interrupts;
 
-    public CPU(GameBoy gameBoy) {
+    public CPU(GameBoy gameBoy, InterruptHandler interrupts) {
         this.gb = gameBoy;
+        this.interrupts = interrupts;
     }
 
     /**
@@ -17,6 +20,9 @@ public class CPU {
     public void step() {
         short oldPC = gb.getPC();
 
+        if (interrupts.waiting()) {
+            // TODO
+        }
         byte opcode = gb.readNextByte();
         Opcodes.getOpcode(opcode).doOp(gb, Byte.toUnsignedInt(opcode));
 

@@ -15,6 +15,7 @@ public class GameBoy {
     public final Registers reg;
     public final HardwareRegisters hwReg;
     public final MemoryMap memoryMap;
+    public final InterruptHandler interrupts;
 
     private boolean debuggerEnabled;
 
@@ -23,13 +24,21 @@ public class GameBoy {
         this.rom = rom;
         reg = new Registers(this);
         hwReg = new HardwareRegisters();
-        cpu = new CPU(this);
+        interrupts = new InterruptHandler(hwReg);
+        cpu = new CPU(this, interrupts);
         memoryMap = new MemoryMap(rom, hwReg);
-
-        // TODO: use BootROM instead of hardcoded values, as this may depend on
-        // revisions. In this case, the values are for the DMG (NOT the DMG0)
-        pc = Bitwise.toShort(0x100);
         sp = new StackPointer(this, (short) 0xfffe);
+        init();
+    }
+
+    /**
+     * Initialize the Game Boy
+     */
+    private void init() {
+        // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
+        // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
+        sp.set((short) 0xfffe);
+        pc = Bitwise.toShort(0x100);
         reg.writeRegisterByte(RegisterIndex.A, 0x01);
         reg.setFlag(Flags.Z);
         reg.resetFlag(Flags.N);
@@ -151,7 +160,7 @@ public class GameBoy {
      * Disables all interrupts by setting the IME flag to 0.
      */
     public void disableInterrupts() {
-        // TODO
+        interrupts.disable();
     }
 
     /**
@@ -161,6 +170,6 @@ public class GameBoy {
      * @param wait If interrupts should be enabled after waiting one M-cycle.
      */
     public void enableInterrupts(boolean wait) {
-        // TODO
+        interrupts.enable(wait);
     }
 }
