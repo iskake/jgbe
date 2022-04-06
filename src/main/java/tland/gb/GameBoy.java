@@ -7,15 +7,19 @@ import tland.gb.cpu.CPU;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
 
+/**
+ * Represents a Game Boy (model 'DMG')
+ */
 public class GameBoy {
-    private CartridgeROM rom;
-    private CPU cpu;
-    private short pc;
     public final StackPointer sp;
     public final Registers reg;
-    public final HardwareRegisters hwReg;
-    public final MemoryMap memoryMap;
-    public final InterruptHandler interrupts;
+
+    private short pc;
+    private final CartridgeROM rom;
+    private final CPU cpu;
+    private final HardwareRegisters hwReg;
+    private final MemoryMap memoryMap;
+    private final InterruptHandler interrupts;
 
     private boolean debuggerEnabled;
 
