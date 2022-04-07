@@ -25,9 +25,6 @@ public class HardwareRegisterMap implements ReadableMemory, WritableMemory {
     @Override
     public byte readByte(int address) throws IndexOutOfBoundsException {
         HardwareRegisterIndex hwreg = HardwareRegisterIndex.getRegisterFromAddress(address);
-        if (hwreg == null) {
-            System.out.printf("Reading from invalid hw register: %04x\n", address);
-        }
         return hwregisters.readRegister(hwreg);
     }
 }
