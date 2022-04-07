@@ -24,20 +24,33 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         VRAM = new RAM(0x2000);
         WRAM1 = new RAM(0x1000);
         WRAM2 = new RAM(0x1000);
-        OAM = new RAM(40*4);
+        OAM = new RAM(40 * 4);
         IO = new HardwareRegisterMap(hwreg);
         HRAM = new RAM(0x200);
+
+        init();
+    }
+
+    /**
+     * Initialize the memory each region.
+     */
+    public void init() {
+        VRAM.clear();
+        WRAM1.randomize();
+        WRAM2.randomize();
+        OAM.randomize();
+        HRAM.randomize();
     }
 
     @Override
     public byte readByte(int address) {
-        ReadableMemory memory = (ReadableMemory)getMemoryIndex(address);
+        ReadableMemory memory = (ReadableMemory) getMemoryIndex(address);
         return memory.readByte(fixedAddress);
     }
 
     @Override
     public void writeByte(int address, byte value) {
-        WritableMemory memory = (WritableMemory)getMemoryIndex(address);
+        WritableMemory memory = (WritableMemory) getMemoryIndex(address);
         memory.writeByte(fixedAddress, value);
     }
 
@@ -59,7 +72,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             return rom;
         } else if (address < 0xA000) {
             // 8000-9fff = 2000
-            // VRAM 
+            // VRAM
             fixedAddress -= 0x8000;
             return VRAM;
         } else if (address < 0xC000) {
