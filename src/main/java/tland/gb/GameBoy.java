@@ -41,8 +41,6 @@ public class GameBoy {
     private void init() {
         // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
         // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
-        sp.set((short) 0xfffe);
-        pc = Bitwise.toShort(0x100);
         reg.writeRegisterByte(RegisterIndex.A, 0x01);
         reg.setFlag(Flags.Z);
         reg.resetFlag(Flags.N);
@@ -51,6 +49,11 @@ public class GameBoy {
         reg.writeRegisterShort(RegisterIndex.BC, (short) 0x0013);
         reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
         reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
+
+        pc = Bitwise.toShort(0x100);
+        sp.set((short) 0xfffe);
+        memoryMap.init();
+        hwReg.init();
     }
 
     /**
