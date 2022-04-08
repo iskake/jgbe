@@ -21,7 +21,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
 
     public MemoryMap(CartridgeROM rom, HardwareRegisters hwreg) {
         this.rom = rom;
-        VRAM = new RAM(0x2000);
+        VRAM = new VRAM(0x2000, hwreg);
         WRAM1 = new RAM(0x1000);
         WRAM2 = new RAM(0x1000);
         OAM = new RAM(40 * 4);
