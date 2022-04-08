@@ -11,10 +11,10 @@ import tland.gb.mem.MemoryMap;
  * Represents a Game Boy (model 'DMG')
  */
 public class GameBoy {
+    public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
 
-    private short pc;
     private final CartridgeROM rom;
     private final CPU cpu;
     private final HardwareRegisters hwReg;
@@ -50,30 +50,10 @@ public class GameBoy {
         reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
         reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
 
-        pc = Bitwise.toShort(0x100);
+        pc.set((short) 0x100);
         sp.set((short) 0xfffe);
         memoryMap.init();
         hwReg.init();
-    }
-
-    /**
-     * Get the memory address currently pointed to by the program counter.
-     * <p>
-     * Used for jump instructions.
-     * 
-     * @return The address of the program counter.
-     */
-    public short getPC() {
-        return pc;
-    }
-
-    /**
-     * Set the program counter to point at the specified address.
-     * <p>
-     * Used for jump instructions.
-     */
-    public void setPC(short address) {
-        pc = address;
     }
 
     public void enableDebugger() {
@@ -98,7 +78,7 @@ public class GameBoy {
     }
 
     public byte readNextByte() {
-        return memoryMap.readByte(pc++);
+        return memoryMap.readByte(pc.postIncrement());
     }
 
     public short readNextShort() {
@@ -152,7 +132,7 @@ public class GameBoy {
      */
     public void stop() {
         // TODO
-        pc++; // stop ignores the next instruction, so
+        pc.postIncrement(); // stop ignores the next instruction, so
 
     }
 

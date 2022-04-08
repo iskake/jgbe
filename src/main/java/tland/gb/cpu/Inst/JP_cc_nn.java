@@ -30,7 +30,7 @@ public class JP_cc_nn extends Instruction {
         }
 
         if (Conditions.conditionSatisfied(gb.reg, condition)) {
-            gb.setPC(address);
+            gb.pc.set(address);
         }
     }
 

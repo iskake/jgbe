@@ -18,7 +18,7 @@ public class CPU {
      * 'Step' the CPU forward by a single instruction.
      */
     public void step() {
-        short oldPC = gb.getPC();
+        short oldPC = gb.pc.get();
 
         if (interrupts.waiting()) {
             // TODO
@@ -26,7 +26,7 @@ public class CPU {
         byte opcode = gb.readNextByte();
         Opcodes.getOpcode(opcode).doOp(gb, Byte.toUnsignedInt(opcode));
 
-        short newPC = gb.getPC();
+        short newPC = gb.pc.get();
 
         // Temp.
         if (oldPC == newPC) {
@@ -40,7 +40,7 @@ public class CPU {
      * Print the name of the next instruction to be extecuted.
      */
     public void printNextInstruction() {
-        short address = gb.getPC();
+        short address = gb.pc.get();
         byte opcode = gb.readMemoryAddress(address);
         System.out.printf("%02x -> %s\n", opcode, getInstructionName(address));
     }

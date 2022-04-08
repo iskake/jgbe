@@ -584,6 +584,6 @@ public class Registers {
         System.out.printf("DE: %04x\n", readRegisterShort(RegisterIndex.DE));
         System.out.printf("HL: %04x\n", readRegisterShort(RegisterIndex.HL));
         System.out.printf("SP: %04x\n", gb.sp.get());
-        System.out.printf("PC: %04x\n", gb.getPC());
+        System.out.printf("PC: %04x\n", gb.pc.get());
     }
 }

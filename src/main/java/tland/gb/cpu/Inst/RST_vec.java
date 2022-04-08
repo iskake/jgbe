@@ -21,8 +21,8 @@ public class RST_vec extends Instruction {
     public void doOp(GameBoy gb, int opcode) {
         short vector = Bitwise.toShort(opcode & 0b111000);
 
-        gb.sp.push(gb.getPC());
-        gb.setPC(vector);
+        gb.sp.push(gb.pc.get());
+        gb.pc.set(vector);
     }
 
 }

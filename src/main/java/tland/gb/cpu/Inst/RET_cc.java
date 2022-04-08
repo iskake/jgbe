@@ -23,7 +23,7 @@ public class RET_cc extends Instruction {
                 // reti
                 gb.enableInterrupts(false);
             }
-            gb.setPC(gb.sp.pop());
+            gb.pc.set(gb.sp.pop());
         }
     }
 

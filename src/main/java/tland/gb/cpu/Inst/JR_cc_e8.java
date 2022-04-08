@@ -22,8 +22,8 @@ public class JR_cc_e8 extends Instruction {
         short value = gb.readNextByte();
 
         if (Conditions.conditionSatisfied(gb.reg, condition)) {
-            short address = gb.getPC();
-            gb.setPC((short) (address + value));
+            short address = gb.pc.get();
+            gb.pc.set((short) (address + value));
         }
     }
 
