@@ -18,7 +18,7 @@ public class GameBoy {
 
     private final CartridgeROM rom;
     private final CPU cpu;
-    private final HardwareRegisters hwReg;
+    private final HardwareRegisters hwreg;
     private final MemoryMap memoryMap;
     private final InterruptHandler interrupts;
 
@@ -32,12 +32,12 @@ public class GameBoy {
         sp = new StackPointer(this, (short) 0xfffe);
 
         reg = new Registers(this);
-        hwReg = new HardwareRegisters();
-        memoryMap = new MemoryMap(rom, hwReg);
+        hwreg = new HardwareRegisters();
+        memoryMap = new MemoryMap(rom, hwreg);
 
-        interrupts = new InterruptHandler(pc, sp, hwReg);
+        interrupts = new InterruptHandler(pc, sp, hwreg);
         cpu = new CPU(this, interrupts);
-        timing = new Timing(this, hwReg, interrupts);
+        timing = new Timing(this, hwreg, interrupts);
         init();
     }
 
@@ -59,7 +59,7 @@ public class GameBoy {
         pc.init();
         sp.set((short) 0xfffe);
         memoryMap.init();
-        hwReg.init();
+        hwreg.init();
     }
 
     public void enableDebugger() {
@@ -75,7 +75,7 @@ public class GameBoy {
             if (!debuggerEnabled)
                 cpu.step();
             else
-                new Debugger(this, cpu).run();
+                new Debugger(this, cpu, hwreg).run();
         }
     }
 
@@ -130,7 +130,7 @@ public class GameBoy {
             if (c % 16 == 0) {
                 System.out.printf("\n%04x  ", (short) i);
             }
-            System.out.printf("%02x ", readMemoryAddress((short) i));
+            System.out.printf("%02x ", readMemoryNoCycle((short) i));
             c++;
         }
         System.out.println("\n");

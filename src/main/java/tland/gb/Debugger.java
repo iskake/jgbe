@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import tland.Bitwise;
+import tland.gb.HardwareRegisters.HardwareRegisterIndex;
 import tland.gb.cpu.CPU;
 import tland.gb.cpu.Opcodes;
 
@@ -14,6 +15,7 @@ public class Debugger {
 
     private final GameBoy gb;
     private final CPU cpu;
+    private final HardwareRegisters hwreg;
 
     private Scanner sc;
     private boolean running;
@@ -22,9 +24,10 @@ public class Debugger {
     private ArrayList<Integer> breakPoints;
     private boolean print;
 
-    public Debugger(GameBoy gb, CPU cpu) {
+    public Debugger(GameBoy gb, CPU cpu, HardwareRegisters hwreg) {
         this.gb = gb;
         this.cpu = cpu;
+        this.hwreg = hwreg;
 
         sc = new Scanner(System.in);
         running = true;
@@ -68,6 +71,7 @@ public class Debugger {
      */
     private void printCPUInfo() {
         gb.reg.printRegisters();
+        System.out.println("Mode: " + (hwreg.readRegister(HardwareRegisterIndex.STAT) & 0b11));
         System.out.println("Cycles: " + gb.timing.getCycles());
         cpu.printNextInstruction();
     }
@@ -96,7 +100,7 @@ public class Debugger {
             breakPoints.add(Integer.decode(in[1]));
             System.out.printf("Set breakpoint at $%04x\n", breakPoints.get(breakPoints.size() - 1));
         } catch (Exception e) {
-            System.err.println("Invalid syntax. Usage: `b [ |$|0x|%|0b]{MEM_ADDR}`");
+            System.err.println("Invalid syntax. Usage: `b [ |$|0x|%|0b]{MEM_ADDR} `");
         }
     }
 
