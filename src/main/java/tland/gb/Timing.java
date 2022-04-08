@@ -18,9 +18,13 @@ public class Timing {
     private final int MODE0_CYCLES_MIN = 172;
     private final int MODE0_CYCLES_MAX = 289;
     private final int SCANLINE_CYCLES = 456;
-    private final int VBLANK_CYCLES = SCANLINE_CYCLES * 10;
-    private final int VBLANK_START = SCANLINE_CYCLES * 144;
-    private final int FRAME_CYCLES = VBLANK_START + VBLANK_CYCLES;
+    private final int MODE1_CYCLES = SCANLINE_CYCLES * 10;
+    private final int FRAME_CYCLES = SCANLINE_CYCLES * 144 + MODE1_CYCLES;
+
+    private final int MODE2_END = MODE2_CYCLES;
+    private final int MODE3_END_MIN = MODE2_END + MODE3_CYCLES_MIN;
+    private final int MODE0_END_MAX = MODE3_END_MIN + MODE0_CYCLES_MAX;
+    private final int MODE1_START = SCANLINE_CYCLES * 144;
 
     public Timing(GameBoy gb, HardwareRegisters hwreg, InterruptHandler interrupts) {
         this.gb = gb;
@@ -63,7 +67,7 @@ public class Timing {
     }
 
     private void handleVideo(long cycle) {
-        // vblank
+        // VBlank
         if ((cycle % SCANLINE_CYCLES) == 0) {
             hwreg.incRegister(LY);
             int ly_val = hwreg.readRegisterInt(LY);
@@ -80,18 +84,22 @@ public class Timing {
         // 0xff41 (STAT)
         long scanDot = (cycle % SCANLINE_CYCLES);
 
-        if ((cycle % FRAME_CYCLES) >= VBLANK_START) {
+        if ((cycle % FRAME_CYCLES) >= MODE1_START) {
+            // Mode 1 (VBlank)
             hwreg.setBit(STAT, 0);
             hwreg.resetBit(STAT, 1);
-        } else if (scanDot < MODE2_CYCLES) {
+        } else if (scanDot < MODE2_END) {
+            // Mode 2 (OAM search)
             hwreg.resetBit(STAT, 0);
             hwreg.setBit(STAT, 1);
-        } else if (scanDot < MODE3_CYCLES_MIN) {
-            // Assume minimum cycles spent drawing
+        } else if (scanDot < MODE3_END_MIN) {
+            // Mode 3 (Scanline render)
+            // For simplicity, assume minimum cycles spent drawing
             hwreg.setBit(STAT, 0);
             hwreg.setBit(STAT, 1);
-        } else if (scanDot < MODE0_CYCLES_MAX) {
-            // Assume maximum cycles spend in HBlank
+        } else if (scanDot < MODE0_END_MAX) {
+            // Mode 0 (HBlank)
+            // For simplicity, assume maximum cycles spend in HBlank
             hwreg.resetBit(STAT, 0);
             hwreg.resetBit(STAT, 1);
         }
