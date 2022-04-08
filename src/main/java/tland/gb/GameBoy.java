@@ -26,12 +26,16 @@ public class GameBoy {
     public GameBoy(CartridgeROM rom) {
         debuggerEnabled = true;
         this.rom = rom;
+
+        pc = new ProgramCounter((short) 0x100);
+        sp = new StackPointer(this, (short) 0xfffe);
+
+        interrupts = new InterruptHandler(pc, sp);
+
+        cpu = new CPU(this, interrupts);
         reg = new Registers(this);
         hwReg = new HardwareRegisters();
-        interrupts = new InterruptHandler(hwReg);
-        cpu = new CPU(this, interrupts);
         memoryMap = new MemoryMap(rom, hwReg);
-        sp = new StackPointer(this, (short) 0xfffe);
         init();
     }
 

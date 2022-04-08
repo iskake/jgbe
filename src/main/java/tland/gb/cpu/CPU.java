@@ -19,12 +19,14 @@ public class CPU {
      */
     public void step() {
         short oldPC = gb.pc.get();
+        boolean ime_wait = interrupts.waiting();
 
-        if (interrupts.waiting()) {
-            // TODO
-        }
         byte opcode = gb.readNextByte();
         Opcodes.getOpcode(opcode).doOp(gb, Byte.toUnsignedInt(opcode));
+
+        if (ime_wait) {
+            interrupts.enable(false);
+        }
 
         short newPC = gb.pc.get();
 
