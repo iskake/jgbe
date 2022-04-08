@@ -27,7 +27,7 @@ public class HardwareRegisters {
         TAC  (0xff07), // TODO (requires timers)
 
         /** Interrupt flag */
-        IF   (0xff0f), // TODO (requires interrupts)
+        IF   (0xff0f),
 
         /* Sound control */
         NR10 (0xff10), //? Requires audio
@@ -99,7 +99,7 @@ public class HardwareRegisters {
         SVBK (0xff70), //? CGB only
 
         /** Interrupt enable */
-        IE   (0xffff); // TODO (requires interrupts)
+        IE   (0xffff);
 
         public final int val;
 
@@ -244,5 +244,50 @@ public class HardwareRegisters {
             return false;
         }
         return writeRegister(hwreg, readRegister(hwreg) + 1);
+    }
+
+    /**
+     * Set the bit in the specified register.
+     * 
+     * @param hwreg The register to set.
+     * @param bit   The bit to set.
+     * @return {@code true} if the write was successful, {@code false} otherwise.
+     */
+    public boolean setBit(HardwareRegisterIndex hwreg, int bit) {
+        if (hwreg == null) {
+            return false;
+        }
+        return writeRegister(hwreg, Bitwise.setBit(readRegister(hwreg), bit));
+    }
+
+    /**
+     * Reset the bit in the specified register.
+     * 
+     * @param hwreg The register to reset.
+     * @param bit   The bit to reset.
+     * @return {@code true} if the write was successful, {@code false} otherwise.
+     */
+    public boolean resetBit(HardwareRegisterIndex hwreg, int bit) {
+        if (hwreg == null) {
+            return false;
+        }
+        return writeRegister(hwreg, Bitwise.clearBit(readRegister(hwreg), bit));
+    }
+
+
+    /**
+     * Set the bit in the specified register.
+     * 
+     * @param hwreg   The register to set/reset.
+     * @param bit     The bit to set
+     * @param boolean Condition to set bit to.
+     * @return {@code true} if the write was successful, {@code false} otherwise.
+     */
+    public boolean setBitConditional(HardwareRegisterIndex hwreg, int bit, boolean condition) {
+        if (condition) {
+            return setBit(hwreg, bit);
+        } else {
+            return resetBit(hwreg, bit);
+        }
     }
 }
