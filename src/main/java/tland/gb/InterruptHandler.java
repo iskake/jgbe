@@ -1,6 +1,7 @@
 package tland.gb;
 
 import tland.Bitwise;
+import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
 
 public class InterruptHandler {
 
@@ -8,10 +9,12 @@ public class InterruptHandler {
     private boolean waitIME = false;
     private final ProgramCounter pc;
     private final StackPointer sp;
+    private final HardwareRegisters hwreg;
 
-    public InterruptHandler(ProgramCounter pc, StackPointer sp) {
+    public InterruptHandler(ProgramCounter pc, StackPointer sp, HardwareRegisters hwreg) {
         this.pc = pc;
         this.sp = sp;
+        this.hwreg = hwreg;
     }
 
     /**
@@ -63,6 +66,15 @@ public class InterruptHandler {
      * @param address The address to call.
      */
     private void callInterrupt(int address) {
+        // System.out.println("Attempting vblank");
+        if (!enabled()) {
+            return;
+        } else {
+            if (!((hwreg.readRegister(IE) & 1) == 1) || !((hwreg.readRegister(IF) & 1) == 1)) {
+                return;
+            }
+        }
+        // System.out.println("vblank start!");
         disable();
         sp.push(pc.get());
         pc.set(Bitwise.toShort(address));

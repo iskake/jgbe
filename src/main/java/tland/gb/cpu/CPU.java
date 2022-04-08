@@ -43,7 +43,7 @@ public class CPU {
      */
     public void printNextInstruction() {
         short address = gb.pc.get();
-        byte opcode = gb.readMemoryAddress(address);
+        byte opcode = gb.readMemoryNoCycle(address);
         System.out.printf("%02x -> %s\n", opcode, getInstructionName(address));
     }
 
@@ -55,12 +55,12 @@ public class CPU {
      * @return The name of the instruction.
      */
     public String getInstructionName(short address) {
-        byte opcode = gb.readMemoryAddress(address);
+        byte opcode = gb.readMemoryNoCycle(address);
 
         String opcodeName;
 
         if (Opcodes.getOpcode(opcode) instanceof Prefixed o) {
-            opcode = gb.readMemoryAddress(Bitwise.toShort(address + 1));
+            opcode = gb.readMemoryNoCycle(Bitwise.toShort(address + 1));
             opcodeName = o.getPrefixedName(Byte.toUnsignedInt(opcode));
         } else {
             opcodeName = Opcodes.getOpcode(opcode).getName();
@@ -70,8 +70,8 @@ public class CPU {
         opcodeName = opcodeName.replace("_N16", "%2$02x%1$02x");
 
         byte[] operands = {
-                gb.readMemoryAddress(Bitwise.toShort(address + 1)),
-                gb.readMemoryAddress(Bitwise.toShort(address + 2))
+                gb.readMemoryNoCycle(Bitwise.toShort(address + 1)),
+                gb.readMemoryNoCycle(Bitwise.toShort(address + 2))
         };
 
         return String.format(opcodeName, operands[0], operands[1]);

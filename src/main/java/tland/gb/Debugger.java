@@ -68,6 +68,7 @@ public class Debugger {
      */
     private void printCPUInfo() {
         gb.reg.printRegisters();
+        System.out.println("Cycles: " + gb.timing.getCycles());
         cpu.printNextInstruction();
     }
 
@@ -132,7 +133,7 @@ public class Debugger {
      * is executed), then the debugger will stop stepping over.
      */
     private void stepOver() {
-        byte opcode = gb.readMemoryAddress(gb.pc.get());
+        byte opcode = gb.readMemoryNoCycle(gb.pc.get());
         String name = Opcodes.getOpcode(opcode).getName();
         cpu.step();
         if (name.startsWith("call") || name.startsWith("rst")) {
@@ -141,7 +142,7 @@ public class Debugger {
                     break;
                 }
 
-                opcode = gb.readMemoryAddress(gb.pc.get());
+                opcode = gb.readMemoryNoCycle(gb.pc.get());
                 name = Opcodes.getOpcode(opcode).getName();
 
                 if (name.startsWith("ret")) {
@@ -168,8 +169,8 @@ public class Debugger {
 
         boolean run = true;
         while (run) {
+            run = !checkBreakpointHit();
             if (run) {
-                run = !checkBreakpointHit();
                 cpu.step();
                 if (print) {
                     printCPUInfo();

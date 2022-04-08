@@ -14,6 +14,7 @@ public class GameBoy {
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
+    public final Timing timing;
 
     private final CartridgeROM rom;
     private final CPU cpu;
@@ -27,15 +28,16 @@ public class GameBoy {
         debuggerEnabled = true;
         this.rom = rom;
 
-        pc = new ProgramCounter((short) 0x100);
+        pc = new ProgramCounter(this, (short) 0x100);
         sp = new StackPointer(this, (short) 0xfffe);
 
-        interrupts = new InterruptHandler(pc, sp);
-
-        cpu = new CPU(this, interrupts);
         reg = new Registers(this);
         hwReg = new HardwareRegisters();
         memoryMap = new MemoryMap(rom, hwReg);
+
+        interrupts = new InterruptHandler(pc, sp, hwReg);
+        cpu = new CPU(this, interrupts);
+        timing = new Timing(this, hwReg, interrupts);
         init();
     }
 
@@ -54,7 +56,7 @@ public class GameBoy {
         reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
         reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
 
-        pc.set((short) 0x100);
+        pc.init();
         sp.set((short) 0xfffe);
         memoryMap.init();
         hwReg.init();
@@ -82,6 +84,7 @@ public class GameBoy {
     }
 
     public byte readNextByte() {
+        timing.incCycles();
         return memoryMap.readByte(pc.postIncrement());
     }
 
@@ -92,10 +95,16 @@ public class GameBoy {
     }
 
     public void writeMemoryAddress(short address, byte value) {
+        timing.incCycles();
         memoryMap.writeByte(address, value);
     }
 
+    public byte readMemoryNoCycle(short address) {
+        return memoryMap.readByte(address);
+    }
+
     public byte readMemoryAddress(short address) {
+        timing.incCycles();
         return memoryMap.readByte(address);
     }
 

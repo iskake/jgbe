@@ -2,14 +2,26 @@ package tland.gb;
 
 public class ProgramCounter {
     private short pc;
+    private final short initialValue;
+    private final GameBoy gb;
 
     /**
      * Stack pointer, simple pointer to a memory address.
      * 
      * @param address The address to start the program counter at.
      */
-    public ProgramCounter(short address) {
+    public ProgramCounter(GameBoy gb, short address) {
         pc = address;
+        initialValue = address;
+        this.gb = gb;
+    }
+
+    /**
+     * Initialize the program counter by setting the initial value specified in the
+     * constructor.
+     */
+    public void init() {
+        pc = initialValue;
     }
 
     /**
@@ -26,9 +38,23 @@ public class ProgramCounter {
     /**
      * Set the program counter to point at the specified address.
      * <p>
-     * Used for jump instructions.
+     * Used for jump instructions. (NOT {@code jp hl})
+     * 
+     * @param address The address to set the program counter to.
      */
     public void set(short address) {
+        gb.timing.incCycles();
+        pc = address;
+    }
+
+    /**
+     * Set the program counter to point at the specified address.
+     * <p>
+     * Used for jump instructions. ({@code jp hl})
+     * 
+     * @param address The address to set the program counter to.
+     */
+    public void setNoCycle(short address) {
         pc = address;
     }
 
