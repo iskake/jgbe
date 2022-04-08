@@ -24,7 +24,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         VRAM = new VRAM(0x2000, hwreg);
         WRAM1 = new RAM(0x1000);
         WRAM2 = new RAM(0x1000);
-        OAM = new RAM(40 * 4);
+        OAM = new OAM(40 * 4, hwreg);
         IO = new HardwareRegisterMap(hwreg);
         HRAM = new RAM(0x200);
 
@@ -88,12 +88,18 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             // d000-dfff = 1000
             fixedAddress -= 0xd000;
             return WRAM2;
-        } else if (address < 0xFE00) {
-            // e000-fdff = 1e00
+        } else if (address < 0xF000) {
+            // e000-f000 = 1000
             // (Mirror of c000-ddff)
             // System.out.println("Accessing ECHO RAM.");
             fixedAddress -= 0xe000;
             return WRAM1;
+        } else if (address < 0xFE00) {
+            // e000-fdff = e00
+            // (Mirror of c000-ddff)
+            // System.out.println("Accessing ECHO RAM.");
+            fixedAddress -= 0xf000;
+            return WRAM2;
         } else if (address < 0xFEA0) {
             // fe00-fe9f = a0
             fixedAddress -= 0xfe00;
