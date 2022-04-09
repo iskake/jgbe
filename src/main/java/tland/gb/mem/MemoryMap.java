@@ -4,7 +4,10 @@ import tland.Bitwise;
 import tland.gb.HardwareRegisters;
 
 /**
- * Game boy memory map.
+ * Memory map of the Game boy.
+ * <p>
+ * The memory map contains the current addressable memory, with a range of
+ * $0000-$ffff ($10000 bytes)
  */
 public class MemoryMap implements WritableMemory, ReadableMemory {
     private final CartridgeROM rom;
@@ -13,7 +16,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     private RAM WRAM1;
     private RAM WRAM2;
     private RAM OAM;
-    private RAM prohibited;
+    private ProhibitedMemory prohibited;
     private HardwareRegisterMap IO;
     private RAM HRAM;
 
@@ -26,6 +29,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         WRAM2 = new RAM(0x1000);
         OAM = new OAM(40 * 4, hwreg);
         IO = new HardwareRegisterMap(hwreg);
+        prohibited = new ProhibitedMemory(hwreg);
         HRAM = new RAM(0x200);
 
         init();
@@ -106,8 +110,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             return OAM;
         } else if (address < 0xFF00) {
             // fea0-feff = 60
-            // ('prohibited access')
-            fixedAddress -= 0xfea0;
+            // ('Not usable/prohibited' memory)
             return prohibited;
         } else if (address < 0xFF80 || address == 0xFFFF) {
             // ff00-ff7f = 80
