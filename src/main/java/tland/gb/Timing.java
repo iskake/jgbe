@@ -2,6 +2,8 @@ package tland.gb;
 
 import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
 
+import tland.gb.InterruptHandler.InterruptType;
+
 /**
  * Timing, incrementing and handling of clock cycles.
  */
@@ -68,11 +70,11 @@ public class Timing {
 
     private void handleVideo(long cycle) {
         // VBlank
-        if ((cycle % SCANLINE_CYCLES) == 0) {
+        if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
             hwreg.incRegister(LY);
             int ly_val = hwreg.readRegisterInt(LY);
             if (ly_val == 0x90) {
-                interrupts.VBlankInterrupt();
+                interrupts.setWaitingToCall(InterruptType.VBLANK);
             } else if (ly_val > 0x99) {
                 hwreg.writeRegister(LY, 0);
             }
