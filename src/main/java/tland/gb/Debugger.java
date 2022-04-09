@@ -71,7 +71,8 @@ public class Debugger {
      */
     private void printCPUInfo() {
         gb.reg.printRegisters();
-        System.out.println("Mode: " + (hwreg.readRegister(HardwareRegisterIndex.STAT) & 0b11));
+        System.out.println("Mode: " + (hwreg.readRegister(HardwareRegisterIndex.STAT) & 0b11)
+                + " LY: " + hwreg.readRegisterInt(HardwareRegisterIndex.LY));
         System.out.println("Cycles: " + gb.timing.getCycles());
         cpu.printNextInstruction();
     }

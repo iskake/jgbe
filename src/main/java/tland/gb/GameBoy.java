@@ -14,7 +14,7 @@ public class GameBoy {
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
-    public final Timing timing;
+    public final Timing timing; // TODO: fix having to pass GameBoy to constructors just to have access to timing?
 
     private final CartridgeROM rom;
     private final CPU cpu;
@@ -35,7 +35,7 @@ public class GameBoy {
         hwreg = new HardwareRegisters();
         memoryMap = new MemoryMap(rom, hwreg);
 
-        interrupts = new InterruptHandler(pc, sp, hwreg);
+        interrupts = new InterruptHandler(this, hwreg);
         cpu = new CPU(this, interrupts);
         timing = new Timing(this, hwreg, interrupts);
         init();
