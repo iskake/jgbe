@@ -57,6 +57,7 @@ public class Debugger {
                 case "s", "step" -> stepInto();
                 case "n", "next" -> stepOver();
                 case "b", "break" -> handleBreakpoints(input);
+                case "d", "delete" -> handleBreakpointDeletion(input);
                 case "x" -> examine(input);
                 case "p", "print" -> enablePrinting();
                 case "reg" -> printCPUInfo();
@@ -78,6 +79,21 @@ public class Debugger {
     }
 
     /**
+     * Decode an integer from a string, optionally starting with $ or %.
+     * 
+     * @param str The string to decode the integer from.
+     * @return The decoded integer.
+     */
+    private int decodeInt(String str) {
+        if (str.charAt(0) == '$') {
+            str = str.replace("$", "0x");
+        } else if (str.charAt(0) == '%') {
+            str = str.replace("%", "0b");
+        }
+        return Integer.decode(str);
+    }
+
+    /**
      * Breakpoint handling. Handles creation of new breakpoints and
      * 
      * @param in The input to read the address from.
@@ -93,15 +109,38 @@ public class Debugger {
             return;
         }
         try {
-            if (in[1].charAt(0) == '$') {
-                in[1] = in[1].replace("$", "0x");
-            } else if (in[1].charAt(0) == '%') {
-                in[1] = in[1].replace("%", "0b");
-            }
-            breakPoints.add(Integer.decode(in[1]));
+            breakPoints.add(decodeInt(in[1]));
             System.out.printf("Set breakpoint at $%04x\n", breakPoints.get(breakPoints.size() - 1));
-        } catch (Exception e) {
-            System.err.println("Invalid syntax. Usage: `b [ |$|0x|%|0b]{MEM_ADDR} `");
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid syntax. Usage: `b [ |$|0x|%|0b]{MEM_ADDR}`");
+        }
+    }
+
+    /**
+     * Handle deletion of breakpoints.
+     * 
+     * @param in The input to read the address from.
+     */
+    private void handleBreakpointDeletion(String[] in) {
+        if (in.length == 1) {
+            try {
+                int b = breakPoints.get(0);
+                breakPoints.remove(0);
+                System.out.printf("Deleted breakpoint at: $%04x\n", b);
+                return;
+            } catch (Exception e) {
+                System.err.println("No breakpoints are defined. (use `b` to list brekpoints.)");
+                return;
+            }
+        }
+        try {
+            int b = decodeInt(in[1]);
+            breakPoints.remove(breakPoints.indexOf(b));
+            System.out.printf("Deleted breakpoint at: $%04x\n", b);
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("No such breakpoint defined. (use `b` to list brekpoints.)");
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid syntax. Usage: `d [ |$|0x|%|0b]{MEM_ADDR}`");
         }
     }
 
