@@ -14,7 +14,7 @@ public class GameBoy {
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
-    public final Timing timing; // TODO: fix having to pass GameBoy to constructors just to have access to timing?
+    public final Timing timing; // TODO: fix having to pass GameBoy to constructors just to access timing?
 
     private final CartridgeROM rom;
     private final CPU cpu;
@@ -42,7 +42,9 @@ public class GameBoy {
     }
 
     /**
-     * Initialize the Game Boy
+     * Initialize the Game Boy.
+     * This method should be used in the constructor and when the Game Boy is reset
+     * ('powered on').
      */
     private void init() {
         // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
@@ -60,6 +62,24 @@ public class GameBoy {
         sp.set((short) 0xfffe);
         memoryMap.init();
         hwreg.init();
+        timing.init();
+
+        if (!ROMHeader.validLogo(rom.getROMBank0())) {
+            System.out.println("Invalid logo.");
+            // stopRunning();
+        }
+
+        if (!ROMHeader.validHeaderChecksum(rom.getROMBank0())) {
+            System.out.println("Invalid checksum.");
+            // stopRunning();
+        }
+    }
+
+    /**
+     * (Hard) restart the Game Boy.
+     */
+    public void restart() {
+        init();
     }
 
     public void enableDebugger() {
