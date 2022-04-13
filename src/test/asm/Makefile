@@ -12,6 +12,7 @@ GB := test_alu.gb\
 	test_cpl_daa.gb\
 	test_stop.gb\
 	test_sp.gb\
+	test_tile.gb\
 	test_interrupts.gb
 	
 	
