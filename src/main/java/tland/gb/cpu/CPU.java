@@ -36,7 +36,7 @@ public class CPU {
         short newPC = gb.pc.get();
 
         // Temp.
-        if (oldPC == newPC) {
+        if (oldPC == newPC && !interrupts.enabled()) {
             gb.printHRAM();
             System.out.println("\nInfinite loop! Exiting.");
             System.exit(0);
