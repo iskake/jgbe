@@ -32,6 +32,14 @@ public class Timing {
         this.gb = gb;
         this.hwreg = hwreg;
         this.interrupts = interrupts;
+        init();
+    }
+
+    /**
+     * Initialise timer. 
+     * Sets cycles to 0.
+     */
+    public void init() {
         cycles = 0;
     }
 
