@@ -47,7 +47,7 @@ public class GameBoyTest {
     }
 
     byte readMem(short address) {
-        return gb.readMemoryAddress(address);
+        return gb.readMemoryNoCycle(address);
     }
 
     void writeMem(short address, byte value) {
@@ -106,38 +106,5 @@ public class GameBoyTest {
         assertEquals((byte) 0, reg.readRegisterByte(F));
     }
 
-    @Test
-    void LDInstructionTest() {
-        // ld h, $93
-        writeMem((short) 0xc100, (byte) 0x93);
-        gb.setPC((short) 0xc100);
-        loadOpcode(0x26);
-        assertEquals((byte) 0x93, readMem((short) 0xc100));
-        assertEquals((byte) 0x93, reg.readRegisterByte(H));
-
-        // ld a, b
-        reg.writeRegisterByte(B, 0x36);
-        loadOpcode(0x78);
-        assertEquals(reg.readRegisterByte(B), reg.readRegisterByte(A));
-        assertEquals(0x36, reg.readRegisterByte(A));
-
-        // ld b, [hl]
-        gb.writeMemoryAddress((short) 0xc000, (byte) 0x45);
-        reg.writeRegisterShort(HL, 0xc000);
-        loadOpcode(0x46);
-        assertEquals(readMem((short) 0xc000), reg.readRegisterByte(B));
-
-        // ld de, $0xaf6e
-        gb.setPC((short) 0xc100);
-        writeMem((short) 0xc100, (byte) 0x6e);
-        writeMem((short) 0xc101, (byte) 0xaf);
-        loadOpcode(0x11);
-        assertEquals((short) 0xaf6e, reg.readRegisterShort(DE));
-
-        // ld a, [bc]
-        writeMem((short) 0xc100, (byte) 0xb4);
-        reg.writeRegisterShort(BC, (short) 0xc100);
-        loadOpcode(0x0a);
-        assertEquals((byte) 0xb4, reg.readRegisterByte(A));
-    }
+    // TODO: rewrite / add asm tests
 }
