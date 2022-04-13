@@ -3,7 +3,14 @@ package tland.gb.cpu;
 import tland.gb.Registers.RegisterIndex;
 import tland.gb.cpu.Inst.*;
 
+/**
+ * Class for getting opcodes.
+ */
 public class Opcodes {
+    /** 
+     * Array containing every (non-prefixed) opcode, with each index of the array
+     * being the corresponding opcode.
+     */
     private final static Instruction[] opcodes = {
 /* 0x00 */ new NOP(),
 
@@ -377,12 +384,23 @@ public class Opcodes {
 /* 0xff */ new RST_vec("rst $38"),
     };
 
+    /**
+     * Get the opcode with the corresponding value.
+     * 
+     * @param index The index (value) of the opcode in the table.
+     * @return The opcode at the index.
+     */
     public static Instruction getOpcode(byte index) {
         int i = Byte.toUnsignedInt(index);
         return opcodes[i];
     }
 
-
+    /**
+     * Get the opcode with the corresponding value.
+     * 
+     * @param index The index (value) of the opcode in the table.
+     * @return The opcode at the index.
+     */
     public static Instruction getOpcode(int index) {
         return opcodes[index];
     }
