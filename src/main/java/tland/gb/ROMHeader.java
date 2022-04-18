@@ -11,7 +11,10 @@ import tland.gb.mem.ROMBank;
  * The header is stored in Bank 0 at the address range $0100-$014f.
  */
 public class ROMHeader {
-    /** Encoded Nintendo logo data. */
+    /**
+     * Compressed Nintendo logo data.
+     * Each tile of the logo is stored in 2 bytes, as opposed to 16 bytes.
+     */
     private final static byte[] logo = {
             (byte) 0xCE, (byte) 0xED, (byte) 0x66, (byte) 0x66, (byte) 0xCC, (byte) 0x0D, (byte) 0x00, (byte) 0x0B,
             (byte) 0x03, (byte) 0x73, (byte) 0x00, (byte) 0x83, (byte) 0x00, (byte) 0x0C, (byte) 0x00, (byte) 0x0D,
@@ -21,6 +24,9 @@ public class ROMHeader {
             (byte) 0xDD, (byte) 0xDC, (byte) 0x99, (byte) 0x9F, (byte) 0xBB, (byte) 0xB9, (byte) 0x33, (byte) 0x3E,
     };
 
+    /**
+     * Rom header data, specified in the constructor.
+     */
     private byte[] data;
 
     public ROMHeader(byte[] data) {
@@ -164,6 +170,9 @@ public class ROMHeader {
      * @return {@code true} if the bytes match, {@code false} otherwise.
      */
     public static boolean validLogo(byte[] logoData) {
+        if (logoData == null)
+            return false;
+
         for (int i = 0; i < logo.length; i++) {
             if (logoData[i] != logo[i]) {
                 return false;
@@ -179,6 +188,9 @@ public class ROMHeader {
      * @return {@code true} if the bytes match, {@code false} otherwise.
      */
     public static boolean validLogo(ROMBank bank) {
+        if (bank == null)
+            return false;
+
         byte[] logoData = Arrays.copyOfRange(bank.bytes(), 0x104, 0x134);
         return validLogo(logoData);
     }
@@ -190,6 +202,9 @@ public class ROMHeader {
      * @return {@code true} if the checksum matches, {@code false} otherwise.
      */
     public static boolean validHeaderChecksum(byte[] headerData) {
+        if (headerData == null)
+            return false;
+
         int x = 0;
         int i = 0x34;
         while (i <= 0x4c) {
@@ -206,6 +221,9 @@ public class ROMHeader {
      * @return {@code true} if the checksum matches, {@code false} otherwise.
      */
     public static boolean validHeaderChecksum(ROMBank bank) {
+        if (bank == null)
+            return false;
+
         return validHeaderChecksum(Arrays.copyOfRange(bank.bytes(), 0x100, 0x150));
     }
 }
