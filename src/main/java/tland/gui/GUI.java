@@ -27,6 +27,9 @@ public class GUI {
     private JFrame frame;
     private CartridgeROM rom;
 
+    private GameBoy gb;
+    private Thread gbThread;
+
     public GUI() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -65,7 +68,17 @@ public class GUI {
             }
         });
 
+        JMenuItem stop = new JMenuItem("Stop (temp)");
+
+        stop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent a) {
+                stopGBThread();
+            }
+        });
+
         fileMenu.add(openRom);
+        fileMenu.add(stop);
 
         return fileMenu;
     }
@@ -81,6 +94,11 @@ public class GUI {
         createMenuBar();
     }
 
+    /**
+     * Load a new ROM file, by creating a new GameBoy thread.
+     * 
+     * @param pathString the path of the ROM file (as a string).
+     */
     private void loadROM(String pathString) {
         System.out.println(pathString);
         Path path = Paths.get(pathString);
@@ -97,11 +115,21 @@ public class GUI {
             return;
         }
         rom = new CartridgeROM(romFile);
-        GameBoy gb = new GameBoy(rom);
+        gb = new GameBoy(rom);
 
         gb.enableDebugger();
 
-        gb.run();
+        gbThread = new Thread(gb);
+        gbThread.start();
+    }
 
+    /**
+     * 'Stop' the active GameBoy thread.
+     */
+    private void stopGBThread() {
+        if (gb != null && gbThread.isAlive()) {
+            gb.stopRunning();
+            gbThread.interrupt();
+        }
     }
 }
