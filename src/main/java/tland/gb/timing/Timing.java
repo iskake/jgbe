@@ -1,7 +1,10 @@
-package tland.gb;
+package tland.gb.timing;
 
 import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
 
+import tland.gb.GameBoy;
+import tland.gb.HardwareRegisters;
+import tland.gb.InterruptHandler;
 import tland.gb.InterruptHandler.InterruptType;
 
 /**
