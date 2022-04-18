@@ -43,9 +43,7 @@ public class GUI {
         frame.setSize(160 * 3, 144 * 3);
     }
 
-    public void showGUI() {
-        final JMenuBar menuBar = new JMenuBar();
-
+    private JMenu createFileMenu() {
         JMenu fileMenu = new JMenu("File");
         JMenuItem openRom = new JMenuItem("Open ROM");
 
@@ -68,8 +66,19 @@ public class GUI {
         });
 
         fileMenu.add(openRom);
+
+        return fileMenu;
+    }
+
+    private void createMenuBar() {
+        final JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = createFileMenu();
         menuBar.add(fileMenu);
         frame.setJMenuBar(menuBar);
+    }
+
+    public void showGUI() {
+        createMenuBar();
     }
 
     private void loadROM(String pathString) {
