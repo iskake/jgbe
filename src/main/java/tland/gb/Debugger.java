@@ -152,7 +152,6 @@ public class Debugger {
      */
     private void stepInto() {
         cpu.step();
-        printCPUInfo();
     }
 
     /**
@@ -204,7 +203,6 @@ public class Debugger {
                 }
             }
         }
-        printCPUInfo();
     }
 
     /**
@@ -223,7 +221,6 @@ public class Debugger {
                 }
             }
         }
-        printCPUInfo();
     }
 
     /**
