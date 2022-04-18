@@ -23,6 +23,7 @@ public class GameBoy implements Runnable {
     private final InterruptHandler interrupts;
 
     private boolean debuggerEnabled;
+    private boolean running;
 
     public GameBoy(CartridgeROM rom) {
         debuggerEnabled = true;
@@ -65,14 +66,23 @@ public class GameBoy implements Runnable {
         timing.init();
 
         if (!ROMHeader.validLogo(rom.getROMBank0())) {
-            System.out.println("Invalid logo.");
-            // stopRunning();
-        }
+        running = true;
+    }
 
-        if (!ROMHeader.validHeaderChecksum(rom.getROMBank0())) {
-            System.out.println("Invalid checksum.");
-            // stopRunning();
-        }
+    /**
+     * Stop execution.
+     */
+    public void stopRunning() {
+        running = false;
+    }
+
+    /**
+     * Check if the Game Boy is running.
+     * 
+     * @return {@code true} if the Game Boy is running, {@code false} otherwise.
+     */
+    public boolean isRunning() {
+        return running;
     }
 
     /**
@@ -95,7 +105,7 @@ public class GameBoy implements Runnable {
      */
     @Override
     public void run() {
-        while (true) {
+        while (running) {
             if (!debuggerEnabled)
                 cpu.step();
             else
