@@ -22,6 +22,7 @@ public class GameBoy implements Runnable {
     private final MemoryMap memoryMap;
     private final InterruptHandler interrupts;
 
+    private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
 
@@ -66,6 +67,8 @@ public class GameBoy implements Runnable {
         timing.init();
 
         if (!ROMHeader.validLogo(rom.getROMBank0())) {
+
+        dbg = new Debugger(this, cpu, hwreg);
         running = true;
     }
 
@@ -109,7 +112,7 @@ public class GameBoy implements Runnable {
             if (!debuggerEnabled)
                 cpu.step();
             else
-                new Debugger(this, cpu, hwreg).run();
+                dbg.step();
         }
     }
 

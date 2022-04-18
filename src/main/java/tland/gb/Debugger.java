@@ -18,7 +18,6 @@ public class Debugger {
     private final HardwareRegisters hwreg;
 
     private Scanner sc;
-    private boolean running;
     private String[] input;
     private String[] lastInput = { "c" };
     private ArrayList<Integer> breakPoints;
@@ -30,41 +29,44 @@ public class Debugger {
         this.hwreg = hwreg;
 
         sc = new Scanner(System.in);
-        running = true;
         breakPoints = new ArrayList<>();
         print = false;
     }
 
     /**
-     * Run the debugger.
+     * Step the debugger. This method should be invoked in the GameBoy.run() method.
+     * 
+     * @see GameBoy#run()
+     * @see CPU#step()
      */
-    public void run() {
+    public void step() {
         printCPUInfo();
 
-        while (running) {
-            System.out.print("> ");
-            input = sc.nextLine().split(" ");
+        System.out.print("> ");
+        input = sc.nextLine().split(" ");
 
-            if (input[0].length() == 0) {
-                input = lastInput;
-            } else {
-                lastInput = input;
-            }
-
-            switch (input[0]) {
-                case "q", "quit", "exit" -> running = false;
-                case "c", "continue" -> continueRunning();
-                case "s", "step" -> stepInto();
-                case "n", "next" -> stepOver();
-                case "b", "break" -> handleBreakpoints(input);
-                case "d", "delete" -> handleBreakpointDeletion(input);
-                case "x" -> examine(input);
-                case "p", "print" -> enablePrinting();
-                case "reg" -> printCPUInfo();
-                default -> System.err.println("Unknown command: " + input[0]);
-            }
+        if (!gb.isRunning()) {
+            return;
         }
-        sc.close();
+
+        if (input[0].length() == 0) {
+            input = lastInput;
+        } else {
+            lastInput = input;
+        }
+
+        switch (input[0]) {
+            case "q", "quit", "exit" -> gb.stopRunning();
+            case "c", "continue" -> continueRunning();
+            case "s", "step" -> stepInto();
+            case "n", "next" -> stepOver();
+            case "b", "break" -> handleBreakpoints(input);
+            case "d", "delete" -> handleBreakpointDeletion(input);
+            case "x" -> examine(input);
+            case "p", "print" -> enablePrinting();
+            case "reg" -> printCPUInfo();
+            default -> System.err.println("Unknown command: " + input[0]);
+        }
     }
 
     /**
