@@ -9,6 +9,9 @@ public class CPU {
     private final GameBoy gb;
     private final InterruptHandler interrupts;
 
+    /** The CPU clock speed, measured in Hz. */
+    public static final int CLOCK_SPEED = 0x400000;
+
     public CPU(GameBoy gameBoy, InterruptHandler interrupts) {
         this.gb = gameBoy;
         this.interrupts = interrupts;
