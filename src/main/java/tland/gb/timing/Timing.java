@@ -39,7 +39,7 @@ public class Timing {
     }
 
     /**
-     * Initialise timer. 
+     * Initialise timer.
      * Sets cycles to 0.
      */
     public void init() {
@@ -65,18 +65,37 @@ public class Timing {
     }
 
     /**
-     * Handle clock cycle increases. 
+     * Handle clock cycle increases.
      * Should be ran after incrementing clock cycles.
      * 
      * @param oldCycles The clock cycles from before the incrementing.
      */
     private void handleCycles(long oldCycles) {
         for (long cycle = oldCycles; cycle < cycles; cycle++) {
+            handleTimers(cycle);
             handleVideo(cycle);
         }
+    }
 
+    private void handleTimers(long cycle) {
+        if (cycle == 0) {
+            return;
+        }
 
-        // 
+        if (cycle % Timers.DIV_CLOCK == 0) {
+            hwreg.incRegister(DIV);
+        }
+
+        if (Timers.isTIMAEnabled(hwreg)) {
+            if (cycle % Timers.getTACFrequency(hwreg) == 0) {
+                hwreg.incRegister(TIMA);
+
+                if (hwreg.readRegisterInt(TIMA) == 0) {
+                    hwreg.writeRegister(TIMA, hwreg.readRegister(TMA)); // ? check TIM write when TIMA overflow
+                    interrupts.setWaitingToCall(InterruptType.TIMER);
+                }
+            }
+        }
     }
 
     private void handleVideo(long cycle) {

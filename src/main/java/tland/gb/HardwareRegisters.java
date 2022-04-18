@@ -18,13 +18,13 @@ public class HardwareRegisters {
         SC   (0xff02), //?
 
         /** Divider register */
-        DIV  (0xff04), // TODO (requires timers)
+        DIV  (0xff04),
         /** Timer counter */
-        TIMA (0xff05), // TODO (requires timers)
+        TIMA (0xff05),
         /** Timer Modulo */
-        TMA  (0xff06), // TODO (requires timers)
+        TMA  (0xff06),
         /** Timer control */
-        TAC  (0xff07), // TODO (requires timers)
+        TAC  (0xff07),
 
         /** Interrupt flag */
         IF   (0xff0f),
