@@ -10,7 +10,7 @@ import tland.gb.mem.MemoryMap;
 /**
  * Represents a Game Boy (model 'DMG')
  */
-public class GameBoy {
+public class GameBoy implements Runnable {
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
@@ -90,6 +90,10 @@ public class GameBoy {
         debuggerEnabled = false;
     }
 
+    /**
+     * Run the Game Boy
+     */
+    @Override
     public void run() {
         while (true) {
             if (!debuggerEnabled)
