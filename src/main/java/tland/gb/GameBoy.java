@@ -66,7 +66,26 @@ public class GameBoy implements Runnable {
         hwreg.init();
         timing.init();
 
-        if (!ROMHeader.validLogo(rom.getROMBank0())) {
+        boolean willStop = false;
+        try {
+            if (!ROMHeader.validLogo(rom.getROMBank0())) {
+                System.out.println("Invalid logo!");
+                willStop = true;
+            }
+            if (!ROMHeader.validHeaderChecksum(rom.getROMBank0())) {
+                System.out.println("Invalid checksum!");
+                willStop = true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println(e);
+            willStop = true;
+        }
+
+        if (willStop) {
+            System.out.println("The provided ROM file is invalid or corrupted.");
+            stopRunning();
+            return;
+        }
 
         dbg = new Debugger(this, cpu, hwreg);
         running = true;
