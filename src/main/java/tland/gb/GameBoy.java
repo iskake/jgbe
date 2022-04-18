@@ -61,7 +61,7 @@ public class GameBoy implements Runnable {
         reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
         reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
 
-        pc.init();
+        pc.init((short) 0x100);
         sp.set((short) 0xfffe);
         memoryMap.init();
         hwreg.init();
@@ -142,7 +142,7 @@ public class GameBoy implements Runnable {
 
     public byte readNextByte() {
         timing.incCycles();
-        return memoryMap.readByte(pc.postIncrement());
+        return memoryMap.readByte(pc.inc());
     }
 
     public short readNextShort() {
@@ -202,7 +202,7 @@ public class GameBoy implements Runnable {
      */
     public void stop() {
         // TODO
-        pc.postIncrement(); // stop ignores the next instruction, so
+        pc.inc(); // stop ignores the next instruction, so
 
     }
 

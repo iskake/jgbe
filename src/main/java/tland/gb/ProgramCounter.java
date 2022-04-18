@@ -1,18 +1,16 @@
 package tland.gb;
 
-public class ProgramCounter {
-    private short pc;
-    private final short initialValue;
+/**
+ * Program counter, a pointer to a memory address.
+ * <p>
+ * The program counter points to the memory address of the next instruction to
+ * be executed.
+ */
+public class ProgramCounter extends Pointer {
     private final GameBoy gb;
 
-    /**
-     * Stack pointer, simple pointer to a memory address.
-     * 
-     * @param address The address to start the program counter at.
-     */
     public ProgramCounter(GameBoy gb, short address) {
-        pc = address;
-        initialValue = address;
+        super(address);
         this.gb = gb;
     }
 
@@ -20,19 +18,8 @@ public class ProgramCounter {
      * Initialize the program counter by setting the initial value specified in the
      * constructor.
      */
-    public void init() {
-        pc = initialValue;
-    }
-
-    /**
-     * Get the memory address currently pointed to by the program counter.
-     * <p>
-     * Used for jump instructions.
-     * 
-     * @return The address of the program counter.
-     */
-    public short get() {
-        return pc;
+    public void init(short address) {
+        ptr = address;
     }
 
     /**
@@ -42,9 +29,10 @@ public class ProgramCounter {
      * 
      * @param address The address to set the program counter to.
      */
+    @Override
     public void set(short address) {
+        super.set(address);
         gb.timing.incCycles();
-        pc = address;
     }
 
     /**
@@ -55,18 +43,7 @@ public class ProgramCounter {
      * @param address The address to set the program counter to.
      */
     public void setNoCycle(short address) {
-        pc = address;
-    }
-
-    /**
-     * Get the current stack pointer and increment.
-     * <p>
-     * Equivalent to {@code pc++}
-     * 
-     * @return The stack pointer before incrementing.
-     */
-    public short postIncrement() {
-        return pc++;
+        super.set(address);
     }
 
 }

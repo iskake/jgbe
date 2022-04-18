@@ -11,45 +11,12 @@ import tland.Bitwise;
  * 'Popping' the stack pointer will return the short at the stack pointer and
  * decrement the stack pointer by 2.
  */
-public class StackPointer {
-    private short sp;
+public class StackPointer extends Pointer {
     private final GameBoy gb;
 
     public StackPointer(GameBoy gb, short address) {
+        super(address);
         this.gb = gb;
-        sp = address;
-    }
-
-    /**
-     * Get the memory address currently pointed to by the stack pointer.
-     * 
-     * @return The address of the stack pointer.
-     */
-    public short get() {
-        return sp;
-    }
-
-    /**
-     * Set the stack pointer to point at the the specified address.
-     * 
-     * @param address The address to set the stack pointer to.
-     */
-    public void set(short address) {
-        sp = address;
-    }
-
-    /**
-     * Decrement the stack pointer by one.
-     */
-    public void dec() {
-        sp--;
-    }
-
-    /**
-     * Increment the stack pointer by one.
-     */
-    public void inc() {
-        sp++;
     }
 
     /**
@@ -62,9 +29,9 @@ public class StackPointer {
      */
     public void push(short value) {
         dec();
-        gb.writeMemoryAddress(sp, Bitwise.getHighByte(value));
+        gb.writeMemoryAddress(ptr, Bitwise.getHighByte(value));
         dec();
-        gb.writeMemoryAddress(sp, Bitwise.getLowByte(value));
+        gb.writeMemoryAddress(ptr, Bitwise.getLowByte(value));
     }
 
     /**
@@ -76,9 +43,9 @@ public class StackPointer {
      * @return The value 'popped' off the stack.
      */
     public short pop() {
-        byte lo = gb.readMemoryAddress(sp);
+        byte lo = gb.readMemoryAddress(ptr);
         inc();
-        byte hi = gb.readMemoryAddress(sp);
+        byte hi = gb.readMemoryAddress(ptr);
         inc();
         return Bitwise.toShort(hi, lo);
     }
