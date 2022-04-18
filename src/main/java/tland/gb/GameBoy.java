@@ -6,6 +6,7 @@ import tland.gb.Registers.RegisterIndex;
 import tland.gb.cpu.CPU;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
+import tland.gb.timing.Timing;
 
 /**
  * Represents a Game Boy (model 'DMG')
