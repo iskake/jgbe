@@ -140,6 +140,18 @@ public class Bitwise {
     }
 
     /**
+     * Check if the desired bit in {@code value} is set to 1.
+     * 
+     * @param value  The value to check.
+     * @param bitNum Bit to check, from 0 to 31.
+     * @return {@code true} if bit is set, {@code false} otherwise.
+     */
+    public static boolean isBitSet(int value, int bitNum) {
+        int bit = (0b1 << bitNum);
+        return (value & bit) != 0;
+    }
+
+    /**
      * Swap the 4 higher and 4 lower bits in the specified byte.
      * 
      * @param value The byte to swap the bits of.
