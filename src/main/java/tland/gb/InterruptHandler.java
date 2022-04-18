@@ -79,13 +79,9 @@ public class InterruptHandler {
      * @param it The interrupt to set.
      */
     public void setWaitingToCall(InterruptType it) {
-        switch (it) {
-            case VBLANK -> waiting[0] = true;
-            case STAT -> waiting[1] = true;
-            case TIMER -> waiting[2] = true;
-            case SERIAL -> waiting[3] = true;
-            case JOYPAD -> waiting[4] = true;
-        }
+        int bit = it.ordinal();
+        waiting[bit] = true;
+        hwreg.setBit(IF, bit);
     }
 
     /**
@@ -95,17 +91,21 @@ public class InterruptHandler {
      */
     public boolean callWaiting() {
         if (waiting[0])
-            return VBlankInterrupt();
-        else if (waiting[1])
-            return STATInterrupt();
-        else if (waiting[2])
-            return timerInterrupt();
-        else if (waiting[3])
-            return serialInterrupt();
-        else if (waiting[4])
-            return joypadInterrupt();
-        else
-            return false;
+            if (VBlankInterrupt())
+                return true;
+        if (waiting[1])
+            if (STATInterrupt())
+                return true;
+        if (waiting[2])
+            if (timerInterrupt())
+                return true;
+        if (waiting[3])
+            if (serialInterrupt())
+                return true;
+        if (waiting[4])
+            if (joypadInterrupt())
+                return true;
+        return false;
     }
 
     /**
@@ -114,10 +114,12 @@ public class InterruptHandler {
      * @param address The address to call.
      */
     private boolean callInterrupt(int address, InterruptType it) {
+        int bit = it.ordinal();
+
         if (!enabled()) {
             return false;
         } else {
-            if (!((hwreg.readRegister(IE) & 1) == 1) || !((hwreg.readRegister(IF) & 1) == 1)) {
+            if (!(Bitwise.isBitSet(hwreg.readRegister(IE), bit)) || !(Bitwise.isBitSet(hwreg.readRegister(IF), bit))) {
                 return false;
             }
         }
@@ -127,13 +129,8 @@ public class InterruptHandler {
         sp.push(pc.get());
         pc.set(Bitwise.toShort(address));
 
-        switch (it) {
-            case VBLANK -> waiting[0] = false;
-            case STAT -> waiting[1] = false;
-            case TIMER -> waiting[2] = false;
-            case SERIAL -> waiting[3] = false;
-            case JOYPAD -> waiting[4] = false;
-        }
+        waiting[bit] = false;
+        hwreg.resetBit(IF, bit);
 
         return true;
     }
