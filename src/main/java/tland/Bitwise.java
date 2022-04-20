@@ -210,4 +210,23 @@ public class Bitwise {
         int val = Short.toUnsignedInt(value);
         return Integer.toBinaryString(val);
     }
+
+    /**
+     * Check if two byte arrays are equal.
+     * 
+     * @param a The first byte array.
+     * @param b The second byte array.
+     * @return {@code true} if the array elemetns match, {@code false} otherwise.
+     */
+    public static boolean byteArrayEquals(byte[] a, byte[] b) {
+        if (a.length != b.length) {
+            return false;
+        }
+        for (int i = 0; i < b.length; i++) {
+            if (a[i] != b[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
