@@ -10,7 +10,7 @@ import java.util.Random;
 public class RAM implements WritableMemory, ReadableMemory {
     public final int size;
     
-    private byte[] bytes;
+    protected byte[] bytes;
     private final Random rand;
 
     public RAM(int size) {
