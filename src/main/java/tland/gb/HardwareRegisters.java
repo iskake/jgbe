@@ -11,100 +11,102 @@ import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
 public class HardwareRegisters {
     public enum HardwareRegisterIndex {
         /** Joypad */
-        P1   (0xff00), // TODO (requires input)
+        P1   (0xff00, 0b0011_1111), // TODO (requires input)
 
         /* Serial data transfer */
-        SB   (0xff01), //?
-        SC   (0xff02), //?
+        SB   (0xff01, 0b1111_1111), //?
+        SC   (0xff02, 0b1111_1111), //?
 
         /** Divider register */
-        DIV  (0xff04),
+        DIV  (0xff04, 0b1111_1111),
         /** Timer counter */
-        TIMA (0xff05),
+        TIMA (0xff05, 0b1111_1111),
         /** Timer Modulo */
-        TMA  (0xff06),
+        TMA  (0xff06, 0b1111_1111),
         /** Timer control */
-        TAC  (0xff07),
+        TAC  (0xff07, 0b0000_0111),
 
         /** Interrupt flag */
-        IF   (0xff0f),
+        IF   (0xff0f, 0b1111_1111),
 
         /* Sound control */
-        NR10 (0xff10), //? Requires audio
-        NR11 (0xff11), //? Requires audio
-        NR12 (0xff12), //? Requires audio
-        NR13 (0xff13), //? Requires audio
-        NR14 (0xff14), //? Requires audio
-        NR21 (0xff16), //? Requires audio
-        NR22 (0xff17), //? Requires audio
-        NR23 (0xff18), //? Requires audio
-        NR24 (0xff19), //? Requires audio
-        NR30 (0xff1a), //? Requires audio
-        NR31 (0xff1b), //? Requires audio
-        NR32 (0xff1c), //? Requires audio
-        NR33 (0xff1d), //? Requires audio
-        NR34 (0xff1e), //? Requires audio
-        NR41 (0xff20), //? Requires audio
-        NR42 (0xff21), //? Requires audio
-        NR43 (0xff22), //? Requires audio
-        NR44 (0xff23), //? Requires audio
-        NR50 (0xff24), //? Requires audio
-        NR51 (0xff25), //? Requires audio
-        NR52 (0xff26), //? Requires audio
+        NR10 (0xff10, 0b1111_1111), //? Requires audio
+        NR11 (0xff11, 0b1111_1111), //? Requires audio
+        NR12 (0xff12, 0b1111_1111), //? Requires audio
+        NR13 (0xff13, 0b1111_1111), //? Requires audio
+        NR14 (0xff14, 0b1111_1111), //? Requires audio
+        NR21 (0xff16, 0b1111_1111), //? Requires audio
+        NR22 (0xff17, 0b1111_1111), //? Requires audio
+        NR23 (0xff18, 0b1111_1111), //? Requires audio
+        NR24 (0xff19, 0b1111_1111), //? Requires audio
+        NR30 (0xff1a, 0b1111_1111), //? Requires audio
+        NR31 (0xff1b, 0b1111_1111), //? Requires audio
+        NR32 (0xff1c, 0b1111_1111), //? Requires audio
+        NR33 (0xff1d, 0b1111_1111), //? Requires audio
+        NR34 (0xff1e, 0b1111_1111), //? Requires audio
+        NR41 (0xff20, 0b1111_1111), //? Requires audio
+        NR42 (0xff21, 0b1111_1111), //? Requires audio
+        NR43 (0xff22, 0b1111_1111), //? Requires audio
+        NR44 (0xff23, 0b1111_1111), //? Requires audio
+        NR50 (0xff24, 0b1111_1111), //? Requires audio
+        NR51 (0xff25, 0b1111_1111), //? Requires audio
+        NR52 (0xff26, 0b1111_1111), //? Requires audio
 
         /** LCD Control */
-        LCDC (0xff40), // TODO (requires rendering)
+        LCDC (0xff40, 0b1111_1111),
         /** LCD STATus */
-        STAT (0xff41), // TODO (requires rendering)
+        STAT (0xff41, 0b1111_1111),
         /** Scroll Y */
-        SCY  (0xff42), // TODO (requires interrupts)
+        SCY  (0xff42, 0b1111_1111),
         /** Scroll X */
-        SCX  (0xff43), // TODO (requires interrupts)
+        SCX  (0xff43, 0b1111_1111),
         /** LCD Y Coordinate */
-        LY   (0xff44), // TODO (requires rendering)
+        LY   (0xff44, 0b0000_0000),
         /** LY Compare */
-        LYC  (0xff45), // TODO (requires rendering)
+        LYC  (0xff45, 0b1111_1111),
 
         /** DMA Transfer */
-        DMA  (0xff46), // TODO (requires rendering)
+        DMA  (0xff46, 0b1111_1111), // TODO (requires rendering)
 
         /** BG Palette data */
-        BGP  (0xff47), // TODO (requires rendering)
+        BGP  (0xff47, 0b1111_1111), // TODO (requires rendering)
         /** OBJ Palette 0 */
-        OBP0 (0xff48), // TODO (requires rendering)
+        OBP0 (0xff48, 0b1111_1111), // TODO (requires rendering)
         /** OBJ Palette 1 */
-        OBP1 (0xff49), // TODO (requires rendering)
+        OBP1 (0xff49, 0b1111_1111), // TODO (requires rendering)
 
         /** Window Y position */
-        WY   (0xff4a), // TODO (requires rendering)
+        WY   (0xff4a, 0b1111_1111), // TODO (requires rendering)
         /** Window X position */
-        WX   (0xff4b), // TODO (requires rendering)
+        WX   (0xff4b, 0b1111_1111), // TODO (requires rendering)
 
-        KEY1 (0xff4d), //? CGB only
-        VBK  (0xff4f), //? CGB only
+        KEY1 (0xff4d, 0b1111_1111), //? CGB only
+        VBK  (0xff4f, 0b1111_1111), //? CGB only
 
-        HDMA1(0xff51), //? CGB only
-        HDMA2(0xff52), //? CGB only
-        HDMA3(0xff53), //? CGB only
-        HDMA4(0xff54), //? CGB only
-        HDMA5(0xff55), //? CGB only
+        HDMA1(0xff51, 0b1111_1111), //? CGB only
+        HDMA2(0xff52, 0b1111_1111), //? CGB only
+        HDMA3(0xff53, 0b1111_1111), //? CGB only
+        HDMA4(0xff54, 0b1111_1111), //? CGB only
+        HDMA5(0xff55, 0b1111_1111), //? CGB only
 
-        RP   (0xff56), //? CGB only
+        RP   (0xff56, 0b1111_1111), //? CGB only
 
-        BCPS (0xff68), //? CGB only
-        BCPD (0xff69), //? CGB only
-        OCPS (0xff6a), //? CGB only
-        OCPD (0xff6b), //? CGB only
+        BCPS (0xff68, 0b1111_1111), //? CGB only
+        BCPD (0xff69, 0b1111_1111), //? CGB only
+        OCPS (0xff6a, 0b1111_1111), //? CGB only
+        OCPD (0xff6b, 0b1111_1111), //? CGB only
 
-        SVBK (0xff70), //? CGB only
+        SVBK (0xff70, 0b1111_1111), //? CGB only
 
         /** Interrupt enable */
-        IE   (0xffff);
+        IE   (0xffff, 0b1111_1111);
 
         public final int val;
+        public final int writableBits;
 
-        private HardwareRegisterIndex(int val) {
+        private HardwareRegisterIndex(int val, int writableBits) {
             this.val = val;
+            this. writableBits = writableBits;
         }
 
         public static HardwareRegisterIndex getRegisterFromAddress(int address) {
@@ -124,61 +126,61 @@ public class HardwareRegisters {
      * Initialize hardware registers. (Based on DMG reset)
      */
     public void init() {
-        writeRegister(P1,    0xCF);
-        writeRegister(SB,    0x00);
-        writeRegister(SC,    0x7E);
-        writeRegister(DIV,   0xAB);
-        writeRegister(TIMA,  0x00);
-        writeRegister(TMA,   0x00);
-        writeRegister(TAC,   0xF8);
-        writeRegister(IF,    0xE1);
-        writeRegister(NR10,  0x80);
-        writeRegister(NR11,  0xBF);
-        writeRegister(NR12,  0xF3);
-        writeRegister(NR13,  0xFF);
-        writeRegister(NR14,  0xBF);
-        writeRegister(NR21,  0x3F);
-        writeRegister(NR22,  0x00);
-        writeRegister(NR23,  0xFF);
-        writeRegister(NR24,  0xBF);
-        writeRegister(NR30,  0x7F);
-        writeRegister(NR31,  0xFF);
-        writeRegister(NR32,  0x9F);
-        writeRegister(NR33,  0xFF);
-        writeRegister(NR34,  0xBF);
-        writeRegister(NR41,  0xFF);
-        writeRegister(NR42,  0x00);
-        writeRegister(NR43,  0x00);
-        writeRegister(NR44,  0xBF);
-        writeRegister(NR50,  0x77);
-        writeRegister(NR51,  0xF3);
-        writeRegister(NR52,  0xF1);
-        writeRegister(LCDC,  0x91);
-        writeRegister(STAT,  0x85);
-        writeRegister(SCY,   0x00);
-        writeRegister(SCX,   0x00);
-        writeRegister(LY,    0x00);
-        writeRegister(LYC,   0x00);
-        writeRegister(DMA,   0xFF);
-        writeRegister(BGP,   0xFC);
-        writeRegister(OBP0,  0xFF); // '??'
-        writeRegister(OBP1,  0xFF); // '??'
-        writeRegister(WY,    0x00);
-        writeRegister(WX,    0x00);
-        writeRegister(KEY1,  0xFF);
-        writeRegister(VBK,   0xFF);
-        writeRegister(HDMA1, 0xFF);
-        writeRegister(HDMA2, 0xFF);
-        writeRegister(HDMA3, 0xFF);
-        writeRegister(HDMA4, 0xFF);
-        writeRegister(HDMA5, 0xFF);
-        writeRegister(RP,    0xFF);
-        writeRegister(BCPS,  0xFF);
-        writeRegister(BCPD,  0xFF);
-        writeRegister(OCPS,  0xFF);
-        writeRegister(OCPD,  0xFF);
-        writeRegister(SVBK,  0xFF);
-        writeRegister(IE,    0x00);
+        writeRegisterInternal(P1,    0xCF);
+        writeRegisterInternal(SB,    0x00);
+        writeRegisterInternal(SC,    0x7E);
+        writeRegisterInternal(DIV,   0xAB);
+        writeRegisterInternal(TIMA,  0x00);
+        writeRegisterInternal(TMA,   0x00);
+        writeRegisterInternal(TAC,   0xF8);
+        writeRegisterInternal(IF,    0xE1);
+        writeRegisterInternal(NR10,  0x80);
+        writeRegisterInternal(NR11,  0xBF);
+        writeRegisterInternal(NR12,  0xF3);
+        writeRegisterInternal(NR13,  0xFF);
+        writeRegisterInternal(NR14,  0xBF);
+        writeRegisterInternal(NR21,  0x3F);
+        writeRegisterInternal(NR22,  0x00);
+        writeRegisterInternal(NR23,  0xFF);
+        writeRegisterInternal(NR24,  0xBF);
+        writeRegisterInternal(NR30,  0x7F);
+        writeRegisterInternal(NR31,  0xFF);
+        writeRegisterInternal(NR32,  0x9F);
+        writeRegisterInternal(NR33,  0xFF);
+        writeRegisterInternal(NR34,  0xBF);
+        writeRegisterInternal(NR41,  0xFF);
+        writeRegisterInternal(NR42,  0x00);
+        writeRegisterInternal(NR43,  0x00);
+        writeRegisterInternal(NR44,  0xBF);
+        writeRegisterInternal(NR50,  0x77);
+        writeRegisterInternal(NR51,  0xF3);
+        writeRegisterInternal(NR52,  0xF1);
+        writeRegisterInternal(LCDC,  0x91);
+        writeRegisterInternal(STAT,  0x85);
+        writeRegisterInternal(SCY,   0x00);
+        writeRegisterInternal(SCX,   0x00);
+        writeRegisterInternal(LY,    0x00);
+        writeRegisterInternal(LYC,   0x00);
+        writeRegisterInternal(DMA,   0xFF);
+        writeRegisterInternal(BGP,   0xFC);
+        writeRegisterInternal(OBP0,  0xFF); // '??'
+        writeRegisterInternal(OBP1,  0xFF); // '??'
+        writeRegisterInternal(WY,    0x00);
+        writeRegisterInternal(WX,    0x00);
+        writeRegisterInternal(KEY1,  0xFF);
+        writeRegisterInternal(VBK,   0xFF);
+        writeRegisterInternal(HDMA1, 0xFF);
+        writeRegisterInternal(HDMA2, 0xFF);
+        writeRegisterInternal(HDMA3, 0xFF);
+        writeRegisterInternal(HDMA4, 0xFF);
+        writeRegisterInternal(HDMA5, 0xFF);
+        writeRegisterInternal(RP,    0xFF);
+        writeRegisterInternal(BCPS,  0xFF);
+        writeRegisterInternal(BCPD,  0xFF);
+        writeRegisterInternal(OCPS,  0xFF);
+        writeRegisterInternal(OCPD,  0xFF);
+        writeRegisterInternal(SVBK,  0xFF);
+        writeRegisterInternal(IE,    0x00);
     }
 
     /**
@@ -218,7 +220,10 @@ public class HardwareRegisters {
         if (hwreg == null) {
             return false;
         }
-        registerValues[hwreg.ordinal()] = value;
+        if (handleSpecialWrites(hwreg)) {
+            return true;
+        }
+        registerValues[hwreg.ordinal()] = (byte)(Byte.toUnsignedInt(value) & hwreg.writableBits);
         return true;
     }
 
@@ -234,6 +239,45 @@ public class HardwareRegisters {
     }
 
     /**
+     * Write the specified value to the specified hardware register.
+     * 
+     * @param hwreg The hardware register to write a value to.
+     * @param value The value to write.
+     * @return {@code true} if the write was successful, {@code false} otherwise.
+     */
+    private boolean writeRegisterInternal(HardwareRegisterIndex hwreg, byte value) {
+        registerValues[hwreg.ordinal()] = value;
+        return true;
+    }
+
+    /**
+     * Write the specified value to the specified hardware register.
+     * 
+     * @param hwreg The hardware register to write a value to.
+     * @param value The value to write.
+     * @return {@code true} if the write was successful, {@code false} otherwise.
+     */
+    private boolean writeRegisterInternal(HardwareRegisterIndex hwreg, int value) {
+        return writeRegisterInternal(hwreg, Bitwise.toByte(value));
+    }
+
+    /**
+     * Handle 'special writes' on registers.
+     * 
+     * @param hwreg
+     * @return {@code true} if the specified register needed special writes,
+     *         {@code false} otherwise.
+     */
+    private boolean handleSpecialWrites(HardwareRegisterIndex hwreg) {
+        switch (hwreg) {
+            case DIV -> writeRegisterInternal(hwreg, (byte)0x00);
+            case DMA -> writeRegisterInternal(hwreg, (byte)0x00);
+            default -> { return false; }
+        }
+        return true;
+    }
+
+    /**
      * Increment the value stored in the register (if writable).
      * 
      * @param hwreg The register to increment.
@@ -243,7 +287,7 @@ public class HardwareRegisters {
         if (hwreg == null) {
             return false;
         }
-        return writeRegister(hwreg, readRegister(hwreg) + 1);
+        return writeRegisterInternal(hwreg, readRegister(hwreg) + 1);
     }
 
     /**
