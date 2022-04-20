@@ -2,10 +2,12 @@ package tland.gb.timing;
 
 import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
 
+import tland.Bitwise;
 import tland.gb.GameBoy;
 import tland.gb.HardwareRegisters;
 import tland.gb.InterruptHandler;
 import tland.gb.InterruptHandler.InterruptType;
+import tland.gb.ppu.PPU;
 
 /**
  * Timing, incrementing and handling of clock cycles.
@@ -14,14 +16,17 @@ public class Timing {
     private long cycles;
 
     private final GameBoy gb;
+    private final PPU ppu;
     private final HardwareRegisters hwreg;
     private final InterruptHandler interrupts;
 
     private final int MODE2_CYCLES = 80;
     private final int MODE3_CYCLES_MIN = 172;
     private final int MODE3_CYCLES_MAX = 289;
+
     private final int MODE0_CYCLES_MIN = 172;
     private final int MODE0_CYCLES_MAX = 289;
+
     private final int SCANLINE_CYCLES = 456;
     private final int MODE1_CYCLES = SCANLINE_CYCLES * 10;
     private final int FRAME_CYCLES = SCANLINE_CYCLES * 144 + MODE1_CYCLES;
@@ -31,10 +36,11 @@ public class Timing {
     private final int MODE0_END_MAX = MODE3_END_MIN + MODE0_CYCLES_MAX;
     private final int MODE1_START = SCANLINE_CYCLES * 144;
 
-    public Timing(GameBoy gb, HardwareRegisters hwreg, InterruptHandler interrupts) {
+    public Timing(GameBoy gb, HardwareRegisters hwreg, InterruptHandler interrupts, PPU ppu) {
         this.gb = gb;
         this.hwreg = hwreg;
         this.interrupts = interrupts;
+        this.ppu = ppu;
         init();
     }
 
@@ -101,6 +107,7 @@ public class Timing {
     private void handleVideo(long cycle) {
         // VBlank
         if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
+            ppu.addScanline();
             hwreg.incRegister(LY);
             int ly_val = hwreg.readRegisterInt(LY);
             if (ly_val == 0x90) {
@@ -111,7 +118,7 @@ public class Timing {
         }
 
         // 0xff40 LCDC
-        // TODO
+        // 'Automatically' 'handled' in PPUController
 
         // 0xff41 (STAT)
         long scanDot = (cycle % SCANLINE_CYCLES);
@@ -135,6 +142,15 @@ public class Timing {
             hwreg.resetBit(STAT, 0);
             hwreg.resetBit(STAT, 1);
         }
+
         hwreg.setBitConditional(STAT, 2, (hwreg.readRegister(LY) == hwreg.readRegister(LYC)));
+
+        boolean STATLY = Bitwise.isBitSet(hwreg.readRegister(STAT), 2) && Bitwise.isBitSet(hwreg.readRegister(STAT), 6);
+        boolean STATHBL = Bitwise.isBitSet(hwreg.readRegister(STAT), 3) && ((hwreg.readRegisterInt(STAT) & 0b11) == 0);
+        boolean STATVBL = Bitwise.isBitSet(hwreg.readRegister(STAT), 4) && ((hwreg.readRegisterInt(STAT) & 0b11) == 1);
+        boolean STATOAM = Bitwise.isBitSet(hwreg.readRegister(STAT), 5) && ((hwreg.readRegisterInt(STAT) & 0b11) == 2);
+        if (STATLY || STATHBL || STATVBL || STATOAM) {
+            interrupts.setWaitingToCall(InterruptType.STAT);
+        }
     }
 }

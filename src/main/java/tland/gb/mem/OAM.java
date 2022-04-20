@@ -1,24 +1,27 @@
 package tland.gb.mem;
 
-import tland.gb.HardwareRegisters;
-import tland.gb.HardwareRegisters.HardwareRegisterIndex;
+import tland.gb.ppu.PPUController;
+import tland.gb.ppu.Sprite;
 
 /**
  * Object Attribute Memory ('Sprite Attribute Table'). 
- * Only accessable in modes 0-1 (STAT register bits 0-1).
+ * Only accessible in modes 0-1 (STAT register bits 0-1).
  */
 public class OAM extends RAM {
-    private final HardwareRegisters hwreg;
+    private final PPUController ppuControl;
+    private final Sprite[] sprites = new Sprite[40];
 
-    public OAM(int size, HardwareRegisters hwreg) {
+    public OAM(int size, PPUController ppuControl) {
         super(size);
-        this.hwreg = hwreg;
+        this.ppuControl = ppuControl;
+        for (int i = 0; i < sprites.length; i++) {
+            sprites[i] = new Sprite(0xffffffff);
+        }
     }
 
     @Override
     public byte readByte(int address) throws IndexOutOfBoundsException {
-        int i = Byte.toUnsignedInt(hwreg.readRegister(HardwareRegisterIndex.STAT)) & 0b11;
-        if (i > 1) {
+        if (!ppuControl.isOAMAccessable()) {
             return (byte) 0xff;
         }
         return super.readByte(address);
@@ -26,10 +29,26 @@ public class OAM extends RAM {
 
     @Override
     public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
-        int i = Byte.toUnsignedInt(hwreg.readRegister(HardwareRegisterIndex.STAT)) & 0b11;
-        if (i > 1) {
+        if (!ppuControl.isOAMAccessable()) {
             return;
         }
         super.writeByte(address, value);
+    }
+
+    /**
+     * Get all sprites in OAM.
+     * 
+     * @return All sprites in OAM.
+     */
+    public Sprite[] getSprites() {
+        for (int i = 0; i < sprites.length; i++) {
+            int offset = i*4;
+            byte YPos = readByte(offset);
+            byte XPos = readByte(offset+1);
+            byte TileIndex = readByte(offset+2);
+            byte Attributes = readByte(offset+3);
+            sprites[i].updateAttributes(YPos, XPos, TileIndex, Attributes);
+        }
+        return sprites;
     }
 }

@@ -12,22 +12,22 @@ import tland.gb.HardwareRegisters;
 public class MemoryMap implements WritableMemory, ReadableMemory {
     private final CartridgeROM rom;
 
-    private RAM VRAM;
+    private VRAM VRAM;
     private RAM WRAM1;
     private RAM WRAM2;
-    private RAM OAM;
+    private OAM OAM;
     private ProhibitedMemory prohibited;
     private HardwareRegisterMap IO;
     private RAM HRAM;
 
     private int fixedAddress;
 
-    public MemoryMap(CartridgeROM rom, HardwareRegisters hwreg) {
+    public MemoryMap(CartridgeROM rom, HardwareRegisters hwreg, VRAM vram, OAM oam) {
         this.rom = rom;
-        VRAM = new VRAM(0x2000, hwreg);
+        VRAM = vram;
         WRAM1 = new RAM(0x1000);
         WRAM2 = new RAM(0x1000);
-        OAM = new OAM(40 * 4, hwreg);
+        OAM = oam;
         IO = new HardwareRegisterMap(hwreg);
         prohibited = new ProhibitedMemory(hwreg);
         HRAM = new RAM(0x200);
