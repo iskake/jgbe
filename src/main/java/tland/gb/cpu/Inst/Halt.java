@@ -1,6 +1,7 @@
 package tland.gb.cpu.Inst;
 
 import tland.gb.GameBoy;
+import tland.gb.Registers.RegisterIndex;
 
 /**
  * Opcodes that 'halt' the operation of the Game Boy.
@@ -18,7 +19,7 @@ public class Halt extends Instruction {
     public void doOp(GameBoy gb, int opcode) {
         switch (opcode) {
             case 0x10 -> gb.stop();
-            case 0x76 -> gb.halt();
+            case 0x76 -> gb.halt(gb.reg.readRegisterShort(RegisterIndex.HL));
             default -> throw new IllegalInstructionException();
         }
     }

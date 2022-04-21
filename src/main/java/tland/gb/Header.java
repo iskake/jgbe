@@ -1,8 +1,11 @@
 package tland.gb;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import tland.Bitwise;
+import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.ROMBank;
 
 /**
@@ -10,7 +13,7 @@ import tland.gb.mem.ROMBank;
  * <p>
  * The header is stored in Bank 0 at the address range $0100-$014f.
  */
-public class ROMHeader {
+public class Header {
     /**
      * Compressed Nintendo logo data.
      * Each tile of the logo is stored in 2 bytes, as opposed to 16 bytes.
@@ -29,12 +32,12 @@ public class ROMHeader {
      */
     private byte[] data;
 
-    public ROMHeader(byte[] data) {
+    public Header(byte[] data) {
         this.data = data;
     }
 
-    public ROMHeader(ROMBank bank) {
-        this.data = getHeaderData(bank);
+    public Header(CartridgeROM ROM) {
+        this.data = getHeaderData(ROM.getROMBank0());
     }
 
     /**
@@ -44,7 +47,7 @@ public class ROMHeader {
      * @return The header data from the rom bank.
      */
     public static byte[] getHeaderData(ROMBank bank) {
-        return Arrays.copyOfRange(bank.bytes(), 0x104, 0x134);
+        return Arrays.copyOfRange(bank.bytes(), 0x100, 0x14f);
     }
 
     /**
@@ -53,7 +56,8 @@ public class ROMHeader {
      * @return The ROM title.
      */
     public String getTitle() {
-        return new String(Arrays.copyOfRange(data, 0x34, 0x44));
+        byte[] str = Arrays.copyOfRange(data, 0x34, 0x44);
+        return new String(str);
     }
 
     /**

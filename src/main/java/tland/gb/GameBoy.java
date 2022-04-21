@@ -1,5 +1,7 @@
 package tland.gb;
 
+import java.util.Scanner;
+
 import tland.Bitwise;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
@@ -57,29 +59,43 @@ public class GameBoy implements Runnable {
         reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
         reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
 
-        pc.init((short) 0x100);
+        pc.init((short) 0x0000);
         sp.set((short) 0xfffe);
         memoryMap.init();
 
         boolean willStop = false;
-        try {
-            if (!ROMHeader.validLogo(rom.getROMBank0())) {
-                System.out.println("Invalid logo!");
-                willStop = true;
-            }
-            if (!ROMHeader.validHeaderChecksum(rom.getROMBank0())) {
-                System.out.println("Invalid checksum!");
-                willStop = true;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.err.println(e);
+        if (Header.validLogo(rom.getROMBank0())) {
+            System.out.println("Valid logo!");
+            willStop = true;
+        }
+        if (Header.validHeaderChecksum(rom.getROMBank0())) {
+            System.out.println("Valid checksum!");
             willStop = true;
         }
 
         if (willStop) {
-            System.out.println("The provided ROM file is invalid or corrupted.");
-            stopRunning();
-            return;
+            System.out.println("Warning: The provided file is in the format of a Game Boy ROM.");
+            System.out.println("JGBE is not designed to run these files, though it should run as a valid file.");
+            Header header = new Header(rom);
+            System.out.println("\nInternal ROM Information:");
+            System.out.println("    Name: '" + header.getTitle().strip() + "'");
+            System.out.println("    ROM size: " + header.getROMSizeString());
+            System.out.println("    RAM size: " + header.getRAMSizeString());
+            System.out.print("\nDo you still wish to continue (y/n)?  ");
+            Scanner sc = new Scanner(System.in);
+
+            boolean invalidInput = true;
+            while (invalidInput) {
+                String answer = sc.nextLine();
+                if (answer.toLowerCase().equals("y")) {
+                    invalidInput = false;
+                } else if (answer.toLowerCase().equals("n")) {
+                    stopRunning();
+                    return;
+                } else {
+                    System.out.print("\nInvalid input (y/n)  ");
+                }
+            }
         }
 
         dbg = new Debugger(this, cpu);
@@ -181,23 +197,26 @@ public class GameBoy implements Runnable {
     }
 
     /**
-     * Halt ('stop') all operations of the Game Boy until the system is reset or any
-     * input is pressed.
+     * Halt ('stop') all operations of the Game Boy.
      * <p>
      * Note that the stop instruction is actually 2 bytes long, with the second byte
      * being ignored.
      */
     public void stop() {
-        // TODO
-        pc.inc(); // stop ignores the next instruction, so
-
+        stopRunning();
     }
 
     /**
-     * Halt CPU instruction execution
+     * Halt CPU instruction execution for some time in milliseconds.
+     * 
+     * @param millis The time (in ms) to halt the CPU for.
      */
-    public void halt() {
-        // TODO
+    public void halt(short millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            System.out.println("Sleep was interrupted.");
+        }
     }
 
     /**

@@ -2,7 +2,6 @@ package tland.gb.cpu;
 
 import tland.Bitwise;
 import tland.gb.GameBoy;
-import tland.gb.InterruptHandler;
 import tland.gb.cpu.Inst.Prefixed;
 
 public class CPU {
