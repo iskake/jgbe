@@ -124,8 +124,6 @@ public class InterruptHandler {
             }
         }
         disable();
-        gb.timing.incCycles();
-        gb.timing.incCycles();
         sp.push(pc.get());
         pc.set(Bitwise.toShort(address));
 

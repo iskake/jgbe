@@ -10,7 +10,6 @@ import tland.gb.mem.OAM;
 import tland.gb.mem.VRAM;
 import tland.gb.ppu.PPU;
 import tland.gb.ppu.PPUController;
-import tland.gb.timing.Timing;
 
 /**
  * Represents a Game Boy (model 'DMG')
@@ -19,7 +18,6 @@ public class GameBoy implements Runnable {
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
-    public final Timing timing; // TODO: fix having to pass GameBoy to constructors just to access timing?
 
     private final CartridgeROM rom;
     private final CPU cpu;
@@ -51,7 +49,6 @@ public class GameBoy implements Runnable {
 
         interrupts = new InterruptHandler(this, hwreg);
         cpu = new CPU(this, interrupts);
-        timing = new Timing(this, hwreg, interrupts, ppu);
         init();
     }
 
@@ -76,7 +73,6 @@ public class GameBoy implements Runnable {
         sp.set((short) 0xfffe);
         memoryMap.init();
         hwreg.init();
-        timing.init();
 
         boolean willStop = false;
         try {
@@ -152,7 +148,6 @@ public class GameBoy implements Runnable {
     }
 
     public byte readNextByte() {
-        timing.incCycles();
         return memoryMap.readByte(pc.inc());
     }
 
@@ -163,7 +158,6 @@ public class GameBoy implements Runnable {
     }
 
     public void writeMemoryAddress(short address, byte value) {
-        timing.incCycles();
         memoryMap.writeByte(address, value);
     }
 
@@ -172,7 +166,6 @@ public class GameBoy implements Runnable {
     }
 
     public byte readMemoryAddress(short address) {
-        timing.incCycles();
         return memoryMap.readByte(address);
     }
 
