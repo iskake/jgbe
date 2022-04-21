@@ -1,9 +1,16 @@
 package tland.gb;
 
+import java.util.stream.Stream;
+
+import javax.swing.ImageIcon;
+
 import tland.Bitwise;
+import tland.gb.HardwareRegisters.HardwareRegisterIndex;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
+import tland.gb.controller.GameBoyJoypad;
 import tland.gb.cpu.CPU;
+import tland.gb.joypad.IJoypad;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
 import tland.gb.mem.OAM;
@@ -11,48 +18,49 @@ import tland.gb.mem.VRAM;
 import tland.gb.ppu.PPU;
 import tland.gb.ppu.PPUController;
 import tland.gb.timing.Timing;
+import tland.gb.view.GameBoyViewable;
 
 /**
  * Represents a Game Boy (model 'DMG')
  */
-public class GameBoy implements Runnable {
+public class GameBoy implements Runnable, GameBoyViewable {
+    // TODO: joypad handling+dma+video
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
     public final Timing timing; // TODO: fix having to pass GameBoy to constructors just to access timing?
 
-    private final CartridgeROM rom;
+    private CartridgeROM rom;
     private final CPU cpu;
     private final PPU ppu;
     private final HardwareRegisters hwreg;
-    private final MemoryMap memoryMap;
+    private MemoryMap memoryMap;
     private final InterruptHandler interrupts;
 
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
 
-    public GameBoy(CartridgeROM rom) {
+    public GameBoy(IJoypad joypad) {
         debuggerEnabled = true;
-        this.rom = rom;
 
         pc = new ProgramCounter(this, (short) 0x100);
         sp = new StackPointer(this, (short) 0xfffe);
 
+        DMAController dmaControl = new DMAController(this);
         reg = new Registers(this);
-        hwreg = new HardwareRegisters();
+        hwreg = new HardwareRegisters(dmaControl, joypad);
 
         PPUController ppuControl = new PPUController(hwreg);
         VRAM vram = new VRAM(0x2000, ppuControl);
         OAM oam = new OAM(40 * 4, ppuControl);
         ppu = new PPU(vram, oam, hwreg, ppuControl);
 
-        memoryMap = new MemoryMap(rom, hwreg, vram, oam);
+        memoryMap = new MemoryMap(hwreg, vram, oam);
 
         interrupts = new InterruptHandler(this, hwreg);
         cpu = new CPU(this, interrupts);
-        timing = new Timing(this, hwreg, interrupts, ppu);
-        init();
+        timing = new Timing(this, hwreg, dmaControl, interrupts, ppu);
     }
 
     /**
@@ -60,7 +68,9 @@ public class GameBoy implements Runnable {
      * This method should be used in the constructor and when the Game Boy is reset
      * ('powered on').
      */
-    private void init() {
+    private void init(CartridgeROM rom) {
+        this.rom = rom;
+
         // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
         // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
         reg.writeRegisterByte(RegisterIndex.A, 0x01);
@@ -74,7 +84,7 @@ public class GameBoy implements Runnable {
 
         pc.init((short) 0x100);
         sp.set((short) 0xfffe);
-        memoryMap.init();
+        memoryMap.init(rom);
         hwreg.init();
         timing.init();
 
@@ -122,8 +132,8 @@ public class GameBoy implements Runnable {
     /**
      * (Hard) restart the Game Boy.
      */
-    public void restart() {
-        init();
+    public void restart(CartridgeROM rom) {
+        init(rom);
     }
 
     public void enableDebugger() {
@@ -164,6 +174,10 @@ public class GameBoy implements Runnable {
 
     public void writeMemoryAddress(short address, byte value) {
         timing.incCycles();
+        memoryMap.writeByte(address, value);
+    }
+
+    public void writeMemoryNoCycle(short address, byte value) {
         memoryMap.writeByte(address, value);
     }
 
@@ -251,4 +265,40 @@ public class GameBoy implements Runnable {
             System.out.println();
         }
     }
+
+    @Override
+    public byte[] getFrame() {
+        byte[][] in = ppu.getFrame();
+        byte[] out = new byte[in.length * in[0].length];
+        for(int i = 0; i < in.length; i ++) {
+            for(int j = 0; j < in[0].length; j ++) {
+                out[(i * in.length) + j] = in[i][j];
+            }
+        }
+        return out;
+    }
+
+    private int[] mappedColors = {
+        0xffffff,
+        0xaaaaaa,
+        0x555555,
+        0x000000,
+    };
+
+    @Override
+    public int[] getFrameInt() {
+        byte[][] in = ppu.getFrame();
+        int[] out = new int[in.length * in[0].length];
+        for(int i = 0; i < in.length; i ++) {
+            for(int j = 0; j < in[0].length; j ++) {
+                out[(i * in.length) + j] = mappedColors[in[i][j]];
+            }
+        }
+        return out;
+    }
+
+	@Override
+	public boolean canGetFrame() {
+		return hwreg.readRegisterInt(HardwareRegisterIndex.LY) >= 144;
+	}
 }

@@ -1,4 +1,4 @@
-package tland.gui;
+package tland.gb;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -20,17 +21,23 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import tland.gb.GameBoy;
-import tland.gb.mem.CartridgeROM;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 
-public class GUI {
+import tland.gb.controller.GameBoyJoypad;
+import tland.gb.mem.CartridgeROM;
+import tland.gb.view.GameBoyView;
+
+public class GameBoyGUI extends JComponent {
     private JFrame frame;
     private CartridgeROM rom;
 
     private GameBoy gb;
     private Thread gbThread;
+    private GameBoyJoypad joypad;
+    private GameBoyView view;
 
-    public GUI() {
+    public GameBoyGUI() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             JFrame.setDefaultLookAndFeelDecorated(true);
@@ -44,6 +51,10 @@ public class GUI {
         frame.pack();
         frame.setVisible(true);
         frame.setSize(160 * 3, 144 * 3);
+
+        this.joypad = new GameBoyJoypad();
+        this.gb = new GameBoy(joypad);
+        this.view = new GameBoyView(gb);
     }
 
     private JMenu createFileMenu() {
@@ -92,6 +103,7 @@ public class GUI {
 
     public void showGUI() {
         createMenuBar();
+        frame.setContentPane(view);
     }
 
     /**
@@ -115,7 +127,7 @@ public class GUI {
             return;
         }
         rom = new CartridgeROM(romFile);
-        gb = new GameBoy(rom);
+        gb.restart(rom);
 
         gb.enableDebugger();
 
@@ -131,5 +143,9 @@ public class GUI {
             gb.stopRunning();
             gbThread.interrupt();
         }
+    }
+
+    public void start() {
+        showGUI();
     }
 }

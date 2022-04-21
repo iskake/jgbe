@@ -1,6 +1,7 @@
 package tland.gb;
 
 import tland.Bitwise;
+import tland.gb.joypad.IJoypad;
 
 import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
 
@@ -9,9 +10,10 @@ import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
  * hardware.
  */
 public class HardwareRegisters {
+    // TODO: not all hwregisters are implemented
     public enum HardwareRegisterIndex {
         /** Joypad */
-        P1   (0xff00, 0b0011_1111), // TODO (requires input)
+        P1   (0xff00, 0b0011_0000),
 
         /* Serial data transfer */
         SB   (0xff01, 0b1111_1111), //?
@@ -66,7 +68,7 @@ public class HardwareRegisters {
         LYC  (0xff45, 0b1111_1111),
 
         /** DMA Transfer */
-        DMA  (0xff46, 0b1111_1111), // TODO (requires rendering)
+        DMA  (0xff46, 0b1111_1111),
 
         /** BG Palette data */
         BGP  (0xff47, 0b1111_1111), // TODO (requires rendering)
@@ -121,6 +123,13 @@ public class HardwareRegisters {
     }
 
     private byte[] registerValues = new byte[HardwareRegisterIndex.values().length];
+    private DMAController dmaControl;
+    private IJoypad joypad;
+
+    public HardwareRegisters(DMAController dmaControl, IJoypad joypad) {
+        this.dmaControl = dmaControl;
+        this.joypad = joypad;
+    }
 
     /**
      * Initialize hardware registers. (Based on DMG reset)
@@ -220,7 +229,7 @@ public class HardwareRegisters {
         if (hwreg == null) {
             return false;
         }
-        if (handleSpecialWrites(hwreg)) {
+        if (handleSpecialWrites(hwreg, value)) {
             return true;
         }
         registerValues[hwreg.ordinal()] = (byte)(Byte.toUnsignedInt(value) & hwreg.writableBits);
@@ -245,7 +254,7 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    private boolean writeRegisterInternal(HardwareRegisterIndex hwreg, byte value) {
+    public boolean writeRegisterInternal(HardwareRegisterIndex hwreg, byte value) {
         registerValues[hwreg.ordinal()] = value;
         return true;
     }
@@ -268,10 +277,25 @@ public class HardwareRegisters {
      * @return {@code true} if the specified register needed special writes,
      *         {@code false} otherwise.
      */
-    private boolean handleSpecialWrites(HardwareRegisterIndex hwreg) {
+    private boolean handleSpecialWrites(HardwareRegisterIndex hwreg, byte value) {
         switch (hwreg) {
             case DIV -> writeRegisterInternal(hwreg, (byte)0x00);
-            case DMA -> writeRegisterInternal(hwreg, (byte)0x00);
+            case DMA -> {
+                writeRegisterInternal(hwreg, value);
+                dmaControl.startDMATransfer(value);
+            }
+            case P1 -> {
+                // ? If both are 0 ?
+                if (!Bitwise.isBitSet(value, 4)) {
+                    int joyVal = joypad.getDirectionsAsInt();
+                    joyVal = Byte.toUnsignedInt(value) | joyVal;
+                    writeRegisterInternal(P1, joyVal);
+                } else if (!Bitwise.isBitSet(value, 5)) {
+                    int joyVal = joypad.getButtonsAsInt();
+                    joyVal = Byte.toUnsignedInt(value) | joyVal;
+                    writeRegisterInternal(P1, joyVal);
+                }
+            }
             default -> { return false; }
         }
         return true;
@@ -333,5 +357,9 @@ public class HardwareRegisters {
         } else {
             return resetBit(hwreg, bit);
         }
+    }
+
+    public boolean isDMATransfer() {
+        return dmaControl.isDMAActive();
     }
 }

@@ -3,6 +3,7 @@ package tland.gb.timing;
 import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
 
 import tland.Bitwise;
+import tland.gb.DMAController;
 import tland.gb.GameBoy;
 import tland.gb.HardwareRegisters;
 import tland.gb.InterruptHandler;
@@ -13,11 +14,14 @@ import tland.gb.ppu.PPU;
  * Timing, incrementing and handling of clock cycles.
  */
 public class Timing {
+    // TODO: many things are not working correctly. For example, opcode timing, DAM
+    // transfers, hwregister reading, etc...
     private long cycles;
 
     private final GameBoy gb;
     private final PPU ppu;
     private final HardwareRegisters hwreg;
+    private final DMAController dmaControl;
     private final InterruptHandler interrupts;
 
     private final int MODE2_CYCLES = 80;
@@ -36,9 +40,10 @@ public class Timing {
     private final int MODE0_END_MAX = MODE3_END_MIN + MODE0_CYCLES_MAX;
     private final int MODE1_START = SCANLINE_CYCLES * 144;
 
-    public Timing(GameBoy gb, HardwareRegisters hwreg, InterruptHandler interrupts, PPU ppu) {
+    public Timing(GameBoy gb, HardwareRegisters hwreg, DMAController dmaControl, InterruptHandler interrupts, PPU ppu) {
         this.gb = gb;
         this.hwreg = hwreg;
+        this.dmaControl = dmaControl;
         this.interrupts = interrupts;
         this.ppu = ppu;
         init();
@@ -78,6 +83,7 @@ public class Timing {
      */
     private void handleCycles(long oldCycles) {
         for (long cycle = oldCycles; cycle < cycles; cycle++) {
+            dmaControl.decCycles();
             handleTimers(cycle);
             handleVideo(cycle);
         }
@@ -105,6 +111,10 @@ public class Timing {
     }
 
     private void handleVideo(long cycle) {
+        if (!Bitwise.isBitSet(hwreg.readRegisterInt(LCDC), 7)) {
+            hwreg.writeRegisterInternal(LY, (byte) 0);
+            return;
+        }
         // VBlank
         if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
             ppu.addScanline();

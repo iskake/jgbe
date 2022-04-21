@@ -40,7 +40,7 @@ public record TileMap(byte[] tileIndices) {
      * @return The tile at the specified coordinate.
      */
     public Tile getTileAtCoordinate(int x, int y, Tile[] tiles) {
-        return tiles[getTileIndexAtCoordinate(x, y)];
+        return tiles[Byte.toUnsignedInt(getTileIndexAtCoordinate(x, y))];
     }
 
     @Override

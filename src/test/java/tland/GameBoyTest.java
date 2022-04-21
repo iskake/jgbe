@@ -19,8 +19,9 @@ import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.ROMBank;
 
 public class GameBoyTest {
+    // TODO!!!!!
     static final byte[] b = Arrays.copyOf(new byte[0], ROMBank.BANK_SIZE * 2);
-    static GameBoy gb = new GameBoy(new CartridgeROM(b));
+    static GameBoy gb = new GameBoy(null);
     static Registers reg;
     final RegisterIndex A = RegisterIndex.A;
     final RegisterIndex F = RegisterIndex.F;
@@ -38,7 +39,7 @@ public class GameBoyTest {
 
     @BeforeAll
     static void initGameBoy() {
-        gb = new GameBoy(new CartridgeROM(b));
+        gb = new GameBoy(null);
         reg = gb.reg;
     }
 

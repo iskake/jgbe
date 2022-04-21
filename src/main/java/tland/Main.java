@@ -1,12 +1,10 @@
 package tland;
-import tland.gui.GUI;
-
+import tland.gb.GameBoyGUI;
 public class Main 
 {
     public static void main(String[] args)
     {
-        GUI gui;
-        gui = new GUI();
-        gui.showGUI();
+        GameBoyGUI gui = new GameBoyGUI();
+        gui.start();
     }
 }

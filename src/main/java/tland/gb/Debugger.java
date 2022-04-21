@@ -66,8 +66,18 @@ public class Debugger {
             case "p", "print" -> enablePrinting();
             case "reg" -> printCPUInfo();
             case "_image" -> debugCreateImage(); // Temp!!
+            case "_jp" -> debugJump(input); // Temp!!
+            case "_ld" -> debugLoad(input); // Temp!!
             default -> System.err.println("Unknown command: " + input[0]);
         }
+    }
+
+    private void debugLoad(String[] in) {
+        gb.writeMemoryNoCycle(Bitwise.toShort(decodeInt(in[1])), Bitwise.toByte(decodeInt(in[2])));
+    }
+
+    private void debugJump(String[] in) {
+        gb.pc.set(Bitwise.toShort(decodeInt(in[1])));
     }
 
     // Temp: print frame.
