@@ -1,6 +1,5 @@
 package tland.gb.mem;
 
-import tland.gb.ppu.PPUController;
 import tland.gb.ppu.Sprite;
 
 /**
@@ -8,12 +7,10 @@ import tland.gb.ppu.Sprite;
  * Only accessible in modes 0-1 (STAT register bits 0-1).
  */
 public class OAM extends RAM {
-    private final PPUController ppuControl;
     private final Sprite[] sprites = new Sprite[40];
 
-    public OAM(int size, PPUController ppuControl) {
+    public OAM(int size) {
         super(size);
-        this.ppuControl = ppuControl;
         for (int i = 0; i < sprites.length; i++) {
             sprites[i] = new Sprite(0xffffffff);
         }
@@ -21,17 +18,11 @@ public class OAM extends RAM {
 
     @Override
     public byte readByte(int address) throws IndexOutOfBoundsException {
-        if (!ppuControl.isOAMAccessable()) {
-            return (byte) 0xff;
-        }
         return super.readByte(address);
     }
 
     @Override
     public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
-        if (!ppuControl.isOAMAccessable()) {
-            return;
-        }
         super.writeByte(address, value);
     }
 

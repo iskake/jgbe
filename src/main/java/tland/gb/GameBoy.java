@@ -8,7 +8,6 @@ import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
 import tland.gb.mem.OAM;
 import tland.gb.mem.VRAM;
-import tland.gb.ppu.PPUController;
 
 /**
  * Represents a Game Boy (model 'DMG')
@@ -38,9 +37,8 @@ public class GameBoy implements Runnable {
         reg = new Registers(this);
         hwreg = new HardwareRegisters();
 
-        PPUController ppuControl = new PPUController(hwreg);
-        VRAM vram = new VRAM(0x2000, ppuControl);
-        OAM oam = new OAM(40 * 4, ppuControl);
+        VRAM vram = new VRAM(0x2000);
+        OAM oam = new OAM(40 * 4);
 
         memoryMap = new MemoryMap(rom, hwreg, vram, oam);
 

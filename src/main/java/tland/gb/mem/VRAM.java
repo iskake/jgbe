@@ -3,7 +3,6 @@ package tland.gb.mem;
 import java.util.Arrays;
 
 import tland.Bitwise;
-import tland.gb.ppu.PPUController;
 import tland.gb.ppu.Tile;
 import tland.gb.ppu.TileMap;
 
@@ -11,13 +10,11 @@ import tland.gb.ppu.TileMap;
  * Video memory. Only accessable in modes 0-2 (STAT register bits 0-1).
  */
 public class VRAM extends RAM {
-    private final PPUController ppuControl;
     private final Tile[] tiles = new Tile[0x180];
     private final TileMap[] tileMaps = new TileMap[2];
 
-    public VRAM(int size, PPUController ppu) {
+    public VRAM(int size) {
         super(size);
-        this.ppuControl = ppu;
         for (int i = 0; i < tiles.length; i++) {
             tiles[i] = new Tile(getByteArray(16));
         }
@@ -33,17 +30,11 @@ public class VRAM extends RAM {
 
     @Override
     public byte readByte(int address) throws IndexOutOfBoundsException {
-        if (!ppuControl.isVRAMAccessable()) {
-            return (byte) 0xff;
-        }
         return super.readByte(address);
     }
 
     @Override
     public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
-        if (!ppuControl.isVRAMAccessable()) {
-            return;
-        }
         super.writeByte(address, value);
     }
 
@@ -71,7 +62,7 @@ public class VRAM extends RAM {
      */
     public TileMap getTileMap(int i) {
         // update the tilemap if necessary
-        int offset = ppuControl.getBGTilemapArea() - 0x8000;
+        int offset = 0;
         byte[] newData = Arrays.copyOfRange(bytes, offset, offset + 0x400);
         if (!Bitwise.byteArrayEquals(tileMaps[i].tileIndices(), newData)) {
             // update tilemap
