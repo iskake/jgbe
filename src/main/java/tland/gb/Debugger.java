@@ -65,14 +65,8 @@ public class Debugger {
             case "x" -> examine(input);
             case "p", "print" -> enablePrinting();
             case "reg" -> printCPUInfo();
-            case "_image" -> debugCreateImage(); // Temp!!
             default -> System.err.println("Unknown command: " + input[0]);
         }
-    }
-
-    // Temp: print frame.
-    private void debugCreateImage() {
-        gb.printFrame();
     }
 
     /**

@@ -8,7 +8,6 @@ import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
 import tland.gb.mem.OAM;
 import tland.gb.mem.VRAM;
-import tland.gb.ppu.PPU;
 import tland.gb.ppu.PPUController;
 
 /**
@@ -21,7 +20,6 @@ public class GameBoy implements Runnable {
 
     private final CartridgeROM rom;
     private final CPU cpu;
-    private final PPU ppu;
     private final HardwareRegisters hwreg;
     private final MemoryMap memoryMap;
     private final InterruptHandler interrupts;
@@ -43,7 +41,6 @@ public class GameBoy implements Runnable {
         PPUController ppuControl = new PPUController(hwreg);
         VRAM vram = new VRAM(0x2000, ppuControl);
         OAM oam = new OAM(40 * 4, ppuControl);
-        ppu = new PPU(vram, oam, hwreg, ppuControl);
 
         memoryMap = new MemoryMap(rom, hwreg, vram, oam);
 
@@ -232,16 +229,5 @@ public class GameBoy implements Runnable {
      */
     public void enableInterrupts(boolean wait) {
         interrupts.enable(wait);
-    }
-
-    // Temporary: print the current frame (each dot as a byte).
-    public void printFrame() {
-        byte[][] scanlines = ppu.getFrame();
-        for (int i = 0; i < scanlines.length; i++) {
-            for (int j = 0; j < scanlines[i].length; j++) {
-                System.out.printf("%02x", scanlines[i][j]);
-            }
-            System.out.println();
-        }
     }
 }
