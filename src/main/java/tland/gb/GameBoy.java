@@ -6,8 +6,6 @@ import tland.gb.Registers.RegisterIndex;
 import tland.gb.cpu.CPU;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
-import tland.gb.mem.OAM;
-import tland.gb.mem.VRAM;
 
 /**
  * Represents a Game Boy (model 'DMG')
@@ -37,10 +35,7 @@ public class GameBoy implements Runnable {
         reg = new Registers(this);
         hwreg = new HardwareRegisters();
 
-        VRAM vram = new VRAM(0x2000);
-        OAM oam = new OAM(40 * 4);
-
-        memoryMap = new MemoryMap(rom, hwreg, vram, oam);
+        memoryMap = new MemoryMap(rom, hwreg);
 
         interrupts = new InterruptHandler(this, hwreg);
         cpu = new CPU(this, interrupts);
