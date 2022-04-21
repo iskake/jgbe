@@ -7,14 +7,12 @@ import tland.gb.cpu.Inst.Prefixed;
 
 public class CPU {
     private final GameBoy gb;
-    private final InterruptHandler interrupts;
 
     /** The CPU clock speed, measured in Hz. */
     public static final int CLOCK_SPEED = 0x400000;
 
-    public CPU(GameBoy gameBoy, InterruptHandler interrupts) {
+    public CPU(GameBoy gameBoy) {
         this.gb = gameBoy;
-        this.interrupts = interrupts;
     }
 
     /**
@@ -22,24 +20,14 @@ public class CPU {
      */
     public void step() {
         short oldPC = gb.pc.get();
-        boolean ime_wait = interrupts.waitingIME();
-        
-        // Call waiting interrupts (if any)
-        if (interrupts.callWaiting()) {
-            return;
-        }
 
         byte opcode = gb.readNextByte();
         Opcodes.getOpcode(opcode).doOp(gb, Byte.toUnsignedInt(opcode));
 
-        if (ime_wait) {
-            interrupts.enable(false);
-        }
-
         short newPC = gb.pc.get();
 
         // Temp.
-        if (oldPC == newPC && !interrupts.enabled()) {
+        if (oldPC == newPC) {
             gb.printHRAM();
             System.out.println("\nInfinite loop! Exiting.");
             System.exit(0);

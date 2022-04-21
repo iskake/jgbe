@@ -36,7 +36,7 @@ public class GameBoy implements Runnable {
         memoryMap = new MemoryMap(rom);
 
         interrupts = new InterruptHandler(this);
-        cpu = new CPU(this, interrupts);
+        cpu = new CPU(this);
         init();
     }
 
