@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import tland.Bitwise;
-import tland.gb.HardwareRegisters.HardwareRegisterIndex;
 import tland.gb.cpu.CPU;
 import tland.gb.cpu.Opcodes;
 
@@ -15,7 +14,6 @@ public class Debugger {
 
     private final GameBoy gb;
     private final CPU cpu;
-    private final HardwareRegisters hwreg;
 
     private Scanner sc;
     private String[] input;
@@ -23,10 +21,9 @@ public class Debugger {
     private ArrayList<Integer> breakPoints;
     private boolean print;
 
-    public Debugger(GameBoy gb, CPU cpu, HardwareRegisters hwreg) {
+    public Debugger(GameBoy gb, CPU cpu) {
         this.gb = gb;
         this.cpu = cpu;
-        this.hwreg = hwreg;
 
         sc = new Scanner(System.in);
         breakPoints = new ArrayList<>();
@@ -74,8 +71,6 @@ public class Debugger {
      */
     private void printCPUInfo() {
         gb.reg.printRegisters();
-        System.out.println("Mode: " + (hwreg.readRegister(HardwareRegisterIndex.STAT) & 0b11)
-                + " LY: " + hwreg.readRegisterInt(HardwareRegisterIndex.LY));
         cpu.printNextInstruction();
     }
 

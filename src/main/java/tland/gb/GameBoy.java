@@ -17,7 +17,6 @@ public class GameBoy implements Runnable {
 
     private final CartridgeROM rom;
     private final CPU cpu;
-    private final HardwareRegisters hwreg;
     private final MemoryMap memoryMap;
     private final InterruptHandler interrupts;
 
@@ -33,11 +32,10 @@ public class GameBoy implements Runnable {
         sp = new StackPointer(this, (short) 0xfffe);
 
         reg = new Registers(this);
-        hwreg = new HardwareRegisters();
 
-        memoryMap = new MemoryMap(rom, hwreg);
+        memoryMap = new MemoryMap(rom);
 
-        interrupts = new InterruptHandler(this, hwreg);
+        interrupts = new InterruptHandler(this);
         cpu = new CPU(this, interrupts);
         init();
     }
@@ -62,7 +60,6 @@ public class GameBoy implements Runnable {
         pc.init((short) 0x100);
         sp.set((short) 0xfffe);
         memoryMap.init();
-        hwreg.init();
 
         boolean willStop = false;
         try {
@@ -85,7 +82,7 @@ public class GameBoy implements Runnable {
             return;
         }
 
-        dbg = new Debugger(this, cpu, hwreg);
+        dbg = new Debugger(this, cpu);
         running = true;
     }
 

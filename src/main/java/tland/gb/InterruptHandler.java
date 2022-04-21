@@ -1,7 +1,6 @@
 package tland.gb;
 
 import tland.Bitwise;
-import static tland.gb.HardwareRegisters.HardwareRegisterIndex.*;
 
 public class InterruptHandler {
 
@@ -17,17 +16,15 @@ public class InterruptHandler {
     private boolean waitIME = false;
     private final ProgramCounter pc;
     private final StackPointer sp;
-    private final HardwareRegisters hwreg;
     private final GameBoy gb;
 
     /** Currently waiting interrupts */
     private boolean[] waiting = { false, false, false, false, false };
 
-    public InterruptHandler(GameBoy gb, HardwareRegisters hwreg) {
+    public InterruptHandler(GameBoy gb) {
         this.gb = gb;
         this.pc = gb.pc;
         this.sp = gb.sp;
-        this.hwreg = hwreg;
     }
 
     /**
@@ -81,7 +78,6 @@ public class InterruptHandler {
     public void setWaitingToCall(InterruptType it) {
         int bit = it.ordinal();
         waiting[bit] = true;
-        hwreg.setBit(IF, bit);
     }
 
     /**
@@ -118,17 +114,16 @@ public class InterruptHandler {
 
         if (!enabled()) {
             return false;
-        } else {
+        } /* else {
             if (!(Bitwise.isBitSet(hwreg.readRegister(IE), bit)) || !(Bitwise.isBitSet(hwreg.readRegister(IF), bit))) {
                 return false;
             }
-        }
+        } */
         disable();
         sp.push(pc.get());
         pc.set(Bitwise.toShort(address));
 
         waiting[bit] = false;
-        hwreg.resetBit(IF, bit);
 
         return true;
     }

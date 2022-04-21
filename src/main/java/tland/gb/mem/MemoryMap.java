@@ -1,7 +1,6 @@
 package tland.gb.mem;
 
 import tland.Bitwise;
-import tland.gb.HardwareRegisters;
 
 /**
  * Memory map of the Game boy.
@@ -16,21 +15,21 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     private RAM WRAM1;
     private RAM WRAM2;
     private RAM OAM;
-    private ProhibitedMemory prohibited;
-    private HardwareRegisterMap IO;
+    private RAM prohibited;
+    private RAM IO;
     private RAM HRAM;
 
     private int fixedAddress;
 
-    public MemoryMap(CartridgeROM rom, HardwareRegisters hwreg) {
+    public MemoryMap(CartridgeROM rom) {
         this.rom = rom;
-        VRAM = new RAM(0x2000);
-        WRAM1 = new RAM(0x1000);
-        WRAM2 = new RAM(0x1000);
-        OAM = new RAM(40 * 4);
-        IO = new HardwareRegisterMap(hwreg);
-        prohibited = new ProhibitedMemory(hwreg);
-        HRAM = new RAM(0x200);
+        VRAM       = new RAM(0x2000);
+        WRAM1      = new RAM(0x1000);
+        WRAM2      = new RAM(0x1000);
+        OAM        = new RAM(0xa0);
+        prohibited = new RAM(0x60);
+        IO         = new RAM(0x80);
+        HRAM       = new RAM(0x200);
 
         init();
     }
