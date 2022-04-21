@@ -172,7 +172,7 @@ public class Debugger {
      * is executed), then the debugger will stop stepping over.
      */
     private void stepOver() {
-        byte opcode = gb.readMemoryNoCycle(gb.pc.get());
+        byte opcode = gb.readMemoryAddress(gb.pc.get());
         String name = Opcodes.getOpcode(opcode).getName();
         cpu.step();
         if (name.startsWith("call") || name.startsWith("rst")) {
@@ -181,7 +181,7 @@ public class Debugger {
                     break;
                 }
 
-                opcode = gb.readMemoryNoCycle(gb.pc.get());
+                opcode = gb.readMemoryAddress(gb.pc.get());
                 name = Opcodes.getOpcode(opcode).getName();
 
                 if (name.startsWith("ret")) {

@@ -47,7 +47,7 @@ public class GameBoyTest {
     }
 
     byte readMem(short address) {
-        return gb.readMemoryNoCycle(address);
+        return gb.readMemoryAddress(address);
     }
 
     void writeMem(short address, byte value) {

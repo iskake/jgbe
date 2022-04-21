@@ -7,11 +7,9 @@ package tland.gb;
  * be executed.
  */
 public class ProgramCounter extends Pointer {
-    private final GameBoy gb;
 
-    public ProgramCounter(GameBoy gb, short address) {
+    public ProgramCounter(short address) {
         super(address);
-        this.gb = gb;
     }
 
     /**

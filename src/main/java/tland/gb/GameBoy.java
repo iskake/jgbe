@@ -28,7 +28,7 @@ public class GameBoy implements Runnable {
         debuggerEnabled = true;
         this.rom = rom;
 
-        pc = new ProgramCounter(this, (short) 0x100);
+        pc = new ProgramCounter((short) 0x100);
         sp = new StackPointer(this, (short) 0xfffe);
 
         reg = new Registers(this);
@@ -148,10 +148,6 @@ public class GameBoy implements Runnable {
         memoryMap.writeByte(address, value);
     }
 
-    public byte readMemoryNoCycle(short address) {
-        return memoryMap.readByte(address);
-    }
-
     public byte readMemoryAddress(short address) {
         return memoryMap.readByte(address);
     }
@@ -178,7 +174,7 @@ public class GameBoy implements Runnable {
             if (c % 16 == 0) {
                 System.out.printf("\n%04x  ", (short) i);
             }
-            System.out.printf("%02x ", readMemoryNoCycle((short) i));
+            System.out.printf("%02x ", readMemoryAddress((short) i));
             c++;
         }
         System.out.println("\n");
