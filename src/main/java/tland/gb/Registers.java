@@ -399,6 +399,17 @@ public class Registers {
     }
 
     /**
+     * Clear all register values. This will set all registers (including the F
+     * register) to {@code $00}.
+     */
+    public void clearAll() {
+        writeRegisterShort(RegisterIndex.AF, 0x0000);
+        writeRegisterShort(RegisterIndex.BC, 0x0000);
+        writeRegisterShort(RegisterIndex.DE, 0x0000);
+        writeRegisterShort(RegisterIndex.HL, 0x0000);
+    }
+
+    /**
      * Increment the value stored in the 8-bit register {@code reg}.
      * 
      * @param reg The register to increment the value of.

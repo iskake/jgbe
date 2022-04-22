@@ -3,8 +3,6 @@ package tland.gb;
 import java.util.Scanner;
 
 import tland.Bitwise;
-import tland.gb.Registers.Flags;
-import tland.gb.Registers.RegisterIndex;
 import tland.gb.cpu.CPU;
 import tland.gb.mem.CartridgeROM;
 import tland.gb.mem.MemoryMap;
@@ -51,16 +49,7 @@ public class GameBoy implements Runnable {
      * ('powered on').
      */
     private void init() {
-        // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
-        // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
-        reg.writeRegisterByte(RegisterIndex.A, 0x01);
-        reg.setFlag(Flags.Z);
-        reg.resetFlag(Flags.N);
-        reg.setFlag(Flags.H);
-        reg.setFlag(Flags.C);
-        reg.writeRegisterShort(RegisterIndex.BC, (short) 0x0013);
-        reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
-        reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
+        reg.clearAll();
 
         pc.set((short) 0x0100);
         sp.set((short) 0xfffe);
