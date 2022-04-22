@@ -30,11 +30,7 @@ public class JP_cc_nn extends Instruction {
         }
 
         if (Conditions.conditionSatisfied(gb.reg, condition)) {
-            if (opcode != 0xe9) {
-                gb.pc.set(address);
-            } else {
-                gb.pc.setNoCycle(address);
-            }
+            gb.pc.set(address);
         }
     }
 
