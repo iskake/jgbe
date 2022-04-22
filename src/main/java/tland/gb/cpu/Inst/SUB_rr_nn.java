@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
@@ -24,29 +24,29 @@ public class SUB_rr_nn extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         byte value;
 
         if (r2 == null) {
             value = gb.readNextByte();
         } else {
-            value = gb.reg.readRegisterByte(r2);
+            value = gb.reg().readRegisterByte(r2);
         }
 
         byte c = 0;
         if (carry) {
             // sbc a, nn
-            c += gb.reg.isFlagSet(Flags.C) ? 1 : 0;
+            c += gb.reg().isFlagSet(Flags.C) ? 1 : 0;
         }
 
-        byte a = gb.reg.readRegisterByte(r1);
+        byte a = gb.reg().readRegisterByte(r1);
 
-        gb.reg.writeRegisterByte(r1, a - value - c);
+        gb.reg().writeRegisterByte(r1, a - value - c);
 
-        gb.reg.setFlagConditional(Flags.Z, (byte) (a - value - c) == 0);
-        gb.reg.setFlag(Flags.N);
-        gb.reg.setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < ((Byte.toUnsignedInt(value) & 0b1111) + c));
-        gb.reg.setFlagConditional(Flags.C, ((Byte.toUnsignedInt(a) - Byte.toUnsignedInt(value) - c) & 0xfff) > 0xff);
+        gb.reg().setFlagConditional(Flags.Z, (byte) (a - value - c) == 0);
+        gb.reg().setFlag(Flags.N);
+        gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < ((Byte.toUnsignedInt(value) & 0b1111) + c));
+        gb.reg().setFlagConditional(Flags.C, ((Byte.toUnsignedInt(a) - Byte.toUnsignedInt(value) - c) & 0xfff) > 0xff);
     }
 
 }

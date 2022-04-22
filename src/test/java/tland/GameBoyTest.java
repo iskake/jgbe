@@ -39,7 +39,7 @@ public class GameBoyTest {
     @BeforeAll
     static void initGameBoy() {
         gb = new GameBoy(new CartridgeROM(b));
-        reg = gb.reg;
+        reg = gb.reg();
     }
 
     void loadOpcode(int opcode) {

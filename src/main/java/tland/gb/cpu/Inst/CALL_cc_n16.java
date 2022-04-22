@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 
 /**
  * Call the specified address.
@@ -18,12 +18,12 @@ public class CALL_cc_n16 extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         short address = gb.readNextShort();
 
-        if (Conditions.conditionSatisfied(gb.reg, condition)) {
-            gb.sp.push(gb.pc.get());
-            gb.pc.set(address);
+        if (Conditions.conditionSatisfied(gb.reg(), condition)) {
+            gb.sp().push(gb.pc().get());
+            gb.pc().set(address);
         }
     }
 

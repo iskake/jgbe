@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.Flags;
 
 /**
@@ -17,10 +17,10 @@ public class CCF extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
-        gb.reg.resetFlag(Flags.N);
-        gb.reg.resetFlag(Flags.H);
-        gb.reg.complementFlag(Flags.C);
+    public void doOp(IGameBoy gb, int opcode) {
+        gb.reg().resetFlag(Flags.N);
+        gb.reg().resetFlag(Flags.H);
+        gb.reg().complementFlag(Flags.C);
     }
 
 }

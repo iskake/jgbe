@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 
 /**
  * Jump to the next address + the signed value $e8, with optional condition.
@@ -18,12 +18,12 @@ public class JR_cc_e8 extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         short value = gb.readNextByte();
 
-        if (Conditions.conditionSatisfied(gb.reg, condition)) {
-            short address = gb.pc.get();
-            gb.pc.set((short) (address + value));
+        if (Conditions.conditionSatisfied(gb.reg(), condition)) {
+            short address = gb.pc().get();
+            gb.pc().set((short) (address + value));
         }
     }
 

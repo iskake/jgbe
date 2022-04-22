@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.RegisterIndex;
 
 /**
@@ -16,10 +16,10 @@ public class Halt extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         switch (opcode) {
             case 0x10 -> gb.stop();
-            case 0x76 -> gb.halt(gb.reg.readRegisterShort(RegisterIndex.HL));
+            case 0x76 -> gb.halt(gb.reg().readRegisterShort(RegisterIndex.HL));
             default -> throw new IllegalInstructionException();
         }
     }

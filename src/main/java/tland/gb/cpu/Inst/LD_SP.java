@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
@@ -17,22 +17,22 @@ public class LD_SP extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         if (opcode == 0xf8) {
             // ld hl, sp+$e8
-            short sp = gb.sp.get();
+            short sp = gb.sp().get();
             byte value = gb.readNextByte();
 
-            gb.reg.writeRegisterShort(RegisterIndex.HL, sp + value);
+            gb.reg().writeRegisterShort(RegisterIndex.HL, sp + value);
 
-            gb.reg.resetFlag(Flags.Z);
-            gb.reg.resetFlag(Flags.N);
-            gb.reg.setFlagConditional(Flags.H,
+            gb.reg().resetFlag(Flags.Z);
+            gb.reg().resetFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H,
                     (Short.toUnsignedInt(sp) & 0b111) + (Byte.toUnsignedInt(value) & 0b111) > 0b111);
-            gb.reg.setFlagConditional(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
+            gb.reg().setFlagConditional(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
             // ld sp, hl
-            gb.sp.set(gb.reg.readRegisterShort(RegisterIndex.HL));
+            gb.sp().set(gb.reg().readRegisterShort(RegisterIndex.HL));
         }
     }
 

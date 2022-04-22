@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
@@ -20,21 +20,21 @@ public class CP_nn extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         byte value;
 
         if (reg == null) {
             value = gb.readNextByte();
         } else {
-            value = gb.reg.readRegisterByte(reg);
+            value = gb.reg().readRegisterByte(reg);
         }
 
-        byte a = gb.reg.readRegisterByte(RegisterIndex.A);
+        byte a = gb.reg().readRegisterByte(RegisterIndex.A);
 
-        gb.reg.setFlagConditional(Flags.Z, a - value == 0);
-        gb.reg.setFlag(Flags.N);
-        gb.reg.setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < (Byte.toUnsignedInt(value) & 0b1111));
-        gb.reg.setFlagConditional(Flags.C, Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value));
+        gb.reg().setFlagConditional(Flags.Z, a - value == 0);
+        gb.reg().setFlag(Flags.N);
+        gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < (Byte.toUnsignedInt(value) & 0b1111));
+        gb.reg().setFlagConditional(Flags.C, Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value));
     }
 
 }

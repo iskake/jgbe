@@ -1,7 +1,7 @@
 package tland.gb.cpu.Inst;
 
 import tland.Bitwise;
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.RegisterIndex;
 
 /**
@@ -21,7 +21,7 @@ public class LD_ptr_rr extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         // Because the three implemented opcodes (see javadoc above class) all load the
         // value in the A register to an address (hence, `LD_ptr_A`), we can use the
         // same class for all three opcodes.
@@ -29,18 +29,18 @@ public class LD_ptr_rr extends Instruction {
             // ldh [$n16], a (a.k.a. `ld [$ff00+n8], a`)
             case 0xE0 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh [c], a (a.k.a. `ld [$ff00+c], a`)
-            case 0xE2 -> Bitwise.toShort((byte) 0xff, gb.reg.readRegisterByte(RegisterIndex.C));
+            case 0xE2 -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(RegisterIndex.C));
             // ld [$n16], a and ld [$n16], sp
             default -> gb.readNextShort();
         };
 
         if (opcode == 0x08) {
             // ld [$n16], sp
-            short sp = gb.sp.get();
+            short sp = gb.sp().get();
             gb.writeMemoryAddress(address, Bitwise.getLowByte(sp));
             gb.writeMemoryAddress((short)(address + 1), Bitwise.getHighByte(sp));
         } else {
-            byte value = gb.reg.readRegisterByte(reg);
+            byte value = gb.reg().readRegisterByte(reg);
             gb.writeMemoryAddress(address, value);
         }
     }

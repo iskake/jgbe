@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 
 public class IllegalInst extends Instruction {
 
@@ -9,7 +9,7 @@ public class IllegalInst extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         throw new IllegalInstructionException();
     }
     

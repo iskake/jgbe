@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
@@ -31,51 +31,51 @@ public class ADD_rr_nn extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         if (Registers.isRegisterByte(r1) || opcode == 0x86) {
             byte value;
 
             if (r2 == null) {
                 value = gb.readNextByte();
             } else {
-                value = gb.reg.readRegisterByte(r2);
+                value = gb.reg().readRegisterByte(r2);
             }
 
             byte c = 0;
             if (carry) {
                 // adc rr, nn
-                c += gb.reg.isFlagSet(Flags.C) ? 1 : 0;
+                c += gb.reg().isFlagSet(Flags.C) ? 1 : 0;
             }
 
-            byte regVal = gb.reg.readRegisterByte(r1);
+            byte regVal = gb.reg().readRegisterByte(r1);
 
-            gb.reg.writeRegisterByte(r1, regVal + value + c);
-            gb.reg.setFlagConditional(Flags.Z, (regVal + value + c == 0));
-            gb.reg.resetFlag(Flags.N);
-            gb.reg.setFlagConditional(Flags.H, (((Byte.toUnsignedInt(regVal) & 0b1111)
+            gb.reg().writeRegisterByte(r1, regVal + value + c);
+            gb.reg().setFlagConditional(Flags.Z, (regVal + value + c == 0));
+            gb.reg().resetFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H, (((Byte.toUnsignedInt(regVal) & 0b1111)
                     + (Byte.toUnsignedInt(value) & 0b1111) + c) > 0b1111));
 
-            gb.reg.setFlagConditional(Flags.C, (Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) > 0xff));
+            gb.reg().setFlagConditional(Flags.C, (Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) > 0xff));
         } else if (opcode == 0xe8) {
             // add sp, $e8
             byte value = gb.readNextByte();
-            short regVal = gb.sp.get();
-            gb.sp.set((short) (regVal + value));
+            short regVal = gb.sp().get();
+            gb.sp().set((short) (regVal + value));
 
-            gb.reg.resetFlag(Flags.Z);
-            gb.reg.resetFlag(Flags.N);
-            gb.reg.setFlagConditional(Flags.H,
+            gb.reg().resetFlag(Flags.Z);
+            gb.reg().resetFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H,
                     ((Short.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111)) > 0b1111);
-            gb.reg.setFlagConditional(Flags.C, (Short.toUnsignedInt(regVal) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
+            gb.reg().setFlagConditional(Flags.C, (Short.toUnsignedInt(regVal) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
-            short r1Val = gb.reg.readRegisterShort(r1);
-            short r2Val = gb.reg.readRegisterShort(r2);
+            short r1Val = gb.reg().readRegisterShort(r1);
+            short r2Val = gb.reg().readRegisterShort(r2);
 
-            gb.reg.writeRegisterShort(r1, r1Val + r2Val);
-            gb.reg.resetFlag(Flags.N);
-            gb.reg.setFlagConditional(Flags.H,
+            gb.reg().writeRegisterShort(r1, r1Val + r2Val);
+            gb.reg().resetFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H,
                     ((Short.toUnsignedInt(r1Val) & 0xfff) + (Short.toUnsignedInt(r2Val) & 0xfff) > 0xfff));
-            gb.reg.setFlagConditional(Flags.C, Short.toUnsignedInt(r1Val) + Short.toUnsignedInt(r2Val) > 0xffff);
+            gb.reg().setFlagConditional(Flags.C, Short.toUnsignedInt(r1Val) + Short.toUnsignedInt(r2Val) > 0xffff);
         }
     }
 

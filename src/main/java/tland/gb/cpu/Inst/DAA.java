@@ -1,7 +1,7 @@
 package tland.gb.cpu.Inst;
 
 import tland.Bitwise;
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
@@ -19,34 +19,34 @@ public class DAA extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
-        int value = Byte.toUnsignedInt(gb.reg.readRegisterByte(RegisterIndex.A));
-        if (!gb.reg.isFlagSet(Flags.N)) {
+    public void doOp(IGameBoy gb, int opcode) {
+        int value = Byte.toUnsignedInt(gb.reg().readRegisterByte(RegisterIndex.A));
+        if (!gb.reg().isFlagSet(Flags.N)) {
             // Adjust value for additions
-            if (gb.reg.isFlagSet(Flags.H) || (value & 0b1111) > 0x09) {
+            if (gb.reg().isFlagSet(Flags.H) || (value & 0b1111) > 0x09) {
                 // carry or overflow in lower digit
                 value += 0x06;
             }
 
-            if (gb.reg.isFlagSet(Flags.C) || value > 0x99) {
+            if (gb.reg().isFlagSet(Flags.C) || value > 0x99) {
                 // carry or overflow in higher digit
                 value += 0x60;
             }
         } else {
             // Adjust value for subtractions (note: only carry and half carry)
-            if (gb.reg.isFlagSet(Flags.H)) {
+            if (gb.reg().isFlagSet(Flags.H)) {
                 value -= 0x06;
             }
 
-            if (gb.reg.isFlagSet(Flags.C)) {
+            if (gb.reg().isFlagSet(Flags.C)) {
                 value -= 0x60;
             }
         }
 
-        gb.reg.writeRegisterByte(RegisterIndex.A, value);
-        gb.reg.setFlagConditional(Flags.Z, Bitwise.intAsByte(value) == 0);
-        gb.reg.resetFlag(Flags.H);
-        gb.reg.setFlagConditional(Flags.C, value > 0x99);
+        gb.reg().writeRegisterByte(RegisterIndex.A, value);
+        gb.reg().setFlagConditional(Flags.Z, Bitwise.intAsByte(value) == 0);
+        gb.reg().resetFlag(Flags.H);
+        gb.reg().setFlagConditional(Flags.C, value > 0x99);
     }
 
 }

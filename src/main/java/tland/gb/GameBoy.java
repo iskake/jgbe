@@ -11,10 +11,9 @@ import tland.gb.mem.MemoryMap;
  * Represents a Game Boy (model 'DMG')
  */
 public class GameBoy implements Runnable, IGameBoy {
-    public final ProgramCounter pc;
-    public final StackPointer sp;
-    public final Registers reg;
-
+    private final ProgramCounter pc;
+    private final StackPointer sp;
+    private final Registers reg;
     private final CartridgeROM rom;
     private final CPU cpu;
     private final MemoryMap memoryMap;

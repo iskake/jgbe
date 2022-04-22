@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 
 /**
  * Prefixed instructions.
@@ -16,7 +16,7 @@ public class Prefixed extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         /*
          * Instead of creating a whole table to hold all prefixed opcodes (as in [1]),
          * it is possible to find each 'instruction type' by looking at the value of the

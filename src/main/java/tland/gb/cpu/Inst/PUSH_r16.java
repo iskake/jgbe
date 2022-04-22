@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.RegisterIndex;
 
 /**
@@ -19,8 +19,8 @@ public class PUSH_r16 extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
-        gb.sp.push(gb.reg.readRegisterShort(reg));
+    public void doOp(IGameBoy gb, int opcode) {
+        gb.sp().push(gb.reg().readRegisterShort(reg));
     }
 
 }

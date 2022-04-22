@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 
 /**
  * Abstract implementation of an instruction
@@ -23,7 +23,7 @@ public abstract class Instruction {
      * @param gb     GameBoy object to read/write values.
      * @param opcode The opcode of the instruction, used for special cases.
      */
-    public abstract void doOp(GameBoy gb, int opcode);
+    public abstract void doOp(IGameBoy gb, int opcode);
 
     /**
      * Get the name of the instruction.

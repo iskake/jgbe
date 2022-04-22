@@ -70,7 +70,7 @@ public class Debugger {
      * Print information about the CPU and registers.
      */
     private void printCPUInfo() {
-        gb.reg.printRegisters();
+        gb.reg().printRegisters();
         cpu.printNextInstruction();
     }
 
@@ -155,7 +155,7 @@ public class Debugger {
      */
     private boolean checkBreakpointHit() {
         for (Integer breakPoint : breakPoints) {
-            if (gb.pc.get() == Bitwise.toShort(breakPoint)) {
+            if (gb.pc().get() == Bitwise.toShort(breakPoint)) {
                 System.out.printf("Hit breakpoint at $%04x\n", breakPoint);
                 return true;
             }
@@ -172,7 +172,7 @@ public class Debugger {
      * is executed), then the debugger will stop stepping over.
      */
     private void stepOver() {
-        byte opcode = gb.readMemoryAddress(gb.pc.get());
+        byte opcode = gb.readMemoryAddress(gb.pc().get());
         String name = Opcodes.getOpcode(opcode).getName();
         cpu.step();
         if (name.startsWith("call") || name.startsWith("rst")) {
@@ -181,13 +181,13 @@ public class Debugger {
                     break;
                 }
 
-                opcode = gb.readMemoryAddress(gb.pc.get());
+                opcode = gb.readMemoryAddress(gb.pc().get());
                 name = Opcodes.getOpcode(opcode).getName();
 
                 if (name.startsWith("ret")) {
-                    short oldPC = gb.pc.get();
+                    short oldPC = gb.pc().get();
                     cpu.step();
-                    short newPC = gb.pc.get();
+                    short newPC = gb.pc().get();
 
                     if ((short) (oldPC + 1) != newPC) {
                         break;

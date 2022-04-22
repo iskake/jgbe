@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers;
 import tland.gb.Registers.RegisterIndex;
 
@@ -19,12 +19,12 @@ public class LD_rr_nn extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         // 0x36 -> ld [hl], $n8
         if (Registers.isRegisterByte(reg) || opcode == 0x36) {
-            gb.reg.writeRegisterByte(reg, gb.readNextByte());
+            gb.reg().writeRegisterByte(reg, gb.readNextByte());
         } else if (Registers.isRegisterShort(reg)) {
-            gb.reg.writeRegisterShort(reg, gb.readNextShort());
+            gb.reg().writeRegisterShort(reg, gb.readNextShort());
         }
     }
 

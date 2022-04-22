@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
@@ -20,19 +20,19 @@ public class DEC_rr extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         // 0x35 -> dec [hl]
         if (Registers.isRegisterByte(reg) || opcode == 0x35) {
-            gb.reg.decRegisterByte(reg);
+            gb.reg().decRegisterByte(reg);
 
-            byte value = gb.reg.readRegisterByte(reg);
+            byte value = gb.reg().readRegisterByte(reg);
 
-            gb.reg.setFlagConditional(Flags.Z, value == 0);
-            gb.reg.setFlag(Flags.N);
-            gb.reg.setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0b1111);
+            gb.reg().setFlagConditional(Flags.Z, value == 0);
+            gb.reg().setFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0b1111);
 
         } else {
-            gb.reg.decRegisterShort(reg);
+            gb.reg().decRegisterShort(reg);
         }
     }
 

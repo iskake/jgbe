@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.RegisterIndex;
 
 /**
@@ -19,9 +19,9 @@ public class POP_r16 extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
-        short value = gb.sp.pop();
-        gb.reg.writeRegisterShort(reg, value);
+    public void doOp(IGameBoy gb, int opcode) {
+        short value = gb.sp().pop();
+        gb.reg().writeRegisterShort(reg, value);
     }
 
 }

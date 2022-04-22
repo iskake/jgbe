@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
@@ -19,23 +19,23 @@ public class XOR_nn extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         byte value;
         
         if (reg == null) {
             value = gb.readNextByte();
         } else {
-            value = gb.reg.readRegisterByte(reg);
+            value = gb.reg().readRegisterByte(reg);
         }
 
-        byte a = gb.reg.readRegisterByte(RegisterIndex.A);
+        byte a = gb.reg().readRegisterByte(RegisterIndex.A);
 
-        gb.reg.writeRegisterByte(RegisterIndex.A, a ^ value);
+        gb.reg().writeRegisterByte(RegisterIndex.A, a ^ value);
 
-        gb.reg.setFlagConditional(Flags.Z, (a ^ value) == 0);
-        gb.reg.resetFlag(Flags.N);
-        gb.reg.resetFlag(Flags.H);
-        gb.reg.resetFlag(Flags.C);
+        gb.reg().setFlagConditional(Flags.Z, (a ^ value) == 0);
+        gb.reg().resetFlag(Flags.N);
+        gb.reg().resetFlag(Flags.H);
+        gb.reg().resetFlag(Flags.C);
     }
 
 }

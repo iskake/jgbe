@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
@@ -17,10 +17,10 @@ public class CPL extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
-        gb.reg.writeRegisterByte(RegisterIndex.A, ~gb.reg.readRegisterByte(RegisterIndex.A));
-        gb.reg.setFlag(Flags.N);
-        gb.reg.setFlag(Flags.H);
+    public void doOp(IGameBoy gb, int opcode) {
+        gb.reg().writeRegisterByte(RegisterIndex.A, ~gb.reg().readRegisterByte(RegisterIndex.A));
+        gb.reg().setFlag(Flags.N);
+        gb.reg().setFlag(Flags.H);
     }
     
 }

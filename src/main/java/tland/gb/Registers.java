@@ -156,9 +156,9 @@ public class Registers {
      */
     public void setFlagConditional(Flags flag, boolean condition) {
         if (condition) {
-            gb.reg.setFlag(flag);
+            setFlag(flag);
         } else {
-            gb.reg.resetFlag(flag);
+            resetFlag(flag);
         }
     }
 
@@ -349,7 +349,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.equals(RegisterIndex.SP)) {
-            return gb.sp.get();
+            return gb.sp().get();
         }
 
         int index = getShortRegisterIndex(reg);
@@ -370,7 +370,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.equals(RegisterIndex.SP)) {
-            gb.sp.set(value);
+            gb.sp().set(value);
             return;
         }
 
@@ -438,7 +438,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.equals(RegisterIndex.SP)) {
-            gb.sp.inc();
+            gb.sp().inc();
             return;
         }
 
@@ -480,7 +480,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.equals(RegisterIndex.SP)) {
-            gb.sp.dec();
+            gb.sp().dec();
             return;
         }
 
@@ -594,7 +594,7 @@ public class Registers {
         System.out.printf("BC: %04x\n", readRegisterShort(RegisterIndex.BC));
         System.out.printf("DE: %04x\n", readRegisterShort(RegisterIndex.DE));
         System.out.printf("HL: %04x\n", readRegisterShort(RegisterIndex.HL));
-        System.out.printf("SP: %04x\n", gb.sp.get());
-        System.out.printf("PC: %04x\n", gb.pc.get());
+        System.out.printf("SP: %04x\n", gb.sp().get());
+        System.out.printf("PC: %04x\n", gb.pc().get());
     }
 }

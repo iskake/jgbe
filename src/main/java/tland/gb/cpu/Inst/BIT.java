@@ -1,7 +1,7 @@
 package tland.gb.cpu.Inst;
 
 import tland.Bitwise;
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.Flags;
 import tland.gb.Registers.RegisterIndex;
 
@@ -24,7 +24,7 @@ public class BIT extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         /*
          * The prefixed Bitwise opcodes can be indexed like so:
          * 40-ff => Bitwise instructions
@@ -43,14 +43,14 @@ public class BIT extends Instruction {
 
         switch (opcodeType) {
             case BIT_VAL -> {
-                boolean bitIsSet = gb.reg.isBitSet(reg, bitNum);
+                boolean bitIsSet = gb.reg().isBitSet(reg, bitNum);
 
-                gb.reg.setFlagConditional(Flags.Z, !bitIsSet);
-                gb.reg.resetFlag(Flags.N);
-                gb.reg.setFlag(Flags.H);
+                gb.reg().setFlagConditional(Flags.Z, !bitIsSet);
+                gb.reg().resetFlag(Flags.N);
+                gb.reg().setFlag(Flags.H);
             }
-            case RES_VAL -> gb.reg.resetBit(reg, bitNum);
-            case SET_VAL -> gb.reg.setBit(reg, bitNum);
+            case RES_VAL -> gb.reg().resetBit(reg, bitNum);
+            case SET_VAL -> gb.reg().setBit(reg, bitNum);
             default -> throw new IllegalInstructionException(
                     "Value %02x is not a valid bitwise instruction.".formatted(opcodeType));
         }

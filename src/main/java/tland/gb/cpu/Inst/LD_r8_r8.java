@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.*;
 
 /**
@@ -22,16 +22,16 @@ public final class LD_r8_r8 extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
-        gb.reg.writeRegisterByte(r1, gb.reg.readRegisterByte(r2));
+    public void doOp(IGameBoy gb, int opcode) {
+        gb.reg().writeRegisterByte(r1, gb.reg().readRegisterByte(r2));
 
         // Handle HLI and HLD opcodes
         if (opcode == 0x22 || opcode == 0x2a) {
             // HLI
-            gb.reg.incRegisterShort(RegisterIndex.HL);
+            gb.reg().incRegisterShort(RegisterIndex.HL);
         } else if (opcode == 0x32 || opcode == 0x3a) {
             // HLD
-            gb.reg.decRegisterShort(RegisterIndex.HL);
+            gb.reg().decRegisterShort(RegisterIndex.HL);
         }
     }
 

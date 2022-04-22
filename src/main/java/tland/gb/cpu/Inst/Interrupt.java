@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 
 /**
  * {@code di} and {@code ei} instructions for disabling and enabling
@@ -16,7 +16,7 @@ public class Interrupt extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         switch (opcode) {
             case 0xf3 -> gb.undecidedDI();
             case 0xfb -> gb.undecidedEI();

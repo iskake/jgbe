@@ -1,6 +1,6 @@
 package tland.gb.cpu.Inst;
 
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.RegisterIndex;
 
 /**
@@ -20,17 +20,17 @@ public class JP_cc_nn extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         short address;
 
         if (opcode == 0xe9) {
-            address = gb.reg.readRegisterShort(RegisterIndex.HL);
+            address = gb.reg().readRegisterShort(RegisterIndex.HL);
         } else {
             address = gb.readNextShort();
         }
 
-        if (Conditions.conditionSatisfied(gb.reg, condition)) {
-            gb.pc.set(address);
+        if (Conditions.conditionSatisfied(gb.reg(), condition)) {
+            gb.pc().set(address);
         }
     }
 

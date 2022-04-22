@@ -1,7 +1,7 @@
 package tland.gb.cpu.Inst;
 
 import tland.Bitwise;
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 import tland.gb.Registers.RegisterIndex;
 
 /**
@@ -21,7 +21,7 @@ public class LD_A_ptr extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         byte value;
 
         // Because the three implemented opcodes (see javadoc above class) all load a
@@ -31,13 +31,13 @@ public class LD_A_ptr extends Instruction {
             // ldh a, [$n16] (a.k.a. `ld a, [$ff00+n8]`)
             case 0xF0 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh a, [c] (a.k.a. `ld a, [$ff00+c]`)
-            case 0xF2 -> Bitwise.toShort((byte) 0xff, gb.reg.readRegisterByte(RegisterIndex.C));
+            case 0xF2 -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(RegisterIndex.C));
             // ld a, [$n16]
             default -> gb.readNextShort();
         };
 
         value = gb.readMemoryAddress(address);
-        gb.reg.writeRegisterByte(reg, value);
+        gb.reg().writeRegisterByte(reg, value);
     }
 
 }

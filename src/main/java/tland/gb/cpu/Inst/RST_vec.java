@@ -1,7 +1,7 @@
 package tland.gb.cpu.Inst;
 
 import tland.Bitwise;
-import tland.gb.GameBoy;
+import tland.gb.IGameBoy;
 
 /**
  * Call the address {@code vec}.
@@ -18,11 +18,11 @@ public class RST_vec extends Instruction {
     }
 
     @Override
-    public void doOp(GameBoy gb, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         short vector = Bitwise.toShort(opcode & 0b111000);
 
-        gb.sp.push(gb.pc.get());
-        gb.pc.set(vector);
+        gb.sp().push(gb.pc().get());
+        gb.pc().set(vector);
     }
 
 }
