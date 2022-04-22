@@ -25,10 +25,13 @@ public class GameBoy implements Runnable {
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
+    private boolean runInterpreter;
 
     public GameBoy(CartridgeROM rom) {
         debuggerEnabled = true;
         this.rom = rom;
+
+        runInterpreter = (rom == null) ? true : false;
 
         pc = new ProgramCounter((short) 0x100);
         sp = new StackPointer(this, (short) 0xfffe);
@@ -63,19 +66,34 @@ public class GameBoy implements Runnable {
         sp.set((short) 0xfffe);
         memoryMap.init();
 
-        boolean willStop = false;
+        if (runInterpreter) {
+            System.out.println("interpreter time!");
+            System.exit(0);
+        } else {
+            checkGameBoyHeader();
+        }
+
+        dbg = new Debugger(this, cpu);
+        running = true;
+    }
+
+    /**
+     * Check if the provided file is a valid Game Boy ROM file.
+     */
+    private void checkGameBoyHeader() {
+        boolean validGBHeader = false;
         if (Header.validLogo(rom.getROMBank0())) {
             System.out.println("Valid logo!");
-            willStop = true;
+            validGBHeader = true;
         }
         if (Header.validHeaderChecksum(rom.getROMBank0())) {
             System.out.println("Valid checksum!");
-            willStop = true;
+            validGBHeader = true;
         }
 
-        if (willStop) {
+        if (validGBHeader) {
             System.out.println("Warning: The provided file is in the format of a Game Boy ROM.");
-            System.out.println("JGBE is not designed to run these files, though it should run as a valid file.");
+            System.out.println("Although this file may run just fine, JGBE is not designed to run Game Boy ROMs.");
             Header header = new Header(rom);
             System.out.println("\nInternal ROM Information:");
             System.out.println("    Name: '" + header.getTitle().strip() + "'");
@@ -97,9 +115,6 @@ public class GameBoy implements Runnable {
                 }
             }
         }
-
-        dbg = new Debugger(this, cpu);
-        running = true;
     }
 
     /**

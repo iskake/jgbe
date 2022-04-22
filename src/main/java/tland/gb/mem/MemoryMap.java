@@ -9,11 +9,15 @@ import tland.Bitwise;
  * $0000-$ffff ($10000 bytes)
  */
 public class MemoryMap implements WritableMemory, ReadableMemory {
-    private final CartridgeROM rom;
-
+    private CartridgeROM rom;
     private RAM virtualMemory;
-
     private int fixedAddress;
+
+    public MemoryMap() {
+        virtualMemory = new RAM(0x10000);
+
+        init();
+    }
 
     public MemoryMap(CartridgeROM rom) {
         this.rom = rom;
@@ -52,15 +56,19 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
      */
     private Object getMemoryIndex(int address) {
         address = Bitwise.intAsShort(address);
-        fixedAddress = address;
-        if (address >= 0 && address < 0x8000) {
-            // 0000-7fff
-            // ROM bank0-n,
-            return rom;
-        } else {
-            // 8000-ffff
-            fixedAddress -= 0x8000;
+        if (rom == null) {
             return virtualMemory;
+        } else {
+            fixedAddress = address;
+            if (address >= 0 && address < 0x8000) {
+                // 0000-7fff
+                // ROM bank0-n,
+                return rom;
+            } else {
+                // 8000-ffff
+                fixedAddress -= 0x8000;
+                return virtualMemory;
+            }
         }
     }
 }
