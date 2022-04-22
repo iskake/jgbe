@@ -13,15 +13,14 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     private RAM virtualMemory;
     private int fixedAddress;
 
-    public MemoryMap() {
-        virtualMemory = new RAM(0x10000);
-
-        init();
-    }
-
     public MemoryMap(CartridgeROM rom) {
         this.rom = rom;
-        virtualMemory = new RAM(0x8000);
+
+        if (rom == null) {
+            virtualMemory = new RAM(0x10000);
+        } else {
+            virtualMemory = new RAM(0x8000);
+        }
 
         init();
     }
