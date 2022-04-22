@@ -18,28 +18,42 @@ public class GameBoy implements Runnable {
     private final CartridgeROM rom;
     private final CPU cpu;
     private final MemoryMap memoryMap;
-    private final InterruptHandler interrupts;
 
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
     private boolean runInterpreter;
+    private boolean ignoreGB;
 
     public GameBoy(CartridgeROM rom) {
         debuggerEnabled = true;
         this.rom = rom;
+        this.ignoreGB = false;
 
         runInterpreter = (rom == null) ? true : false;
 
         pc = new ProgramCounter((short) 0x100);
         sp = new StackPointer(this, (short) 0xfffe);
-
         reg = new Registers(this);
-
         memoryMap = new MemoryMap(rom);
-
-        interrupts = new InterruptHandler(this);
         cpu = new CPU(this);
+
+        init();
+    }
+
+    public GameBoy(CartridgeROM rom, boolean ignoreGB) {
+        debuggerEnabled = true;
+        this.rom = rom;
+        this.ignoreGB = ignoreGB;
+
+        runInterpreter = (rom == null) ? true : false;
+
+        pc = new ProgramCounter((short) 0x100);
+        sp = new StackPointer(this, (short) 0xfffe);
+        reg = new Registers(this);
+        memoryMap = new MemoryMap(rom);
+        cpu = new CPU(this);
+
         init();
     }
 
@@ -70,6 +84,7 @@ public class GameBoy implements Runnable {
      * Check if the provided file is a valid Game Boy ROM file.
      */
     private void checkGameBoyHeader() {
+
         boolean validGBHeader = false;
         if (Header.validLogo(rom.getROMBank0())) {
             System.out.println("Valid logo!");
@@ -81,6 +96,9 @@ public class GameBoy implements Runnable {
         }
 
         if (validGBHeader) {
+            if (ignoreGB) {
+                return;
+            }
             System.out.println("Warning: The provided file is in the format of a Game Boy ROM.");
             System.out.println("Although this file may run just fine, JGBE is not designed to run Game Boy ROMs.");
             Header header = new Header(rom);
@@ -227,7 +245,7 @@ public class GameBoy implements Runnable {
      * Disables all interrupts by setting the IME flag to 0.
      */
     public void disableInterrupts() {
-        interrupts.disable();
+        // TODO: change DI to something else...
     }
 
     /**
@@ -237,6 +255,6 @@ public class GameBoy implements Runnable {
      * @param wait If interrupts should be enabled after waiting one M-cycle.
      */
     public void enableInterrupts(boolean wait) {
-        interrupts.enable(wait);
+        // TODO: change EI to something else...
     }
 }
