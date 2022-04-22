@@ -11,10 +11,7 @@ public class Main {
     public static void main(String[] args) {
         if (args.length == 0) {
             // Interpreter
-            System.out.println("Running interpreter");
             GameBoy gb = new GameBoy(null);
-
-            gb.enableDebugger();
             gb.run();
         } else if (args.length == 1) {
             Path path = Paths.get(args[0]);

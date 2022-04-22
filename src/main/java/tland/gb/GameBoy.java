@@ -71,12 +71,7 @@ public class GameBoy implements Runnable, IGameBoy {
         sp.set((short) 0xfffe);
         memoryMap.init();
 
-        if (runInterpreter) {
-            System.out.println("Starting interpreter");
-            interpreter = new Interpreter(this);
-            interpreter.interpret(sc);
-            pc.set((short) 0x0100);
-        } else {
+        if (!runInterpreter) {
             checkGameBoyHeader();
         }
 
@@ -238,6 +233,12 @@ public class GameBoy implements Runnable, IGameBoy {
      */
     @Override
     public void run() {
+        if (runInterpreter) {
+            System.out.println("Starting interpreter");
+            interpreter = new Interpreter(this);
+            interpreter.interpret(sc);
+            pc.set((short) 0x0100);
+        }
         while (running) {
             if (!debuggerEnabled)
                 cpu.step();
