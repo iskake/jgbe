@@ -56,10 +56,10 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
      */
     private Object getMemoryIndex(int address) {
         address = Bitwise.intAsShort(address);
+        fixedAddress = address;
         if (rom == null) {
             return virtualMemory;
         } else {
-            fixedAddress = address;
             if (address >= 0 && address < 0x8000) {
                 // 0000-7fff
                 // ROM bank0-n,

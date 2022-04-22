@@ -17,30 +17,21 @@ public class GameBoy implements Runnable, IGameBoy {
     private final CartridgeROM rom;
     private final CPU cpu;
     private final MemoryMap memoryMap;
+    private final Scanner sc;
 
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
     private boolean runInterpreter;
     private boolean ignoreGB;
+    private Interpreter interpreter;
 
     public GameBoy(CartridgeROM rom) {
-        debuggerEnabled = true;
-        this.rom = rom;
-        this.ignoreGB = false;
-
-        runInterpreter = (rom == null) ? true : false;
-
-        pc = new ProgramCounter((short) 0x100);
-        sp = new StackPointer(this, (short) 0xfffe);
-        reg = new Registers(this);
-        memoryMap = new MemoryMap(rom);
-        cpu = new CPU(this);
-
-        init();
+        this(rom, false);
     }
 
     public GameBoy(CartridgeROM rom, boolean ignoreGB) {
+        this.sc = new Scanner(System.in);
         debuggerEnabled = true;
         this.rom = rom;
         this.ignoreGB = ignoreGB;
@@ -69,8 +60,10 @@ public class GameBoy implements Runnable, IGameBoy {
         memoryMap.init();
 
         if (runInterpreter) {
-            System.out.println("interpreter time!");
-            System.exit(0);
+            System.out.println("Starting interpreter");
+            interpreter = new Interpreter(this);
+            interpreter.interpret(sc);
+            pc.set((short) 0x0100);
         } else {
             checkGameBoyHeader();
         }
