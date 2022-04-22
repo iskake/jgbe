@@ -1,16 +1,24 @@
 package tland.gb;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import tland.Bitwise;
 import tland.gb.cpu.Opcodes;
+import tland.gb.mem.CartridgeROM;
 
 public class Interpreter {
 
+    private boolean finished;
     private GameBoy gb;
 
     public Interpreter(GameBoy gb) {
         this.gb = gb;
+        finished = false;
     }
 
     /**
@@ -22,15 +30,17 @@ public class Interpreter {
         while (true) {
             boolean match = false;
             System.out.print(">>> ");
+
             String line = sc.nextLine();
-            int i = 0;
-            if (line.equals("run")) {
+            String[] inParts = line.split(" ");
+            handleSpecial(inParts);
+
+            if (finished) {
                 return;
-            } else if (line.equals("exit")) {
-                gb.stop();
             }
+
+            int i = 0;
             for (String opName : Opcodes.tokens) {
-                String[] inParts = line.split(" ");
                 String[] opParts = opName.split(" ");
                 if (inParts.length != opParts.length) {
                     i++;
@@ -69,17 +79,18 @@ public class Interpreter {
                     match = true;
                 }
                 if (match) {
-                    System.out.println("Found match for " + line + ": " + opName + " (opcode " + Integer.toHexString(i) + ")");
+                    System.out.println(
+                            "Found match for " + line + ": " + opName + " (opcode " + Integer.toHexString(i) + ")");
                     int pcVal = gb.pc().get();
                     gb.writeMemoryAddress(gb.pc().inc(), Bitwise.toByte(i));
                     if (value != null) {
                         if (decodedShort) {
-                            byte hi = (byte)((value & 0xff00) >> 8);
-                            byte lo = (byte)(value & 0xff);
+                            byte hi = (byte) ((value & 0xff00) >> 8);
+                            byte lo = (byte) (value & 0xff);
                             gb.writeMemoryAddress(gb.pc().inc(), hi);
                             gb.writeMemoryAddress(gb.pc().inc(), lo);
                         } else {
-                            byte lo = (byte)(value & 0xff);
+                            byte lo = (byte) (value & 0xff);
                             gb.writeMemoryAddress(gb.pc().inc(), lo);
                         }
                     }
@@ -93,5 +104,31 @@ public class Interpreter {
             }
         }
     }
+
+    /**
+     * Handle special tokens.
+     * 
+     * @param s The array to read the tokens from.
+     */
+    private void handleSpecial(String[] s) {
+        switch (s[0]) {
+            case "run" -> finished = true;
+            case "open" -> {
+                try {
+                    Path path = Paths.get(s[1]);
+                    byte[] romFile;
+                    romFile = Files.readAllBytes(path);
     
+                    CartridgeROM rom = new CartridgeROM(romFile);
+                    gb.restart(rom);
+                    gb.enableDebugger();
+                    gb.run();
+                } catch (Exception e) {
+                    System.err.println("Could not read the file, returning to interpreter.");
+                }
+            }
+            case "exit" -> gb.stop();
+        }
+    }
+
 }

@@ -14,11 +14,11 @@ public class GameBoy implements Runnable, IGameBoy {
     private final ProgramCounter pc;
     private final StackPointer sp;
     private final Registers reg;
-    private final CartridgeROM rom;
     private final CPU cpu;
     private final MemoryMap memoryMap;
     private final Scanner sc;
 
+    private CartridgeROM rom;
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
@@ -44,6 +44,18 @@ public class GameBoy implements Runnable, IGameBoy {
         memoryMap = new MemoryMap(rom);
         cpu = new CPU(this);
 
+        init();
+    }
+
+    /**
+     * Restart the system with a new ROM file
+     * 
+     * @param rom The ROM to restart the system with.
+     */
+    public void restart(CartridgeROM rom) {
+        this.rom = rom;
+        memoryMap.restart(rom);
+        runInterpreter = (rom == null) ? true : false;
         init();
     }
 
@@ -99,7 +111,6 @@ public class GameBoy implements Runnable, IGameBoy {
             System.out.println("    ROM size: " + header.getROMSizeString());
             System.out.println("    RAM size: " + header.getRAMSizeString());
             System.out.print("\nDo you still wish to continue (y/n)?  ");
-            Scanner sc = new Scanner(System.in);
 
             boolean invalidInput = true;
             while (invalidInput) {

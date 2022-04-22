@@ -26,6 +26,20 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     }
 
     /**
+     * Restart the memory map, depending on the specified ROM.
+     * 
+     * @param rom The ROM file to create a memory map from.
+     */
+    public void restart(CartridgeROM rom) {
+        if (rom == null) {
+            init();
+        } else {
+            this.rom = rom;
+            virtualMemory = new RAM(0x8000);
+        }
+    }
+
+    /**
      * Initialize the memory each region.
      */
     public void init() {
