@@ -117,7 +117,10 @@ public class Interpreter {
      */
     private void handleSpecial(String[] s) {
         switch (s[0]) {
-            case "run" -> finished = true;
+            case "run" -> {
+                finished = true;
+                gb.writeMemoryAddress(gb.pc().get(), (byte)0x10); // stop
+            }
             case "open" -> {
                 try {
                     Path path = Paths.get(s[1]);
