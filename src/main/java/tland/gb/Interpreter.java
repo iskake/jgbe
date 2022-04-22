@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 
 import tland.Bitwise;
 import tland.gb.cpu.Opcodes;
@@ -14,6 +15,7 @@ import tland.gb.mem.CartridgeROM;
 public class Interpreter {
 
     private boolean finished;
+    private Stack<Short> writtenBytes;
     private GameBoy gb;
 
     public Interpreter(GameBoy gb) {
@@ -53,7 +55,10 @@ public class Interpreter {
                     if (opParts[k].equals(inParts[k])) {
                         matchingParts[k] = true;
                     } else {
-                        // TODO: fix ldh and ld [_N16]
+                        // TODO: some opcode reading to fix:
+                        //   'ldh' opcodes
+                        //   'ld a, ptr/ld ptr, a'
+                        //   'ei' and 'di' are undefined
                         String fixedName = inParts[k];
                         if (inParts[k].contains("[") && opParts[k].contains("[")) {
                             fixedName = (inParts[k].replaceAll("\\[(.+)\\]", "$1"));
@@ -94,13 +99,13 @@ public class Interpreter {
                             gb.writeMemoryAddress(gb.pc().inc(), lo);
                         }
                     }
-                    gb.printMemoryRegion(pcVal & 0xfff0, (pcVal + 56) & 0xfff0);
+                    gb.printMemoryRegion(pcVal & 0xfff0, ((pcVal + 32) & 0xfff0) - 1);
                     break;
                 }
                 i++;
             }
             if (!match) {
-                System.out.println("No match was found.");
+                System.out.println("Invalid symbol '" + line + "'");
             }
         }
     }
@@ -127,6 +132,7 @@ public class Interpreter {
                     System.err.println("Could not read the file, returning to interpreter.");
                 }
             }
+            // case "undo" -> 
             case "exit" -> gb.stop();
         }
     }
