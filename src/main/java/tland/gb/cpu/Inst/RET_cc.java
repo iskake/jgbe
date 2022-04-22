@@ -21,7 +21,7 @@ public class RET_cc extends Instruction {
         if (Conditions.conditionSatisfied(gb.reg, condition)) {
             if (opcode == 0xd9) {
                 // reti
-                gb.enableInterrupts(false);
+                gb.undecidedEI();
             }
             gb.pc.set(gb.sp.pop());
         }

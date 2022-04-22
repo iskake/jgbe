@@ -10,7 +10,7 @@ import tland.gb.mem.MemoryMap;
 /**
  * Represents a Game Boy (model 'DMG')
  */
-public class GameBoy implements Runnable {
+public class GameBoy implements Runnable, IGameBoy {
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
@@ -124,6 +124,81 @@ public class GameBoy implements Runnable {
         }
     }
 
+    @Override
+    public byte readNextByte() {
+        return memoryMap.readByte(pc.inc());
+    }
+
+    @Override
+    public short readNextShort() {
+        byte lo = readNextByte();
+        byte hi = readNextByte();
+        return Bitwise.toShort(hi, lo);
+    }
+
+    @Override
+    public byte readMemoryAddress(short address) {
+        return memoryMap.readByte(address);
+    }
+
+    @Override
+    public void writeMemoryAddress(short address, byte value) {
+        memoryMap.writeByte(address, value);
+    }
+
+    @Override
+    public void stop() {
+        stopRunning();
+    }
+
+    @Override
+    public void halt(short millis) {
+        try {
+            // Max 65.535 seconds
+            Thread.sleep(Short.toUnsignedInt(millis));
+        } catch (InterruptedException e) {
+            System.out.println("Sleep was interrupted.");
+        }
+    }
+
+    @Override
+    public void undecidedDI() {
+        // ...
+    }
+
+    @Override
+    public void undecidedEI() {
+        // ...
+    }
+
+    /**
+     * Print the HRAM ($ff80-$ffff)
+     */
+    public void printHRAM() {
+        printMemoryRegion(0xff80, 0xffff);
+    }
+
+    /**
+     * Print the contents at the memory region from {@code start} including
+     * {@code end}.
+     * <p>
+     * Each line is formatted into 16 bytes (if applicable).
+     * 
+     * @param start The starting memory address to read from.
+     * @param end   The memory address to read to and from.
+     */
+    public void printMemoryRegion(int start, int end) {
+        int c = 0;
+        for (int i = start; i <= end; i++) {
+            if (c % 16 == 0) {
+                System.out.printf("\n%04x  ", (short) i);
+            }
+            System.out.printf("%02x ", readMemoryAddress((short) i));
+            c++;
+        }
+        System.out.println("\n");
+    }
+
     /**
      * Stop execution.
      */
@@ -170,91 +245,5 @@ public class GameBoy implements Runnable {
 
     public CartridgeROM getROM() {
         return rom;
-    }
-
-    public byte readNextByte() {
-        return memoryMap.readByte(pc.inc());
-    }
-
-    public short readNextShort() {
-        byte lo = readNextByte();
-        byte hi = readNextByte();
-        return Bitwise.toShort(hi, lo);
-    }
-
-    public void writeMemoryAddress(short address, byte value) {
-        memoryMap.writeByte(address, value);
-    }
-
-    public byte readMemoryAddress(short address) {
-        return memoryMap.readByte(address);
-    }
-
-    /**
-     * Print the HRAM ($ff80-$ffff)
-     */
-    public void printHRAM() {
-        printMemoryRegion(0xff80, 0xffff);
-    }
-
-    /**
-     * Print the contents at the memory region from {@code start} including
-     * {@code end}.
-     * <p>
-     * Each line is formatted into 16 bytes (if applicable).
-     * 
-     * @param start The starting memory address to read from.
-     * @param end   The memory address to read to and from.
-     */
-    public void printMemoryRegion(int start, int end) {
-        int c = 0;
-        for (int i = start; i <= end; i++) {
-            if (c % 16 == 0) {
-                System.out.printf("\n%04x  ", (short) i);
-            }
-            System.out.printf("%02x ", readMemoryAddress((short) i));
-            c++;
-        }
-        System.out.println("\n");
-    }
-
-    /**
-     * Halt ('stop') all operations of the Game Boy.
-     * <p>
-     * Note that the stop instruction is actually 2 bytes long, with the second byte
-     * being ignored.
-     */
-    public void stop() {
-        stopRunning();
-    }
-
-    /**
-     * Halt CPU instruction execution for some time in milliseconds.
-     * 
-     * @param millis The time (in ms) to halt the CPU for.
-     */
-    public void halt(short millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            System.out.println("Sleep was interrupted.");
-        }
-    }
-
-    /**
-     * Disables all interrupts by setting the IME flag to 0.
-     */
-    public void disableInterrupts() {
-        // TODO: change DI to something else...
-    }
-
-    /**
-     * Enables all interrupts enabled in the IE hardware register by setting the IME
-     * flag to 1.
-     * 
-     * @param wait If interrupts should be enabled after waiting one M-cycle.
-     */
-    public void enableInterrupts(boolean wait) {
-        // TODO: change EI to something else...
     }
 }

@@ -18,8 +18,8 @@ public class Interrupt extends Instruction {
     @Override
     public void doOp(GameBoy gb, int opcode) {
         switch (opcode) {
-            case 0xf3 -> gb.disableInterrupts();
-            case 0xfb -> gb.enableInterrupts(true);
+            case 0xf3 -> gb.undecidedDI();
+            case 0xfb -> gb.undecidedEI();
             default -> throw new IllegalInstructionException();
         }
     }
