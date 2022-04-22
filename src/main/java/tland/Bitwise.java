@@ -229,4 +229,21 @@ public class Bitwise {
         }
         return true;
     }
+
+    
+
+    /**
+     * Decode an integer from a string, optionally starting with $ or %.
+     * 
+     * @param str The string to decode the integer from.
+     * @return The decoded integer.
+     */
+    public static int decodeInt(String str) {
+        if (str.charAt(0) == '$') {
+            str = str.replace("$", "0x");
+        } else if (str.charAt(0) == '%') {
+            str = str.replace("%", "0b");
+        }
+        return Integer.decode(str);
+    }
 }

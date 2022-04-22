@@ -75,21 +75,6 @@ public class Debugger {
     }
 
     /**
-     * Decode an integer from a string, optionally starting with $ or %.
-     * 
-     * @param str The string to decode the integer from.
-     * @return The decoded integer.
-     */
-    private int decodeInt(String str) {
-        if (str.charAt(0) == '$') {
-            str = str.replace("$", "0x");
-        } else if (str.charAt(0) == '%') {
-            str = str.replace("%", "0b");
-        }
-        return Integer.decode(str);
-    }
-
-    /**
      * Breakpoint handling. Handles creation of new breakpoints and
      * 
      * @param in The input to read the address from.
@@ -105,7 +90,7 @@ public class Debugger {
             return;
         }
         try {
-            breakPoints.add(decodeInt(in[1]));
+            breakPoints.add(Bitwise.decodeInt(in[1]));
             System.out.printf("Set breakpoint at $%04x\n", breakPoints.get(breakPoints.size() - 1));
         } catch (NumberFormatException e) {
             System.err.println("Invalid syntax. Usage: `b [ |$|0x|%|0b]{MEM_ADDR}`");
@@ -130,7 +115,7 @@ public class Debugger {
             }
         }
         try {
-            int b = decodeInt(in[1]);
+            int b = Bitwise.decodeInt(in[1]);
             breakPoints.remove(breakPoints.indexOf(b));
             System.out.printf("Deleted breakpoint at: $%04x\n", b);
         } catch (IndexOutOfBoundsException e) {
