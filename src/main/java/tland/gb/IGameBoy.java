@@ -58,4 +58,25 @@ public interface IGameBoy {
      * Undecided
      */
     void undecidedEI();
+
+    /**
+     * Get the ProgramCounter stored in the IGameBoy object.
+     * 
+     * @return The program counter object.
+     */
+    ProgramCounter pc();
+
+    /**
+     * Get the StackPointer stored in the IGameBoy object.
+     * 
+     * @return The stack pointer object.
+     */
+    StackPointer sp();
+
+    /**
+     * Get the Registers stored in the IGameBoy object.
+     * 
+     * @return The registers object.
+     */
+    Registers reg();
 }

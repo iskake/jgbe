@@ -246,4 +246,19 @@ public class GameBoy implements Runnable, IGameBoy {
     public CartridgeROM getROM() {
         return rom;
     }
+
+    @Override
+    public ProgramCounter pc() {
+        return pc;
+    }
+
+    @Override
+    public StackPointer sp() {
+        return sp;
+    }
+
+    @Override
+    public Registers reg() {
+        return reg;
+    }
 }
