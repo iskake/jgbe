@@ -29,20 +29,23 @@ public class Interpreter {
      * @param sc Scanner to read input from.
      */
     public void interpret(Scanner sc) {
-        while (true) {
+        while (!finished) {
             boolean match = false;
             System.out.print(">>> ");
 
             String line = sc.nextLine();
             String[] inParts = line.split(" ");
-            handleSpecial(inParts);
-
-            if (finished) {
-                return;
+            if (handleSpecial(inParts)) {
+                continue;
             }
 
             int i = 0;
             for (String opName : Opcodes.tokens) {
+                if (handleSpecialInstruction(line)) {
+                    match = true;
+                    break;
+                }
+
                 String[] opParts = opName.split(" ");
                 if (inParts.length != opParts.length) {
                     i++;
@@ -56,9 +59,9 @@ public class Interpreter {
                         matchingParts[k] = true;
                     } else {
                         // TODO: some opcode reading to fix:
-                        //   'ldh' opcodes
-                        //   'ld a, ptr/ld ptr, a'
-                        //   'ei' and 'di' are undefined
+                        // 'ldh' opcodes
+                        // 'ld a, ptr/ld ptr, a'
+                        // 'ei' and 'di' are undefined
                         String fixedName = inParts[k];
                         if (inParts[k].contains("[") && opParts[k].contains("[")) {
                             fixedName = (inParts[k].replaceAll("\\[(.+)\\]", "$1"));
@@ -114,12 +117,14 @@ public class Interpreter {
      * Handle special tokens.
      * 
      * @param s The array to read the tokens from.
+     * @return 
      */
-    private void handleSpecial(String[] s) {
+    private boolean handleSpecial(String[] s) {
         switch (s[0]) {
             case "run" -> {
-                finished = true;
                 gb.writeMemoryAddress(gb.pc().get(), (byte)0x10); // stop
+                finished = true;
+                return true;
             }
             case "open" -> {
                 try {
@@ -136,8 +141,67 @@ public class Interpreter {
                 }
             }
             // case "undo" -> 
-            case "exit" -> gb.stop();
+            case "exit" -> {
+                gb.stop();
+                return true;
+            }
+            case "debugger" -> {
+                try {
+                    if (s[1].equals("enable")) {
+                        gb.enableDebugger();
+                        return true;
+                    } else if (s[1].equals("disable")) {
+                        gb.disableDebugger();
+                        return true;
+                    } else {
+                        System.err.println("Invalid syntax: write `debugger [enable/disable]`");
+                        return true;
+                    }
+                } catch (Exception e) {
+                    System.err.println("Invalid syntax: write `debugger [enable/disable]`");
+                    return true;
+                }
+            }
         }
+
+        return false;
+    }
+
+    /**
+     * Handle special instructions.
+     * 
+     * @param str The array to read the tokens from.
+     * @return 
+     */
+    private boolean handleSpecialInstruction(String str) {
+        String[] strParts = str.split(" ");
+        switch (strParts[0]) {
+            case "_PREFIXED" -> {
+                System.out.println("prefixed opcode!!!");
+                return true;
+            }
+            case "prt" -> {
+                System.out.println("print opcode!!!!\n args:");
+                for (int i = 0; i < strParts.length; i++) {
+                    System.out.println("   " + strParts[i]);
+                }
+                int pcVal = Short.toUnsignedInt(gb.pc().get());
+                gb.writeMemoryAddress(gb.pc().inc(), (byte)0xfc); // opcode
+                
+                for (int i = 0; i < strParts[1].length(); i++) {
+                    System.out.println(strParts[1]);
+                    gb.writeMemoryAddress(gb.pc().inc(), (byte)strParts[1].charAt(i));
+                }
+                gb.writeMemoryAddress(gb.pc().inc(), (byte)0); // null terminated string.
+                gb.writeMemoryAddress(gb.pc().inc(), (byte)0); // arg length
+
+                gb.printMemoryRegion(pcVal & 0xfff0, ((pcVal + 32) & 0xfff0) - 1);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
