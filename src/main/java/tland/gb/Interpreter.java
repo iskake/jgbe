@@ -37,14 +37,27 @@ public class Interpreter {
                     continue;
                 }
                 boolean[] matchingParts = new boolean[inParts.length];
+                Integer value = null;
+                boolean decodedShort = true;
                 for (int k = 0; k < inParts.length; k++) {
                     if (opParts[k].equals(inParts[k])) {
                         matchingParts[k] = true;
                     } else {
-                        if (opParts[k].equals("$_N8") && inParts[k].contains("$")) {
+                        // TODO: fix ldh and ld [_N16]
+                        String fixedName = inParts[k];
+                        if (inParts[k].contains("[") && opParts[k].contains("[")) {
+                            fixedName = (inParts[k].replaceAll("\\[(.+)\\]", "$1"));
+                        } else if (inParts[k].contains("[") || opParts[k].contains("[")) {
+                            break;
+                        }
+                        if (opParts[k].equals("$_N8") && fixedName.contains("$")) {
                             matchingParts[k] = true;
-                        } else if (opName.contains("$_N16") && inParts[k].contains("$")) {
+                            decodedShort = false;
+                            value = Bitwise.decodeInt(fixedName);
+                        } else if (opParts[k].equals("$_N16") && fixedName.contains("$")) {
                             matchingParts[k] = true;
+                            decodedShort = true;
+                            value = Bitwise.decodeInt(fixedName);
                         }
                     }
                 }
@@ -56,9 +69,20 @@ public class Interpreter {
                     match = true;
                 }
                 if (match) {
-                    System.out.println("Found match for " + line + ": " + opName + "(opcode " + Integer.toHexString(i) + ")");
+                    System.out.println("Found match for " + line + ": " + opName + " (opcode " + Integer.toHexString(i) + ")");
                     int pcVal = gb.pc().get();
                     gb.writeMemoryAddress(gb.pc().inc(), Bitwise.toByte(i));
+                    if (value != null) {
+                        if (decodedShort) {
+                            byte hi = (byte)((value & 0xff00) >> 8);
+                            byte lo = (byte)(value & 0xff);
+                            gb.writeMemoryAddress(gb.pc().inc(), hi);
+                            gb.writeMemoryAddress(gb.pc().inc(), lo);
+                        } else {
+                            byte lo = (byte)(value & 0xff);
+                            gb.writeMemoryAddress(gb.pc().inc(), lo);
+                        }
+                    }
                     gb.printMemoryRegion(pcVal & 0xfff0, (pcVal + 56) & 0xfff0);
                     break;
                 }
