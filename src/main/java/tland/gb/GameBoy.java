@@ -62,7 +62,7 @@ public class GameBoy implements Runnable {
         reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
         reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
 
-        pc.init((short) 0x0000);
+        pc.set((short) 0x0100);
         sp.set((short) 0xfffe);
         memoryMap.init();
 
