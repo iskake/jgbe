@@ -1,7 +1,7 @@
 package tland;
 
 /**
- * Class containing methods for bitwise operations.
+ * Class containing methods for bitwise/number operations.
  */
 public class Bitwise {
     /**
@@ -229,8 +229,6 @@ public class Bitwise {
         }
         return true;
     }
-
-    
 
     /**
      * Decode an integer from a string, optionally starting with $ or %.
