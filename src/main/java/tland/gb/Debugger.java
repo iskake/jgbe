@@ -161,7 +161,7 @@ public class Debugger {
         String name = Opcodes.getOpcode(opcode).getName();
         cpu.step();
         if (name.startsWith("call") || name.startsWith("rst")) {
-            while (true) {
+            while (true && gb.isRunning()) {
                 if (checkBreakpointHit()) {
                     break;
                 }
@@ -191,7 +191,7 @@ public class Debugger {
         cpu.step();
 
         boolean run = true;
-        while (run) {
+        while (run && gb.isRunning()) {
             run = !checkBreakpointHit();
             if (run) {
                 cpu.step();
