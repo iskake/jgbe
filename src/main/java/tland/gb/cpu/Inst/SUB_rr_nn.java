@@ -8,8 +8,7 @@ import tland.gb.Registers.RegisterIndex;
  * Subtraction instruction.
  * 
  * <p>
- * Implements opcodes: {@code sub a, r8}, {@code sub a, $n8},
- * {@code sub hl, r16}, {@code sbc a, r8} and {@code sbc a, $n8}
+ * Implements opcodes: {@code sub r8}, {@code sub $n8}, {@code sbc r8} and {@code sbc $n8}
  */
 public class SUB_rr_nn extends Instruction {
     private final RegisterIndex r1;
@@ -35,7 +34,7 @@ public class SUB_rr_nn extends Instruction {
 
         byte c = 0;
         if (carry) {
-            // sbc a, nn
+            // sbc nn
             c += gb.reg().isFlagSet(Flags.C) ? 1 : 0;
         }
 
