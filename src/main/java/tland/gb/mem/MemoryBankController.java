@@ -4,7 +4,7 @@ package tland.gb.mem;
  * Memory Bank Controller, controls the currently mapped ROM banks and RAM
  * banks.
  */
-public abstract class MemoryBankController implements WritableMemory {
+public abstract class MemoryBankController implements WritableMemory<Byte> {
     {
         // Initialize the switchable ROM bank to 1
         currSwitchableBank = 1;

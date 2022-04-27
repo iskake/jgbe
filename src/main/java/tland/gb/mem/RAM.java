@@ -7,9 +7,9 @@ import java.util.Random;
  * Random Access Memory. Implementation of memory that can be both read and
  * written to.
  */
-public class RAM implements WritableMemory, ReadableMemory {
+public class RAM implements WritableMemory<Byte>, ReadableMemory<Byte> {
     public final int size;
-    
+
     protected byte[] bytes;
     private final Random rand;
 
@@ -20,12 +20,12 @@ public class RAM implements WritableMemory, ReadableMemory {
     }
 
     @Override
-    public byte readByte(int address) throws IndexOutOfBoundsException {
+    public Byte readAddress(int address) throws IndexOutOfBoundsException {
         return bytes[address];
     }
 
     @Override
-    public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
+    public void writeAddress(int address, Byte value) throws IndexOutOfBoundsException {
         bytes[address] = value;
     }
 

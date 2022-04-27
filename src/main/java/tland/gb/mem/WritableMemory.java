@@ -5,13 +5,13 @@ package tland.gb.mem;
  * 
  * @see ReadableMemory
  */
-public interface WritableMemory {
+public interface WritableMemory<T> extends Memory<T> {
     /**
-     * Write {@code value} to the byte at address {@code address} in memory.
+     * Write {@code value} to the address {@code address} memory.
      * 
-     * @param address The address of the byte to be written to.
+     * @param address The address to be written to.
      * @param value   The value to write.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    void writeByte(int address, byte value) throws IndexOutOfBoundsException;
+    void writeAddress(int address, T value) throws IndexOutOfBoundsException;
 }

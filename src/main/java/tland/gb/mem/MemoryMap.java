@@ -8,7 +8,7 @@ import tland.Bitwise;
  * The memory map contains the current addressable memory, with a range of
  * $0000-$ffff ($10000 bytes)
  */
-public class MemoryMap implements WritableMemory, ReadableMemory {
+public class MemoryMap implements WritableMemory<Byte>, ReadableMemory<Byte> {
     private CartridgeROM rom;
     private RAM virtualMemory;
     private int fixedAddress;
@@ -47,15 +47,21 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     }
 
     @Override
-    public byte readByte(int address) {
-        ReadableMemory memory = (ReadableMemory) getMemoryIndex(address);
-        return memory.readByte(fixedAddress);
+    public Byte readAddress(int address) {
+        Memory<Byte> memory = getMemoryIndex(address);
+        if (memory instanceof ReadableMemory<Byte> m) {
+            return m.readAddress(fixedAddress);
+        } else {
+            return 0;
+        }
     }
 
     @Override
-    public void writeByte(int address, byte value) {
-        WritableMemory memory = (WritableMemory) getMemoryIndex(address);
-        memory.writeByte(fixedAddress, value);
+    public void writeAddress(int address, Byte value) {
+        Memory<Byte> memory = getMemoryIndex(address);
+        if (memory instanceof WritableMemory<Byte> m) {
+            m.writeAddress(fixedAddress, value);
+        }
     }
 
     /**
@@ -67,7 +73,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
      * @param address The address to get the memory from.
      * @return The correct memory at the specified address.
      */
-    private Object getMemoryIndex(int address) {
+    private Memory<Byte> getMemoryIndex(int address) {
         address = Bitwise.intAsShort(address);
         fixedAddress = address;
         if (rom == null) {

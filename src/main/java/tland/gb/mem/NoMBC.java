@@ -7,7 +7,7 @@ package tland.gb.mem;
 public class NoMBC extends MemoryBankController {
 
     @Override
-    public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
+    public void writeAddress(int address, Byte value) throws IndexOutOfBoundsException {
     }
 
 }
