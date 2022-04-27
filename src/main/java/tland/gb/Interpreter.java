@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 import tland.Bitwise;
-import tland.StringHelpers;
 import tland.gb.cpu.Opcodes;
 import tland.gb.mem.CartridgeROM;
 import tland.pair.Pair;
@@ -176,7 +175,7 @@ public class Interpreter {
     private boolean handleCommands(String[] s) {
         switch (s[0]) {
             case "help" -> {
-                printHelp(s);
+                printHelp();
                 return true;
             }
             case "cmds" -> {
@@ -259,29 +258,33 @@ public class Interpreter {
         return false;
     }
 
-    private void printHelp(String[] s) {
-        if (s.length == 1) {
-            System.out.println("Welcome to the JGBE command line interpreter.");
-            System.out.println(
-                    "Type \"help\" for help, \"cmds\" for a list of commands, \"inst\" for a list of valid instructions.");
-            System.out.println("\nIn the command line interpreter, instructions typed in will be written to memory");
-            System.out.println("and executed after sending the `run` command.");
-            System.out.println(
-                    "\nAn example run of a program (with debugger disabled, running `debugger disable` first):\n");
-            System.out.println("    >>> ld a, $10");
-            System.out.println("    >>> ld b, $67");
-            System.out.println("    >>> add a, b");
-            System.out.println("    >>> prt \"The value of a is: %x in hex (%d in decimal)\" a a");
-            System.out.println("    >>> run");
-            System.out.println("    The value of a is: 77 in hex (119 in decimal)");
-            System.out.println(
-                    "\nTyping the above instructions into the interpreter will write the instructions to memory");
-            System.out.println(
-                    "and run them. Using a debugger (type: `debugger enable`) will show that the instructions");
-            System.out.println("have been written to memory and are executing.");
-        }
+    /**
+     * Print the help dialog.
+     */
+    private void printHelp() {
+        System.out.println("Welcome to the JGBE command line interpreter.");
+        System.out.println(
+                "Type \"help\" for help, \"cmds\" for a list of commands, \"inst\" for a list of valid instructions.");
+        System.out.println("\nIn the command line interpreter, instructions typed in will be written to memory");
+        System.out.println("and executed after sending the `run` command.");
+        System.out.println(
+                "\nAn example run of a program (with debugger disabled, running `debugger disable` first):\n");
+        System.out.println("    >>> ld a, $10");
+        System.out.println("    >>> ld b, $67");
+        System.out.println("    >>> add a, b");
+        System.out.println("    >>> prt \"The value of a is: %x in hex (%d in decimal)\" a a");
+        System.out.println("    >>> run");
+        System.out.println("    The value of a is: 77 in hex (119 in decimal)");
+        System.out.println(
+                "\nTyping the above instructions into the interpreter will write the instructions to memory");
+        System.out.println(
+                "and run them. Using a debugger (type: `debugger enable`) will show that the instructions");
+        System.out.println("have been written to memory and are executing.");
     }
 
+    /**
+     * Print all valid commands.
+     */
     private void printCommands() {
         System.out.println("List of commands:");
         for (Pair<String, String> simplePair : commands) {
@@ -290,8 +293,14 @@ public class Interpreter {
         }
     }
 
+    /**
+     * Print all valid instructions.
+     */
     private void printInstructions() {
         for (int i = 0; i < 0x100; i++) {
+            if (i == 0xcb) {
+                // Prefixed opcodes
+            }
             System.out.println("%02x".formatted(i) + ": " + Opcodes.getOpcode(i).getName());
         }
     }
@@ -315,7 +324,7 @@ public class Interpreter {
         if (strParts[0] == "prt") {
             System.out.println("str: " + str);
 
-            boolean validString = StringHelpers.legalString(str, 4);
+            boolean validString = validPRTString(str, 4);
             if (validString) {
                 System.out.println("legal string? " + str);
             }
@@ -342,6 +351,33 @@ public class Interpreter {
              */
         }
 
+        return false;
+    }
+
+    /**
+     * Check if a string is valid for the {@code prt} instruction.
+     * 
+     * @param str       The string to for valid format.
+     * @param startChar The index of the starting char to check
+     * @return The 
+     */
+    public static boolean validPRTString(String str, int startChar) {
+        for (int i = startChar; i < str.length(); i++) {
+            if (i == startChar) {
+                if (str.charAt(i) != '"') {
+                    return false;
+                }
+            } else {
+                if (str.charAt(i) == '"' && str.charAt(i - 1) != '\\') {
+                    try {
+                        char c = str.charAt(i + 1);
+                        return (c == ' ') ? true : false;
+                    } catch (IndexOutOfBoundsException e) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
