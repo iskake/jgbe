@@ -8,7 +8,7 @@ import tland.emu.mem.CartridgeROM;
 import tland.emu.mem.MemoryMap;
 
 /**
- * Represents a Game Boy (model 'DMG')
+ * Represents the JGBE emulator/interpreter/virtual machine.
  */
 public class Emulator implements Runnable, IEmulator {
     private final ProgramCounter pc;
@@ -60,8 +60,8 @@ public class Emulator implements Runnable, IEmulator {
     }
 
     /**
-     * Initialize the Game Boy.
-     * This method should be used in the constructor and when the Game Boy is reset
+     * Initialize the emulator.
+     * This method should be used in the constructor and when the emulator is reset
      * ('powered on').
      */
     private void init() {
@@ -81,6 +81,8 @@ public class Emulator implements Runnable, IEmulator {
 
     /**
      * Check if the provided file is a valid Game Boy ROM file.
+     * <p>
+     * If it is, show a warning message.
      */
     private void checkGameBoyHeader() {
 
@@ -205,9 +207,9 @@ public class Emulator implements Runnable, IEmulator {
     }
 
     /**
-     * Check if the Game Boy is running.
+     * Check if the emulator is running.
      * 
-     * @return {@code true} if the Game Boy is running, {@code false} otherwise.
+     * @return {@code true} if the emulator is running, {@code false} otherwise.
      */
     public boolean isRunning() {
         return running;

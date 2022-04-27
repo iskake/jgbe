@@ -3,7 +3,7 @@ package tland.emu;
 /**
  * Class holding a memory address in the range {@code $0000-$ffff}.
  * <p>
- * As an example, (in the Game Boy's memory map,) a pointer with the value
+ * As an example, (in the emulator's memory map,) a pointer with the value
  * {@code $fffe} points to the last byte of HRAM.
  */
 public abstract class Pointer {

@@ -3,7 +3,7 @@ package tland.emu.mem;
 import tland.Bitwise;
 
 /**
- * Memory map of the Game boy.
+ * Memory map of the emulator.
  * <p>
  * The memory map contains the current addressable memory, with a range of
  * $0000-$ffff ($10000 bytes)

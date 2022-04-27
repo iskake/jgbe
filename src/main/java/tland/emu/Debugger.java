@@ -12,7 +12,7 @@ import tland.pair.SimplePair;
 import tland.pair.SimplePairs;
 
 /**
- * Simple CLI Game Boy debugger.
+ * Simple CLI Emulator debugger.
  */
 public class Debugger {
 

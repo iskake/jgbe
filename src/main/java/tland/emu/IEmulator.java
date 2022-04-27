@@ -1,7 +1,7 @@
 package tland.emu;
 
 /**
- * Game Boy interface.
+ * Emulator interface.
  */
 public interface IEmulator {
     /**
@@ -35,7 +35,7 @@ public interface IEmulator {
     void writeMemoryAddress(short address, byte value);
 
     /**
-     * Halt ('stop') all operations of the Game Boy.
+     * Halt ('stop') all operations of the emulator.
      * <p>
      * Note that the stop instruction is actually 2 bytes long, with the second byte
      * being ignored.

@@ -3,7 +3,7 @@ package tland.emu;
 import tland.Bitwise;
 
 /**
- * The CPU registers in the Game Boy processor.
+ * The CPU registers in the modified SM83 processor.
  */
 public class Registers {
     /**

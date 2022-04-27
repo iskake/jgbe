@@ -4,7 +4,7 @@ import tland.emu.IEmulator;
 import tland.emu.Registers.RegisterIndex;
 
 /**
- * Opcodes that 'halt' the operation of the Game Boy.
+ * Opcodes that 'halt' the operation of the emulator.
  * 
  * <p>
  * Implements opcodes: {@code stop} and {@code halt}
