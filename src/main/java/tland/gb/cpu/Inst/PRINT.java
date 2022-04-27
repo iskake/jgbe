@@ -13,18 +13,33 @@ public class PRINT extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
+        System.out.println(parseString(gb));
+    }
+
+    /**
+     * Parse the string in memory, according to the print instruction format.
+     * 
+     * @param gb The IGameBoy object to read memory from.
+     * @return The parsed string.
+     */
+    public String parseString(IGameBoy gb) {
+        /*
+         * The prt instruction format is as follows:
+         *     byte 0: opcode
+         *     byte 1: length
+         *     byte 2..k: string
+         *     byte k+1: args length
+         *     byte k+2..n: args
+         */
         List<Character> buf = new ArrayList<>();
-        char c;
-        int i = 0;
-        do {
-            c = (char)gb.readNextByte();
-            buf.add(c);
-            i++;
-        } while (c != (char)0 && i < 0x100);
+        byte length = gb.readNextByte();
+        for (int j = 0; j < length; j++) {
+            buf.add((char) gb.readNextByte());
+        }
 
         StringBuilder sb = new StringBuilder();
-        for (char ch : buf) {
-            sb.append(ch);
+        for (char c : buf) {
+            sb.append(c);
         }
 
         int argLen = Byte.toUnsignedInt(gb.readNextByte());
@@ -44,16 +59,31 @@ public class PRINT extends Instruction {
                     case 0x08 -> stringArgs[j] = gb.reg().readRegisterShort(RegisterIndex.BC);
                     case 0x09 -> stringArgs[j] = gb.reg().readRegisterShort(RegisterIndex.DE);
                     case 0x0a -> stringArgs[j] = gb.reg().readRegisterShort(RegisterIndex.HL);
+                    case 0x0b -> stringArgs[j] = gb.reg().readRegisterShort(RegisterIndex.SP);
+                    /* case 0x0c -> {
+                        int strLength = Byte.toUnsignedInt(gb.readNextByte());
+                        stringArgs[j] = StringHelpers.stringParse(gb, strLength, gb.pc().get());
+                    } */
                     default -> throw new IllegalInstructionException("Invalid print format.");
                 }
             }
         }
 
         if (stringArgs == null) {
-            System.out.println(sb.toString());
+            return sb.toString();
         } else {
-            System.out.printf(sb.toString(), stringArgs);
+            return sb.toString().formatted(stringArgs);
         }
     }
-    
+
+    /**
+     * Get the fixed name of the instruction.
+     * 
+     * @param gb
+     * @return
+     */
+    public String getFixedName(IGameBoy gb) {
+        return "prt " + "__TODO__"; // + parseString(gb);
+    }
+
 }
