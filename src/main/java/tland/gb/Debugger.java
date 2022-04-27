@@ -6,6 +6,10 @@ import java.util.Scanner;
 import tland.Bitwise;
 import tland.gb.cpu.CPU;
 import tland.gb.cpu.Opcodes;
+import tland.pair.Pair;
+import tland.pair.Pairs;
+import tland.pair.SimplePair;
+import tland.pair.SimplePairs;
 
 /**
  * Simple CLI Game Boy debugger.
@@ -20,6 +24,7 @@ public class Debugger {
     private String[] lastInput = { "c" };
     private ArrayList<Integer> breakPoints;
     private boolean print;
+    private Pairs<String, String> commands = new SimplePairs<>();
 
     public Debugger(GameBoy gb, CPU cpu) {
         this.gb = gb;
@@ -28,6 +33,26 @@ public class Debugger {
         sc = new Scanner(System.in);
         breakPoints = new ArrayList<>();
         print = false;
+
+        commands.add(new SimplePair<String, String>("h, help",
+                "Print this help information."));
+        commands.add(new SimplePair<String, String>("q, quit, exit",
+                "Quit JGBE."));
+        commands.add(new SimplePair<String, String>("c, continue",
+                "Continue running until the program exits or a breakpoint is hit."));
+        commands.add(new SimplePair<String, String>("s, step",
+                "'Step into'. Will step a single instruction forward, including through function calls."));
+        commands.add(new SimplePair<String, String>("n, next",
+                "'Step over'. Will step a single instruction forward, stepping over function calls ('skipping them'.)"));
+        commands.add(new SimplePair<String, String>("b, break",
+                "Create or list all breakpoints. To list all breakpoints, don't include any parameters (simply type `b`.) "
+                        + "To create a breakpoint, include a parameter of which address to break at (e.g. type `b $0102` to set a breakpoint at address 0x0102.)"));
+        commands.add(new SimplePair<String, String>("d, delete",
+                "Delete a breakpoint. If no parameter (the address of the breakpoint) is specified, the first breakpoint in the list is deleted."));
+        commands.add(new SimplePair<String, String>("x",
+                "'Examine' the memory at the specified address (e.g. typing `x $ffd0` will print all bytes 0xffd0-0xffff)"));
+        commands.add(new SimplePair<String, String>("p",
+                "Toggle printing for each instruction after continuing to run (after typing `c` or `continue`.)"));
     }
 
     /**
@@ -53,6 +78,7 @@ public class Debugger {
         }
 
         switch (input[0]) {
+            case "h", "help" -> printHelp();
             case "q", "quit", "exit" -> gb.stopRunning();
             case "c", "continue" -> continueRunning();
             case "s", "step" -> stepInto();
@@ -64,6 +90,53 @@ public class Debugger {
             case "reg" -> printCPUInfo();
             default -> System.err.println("Unknown command: " + input[0]);
         }
+    }
+
+    private void printHelp() {
+        System.out.println("To use the debugger, type a command, optionally followed by a parameter.\n");
+        System.out.println("List of commands:");
+        for (Pair<String, String> pair : commands) {
+            System.out.println(pair.getFirst() + ":");
+            printStringWithLengthAndLeading(pair.getSecond(), 80, "   ");
+        }
+
+        System.out.println("The information below (`AF: ...`) shows the current values of the registers.");
+        System.out.println(
+                "For example (if registers are cleared), after running the instruction `ld bc, $34a7`, the output is:\n");
+        System.out.println("    AF: 0000  Flags: ----\n    BC: 34a7\n    DE: 0000\n    ...");
+        System.out.println(
+                "If then another instruction is run, such as `ld a, $ff`, the values will adjust accordingly:\n");
+        System.out.println("    AF: ff00  Flags: ----\n    BC: 34a7\n    DE: 0000\n    ...");
+        System.out.println(
+                "The flags register (F) will also adjust based on the instruction as well. After running `inc a`:\n");
+        System.out.println("    AF: 0000  Flags: Z--C\n    BC: 3400\n    DE: 0000\n    ...");
+    }
+
+    /**
+     * Helper method to print the specified string with the specified length and
+     * with teh spcecified leading string.
+     * 
+     * @param s       The string to print.
+     * @param length  The length of each line.
+     * @param leading The leading string to print at the start of each line.
+     */
+    private void printStringWithLengthAndLeading(String s, int length, String leading) {
+        String[] stringParts = s.split(" ");
+        System.out.print(leading);
+
+        int totalLineChars = leading.length();
+        totalLineChars++;
+        for (String str : stringParts) {
+            totalLineChars += str.length();
+            totalLineChars++; // Added to account for spaces
+            if (totalLineChars > length) {
+                System.out.print("\n" + leading);
+
+                totalLineChars = leading.length();
+            }
+            System.out.print(str + " ");
+        }
+        System.out.println();
     }
 
     /**
