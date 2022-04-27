@@ -20,7 +20,7 @@ main:
     swap e  ; swap e: lower and higher 4 bits are swapped
     srl a   ; shift a right logically
     ; See https://rgbds.gbdev.io/docs/v0.5.2/gbz80.7#Bit_Shift_Instructions
-    ; for an explenation of each instruction.
+    ; for an explanation of each instruction.
 
     ld hl, $c000
     ld [hl], $b5    ; Memory address $c000 is set to $b5

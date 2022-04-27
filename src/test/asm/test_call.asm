@@ -106,7 +106,7 @@ _call4:
     jp _failed
 
 _call5:
-    xor a   ; xor a with a -> a is set to 0 (see explenation above)
+    xor a   ; xor a with a -> a is set to 0 (see explanation above)
     ret z   ; z  -> return if the zero flag is set.
     jp _failed
 
