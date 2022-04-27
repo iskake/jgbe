@@ -1,7 +1,5 @@
 package tland.gb;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import tland.Bitwise;
