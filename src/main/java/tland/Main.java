@@ -4,15 +4,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import tland.gb.GameBoy;
-import tland.gb.mem.CartridgeROM;
+import tland.emu.Emulator;
+import tland.emu.mem.CartridgeROM;
 
 public class Main {
     public static void main(String[] args) {
         if (args.length == 0) {
             // Interpreter
-            GameBoy gb = new GameBoy(null);
-            gb.run();
+            Emulator emu = new Emulator(null);
+            emu.run();
         } else if (args.length == 1) {
             Path path = Paths.get(args[0]);
             byte[] romFile;
@@ -24,10 +24,10 @@ public class Main {
             }
 
             CartridgeROM rom = new CartridgeROM(romFile);
-            GameBoy gb = new GameBoy(rom);
+            Emulator emu = new Emulator(rom);
 
-            gb.enableDebugger();
-            gb.run();
+            emu.enableDebugger();
+            emu.run();
         } else {
             // Invalid
             System.err.println("Invalid arguments.\nUsage: jgbe [file]");

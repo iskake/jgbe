@@ -10,17 +10,17 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import tland.gb.GameBoy;
-import tland.gb.Registers;
-import tland.gb.Registers.Flags;
-import tland.gb.Registers.RegisterIndex;
-import tland.gb.cpu.Opcodes;
-import tland.gb.mem.CartridgeROM;
-import tland.gb.mem.ROMBank;
+import tland.emu.Emulator;
+import tland.emu.Registers;
+import tland.emu.Registers.Flags;
+import tland.emu.Registers.RegisterIndex;
+import tland.emu.cpu.Opcodes;
+import tland.emu.mem.CartridgeROM;
+import tland.emu.mem.ROMBank;
 
 public class GameBoyTest {
     static final byte[] b = Arrays.copyOf(new byte[0], ROMBank.BANK_SIZE * 2);
-    static GameBoy gb = new GameBoy(new CartridgeROM(b));
+    static Emulator emu = new Emulator(new CartridgeROM(b));
     static Registers reg;
     final RegisterIndex A = RegisterIndex.A;
     final RegisterIndex F = RegisterIndex.F;
@@ -38,20 +38,20 @@ public class GameBoyTest {
 
     @BeforeAll
     static void initGameBoy() {
-        gb = new GameBoy(new CartridgeROM(b));
-        reg = gb.reg();
+        emu = new Emulator(new CartridgeROM(b));
+        reg = emu.reg();
     }
 
     void loadOpcode(int opcode) {
-        Opcodes.getOpcode(opcode).doOp(gb, opcode);
+        Opcodes.getOpcode(opcode).doOp(emu, opcode);
     }
 
     byte readMem(short address) {
-        return gb.readMemoryAddress(address);
+        return emu.readMemoryAddress(address);
     }
 
     void writeMem(short address, byte value) {
-        gb.writeMemoryAddress(address, value);
+        emu.writeMemoryAddress(address, value);
     }
 
     @Test
@@ -105,6 +105,4 @@ public class GameBoyTest {
         reg.resetFlag(Flags.C);
         assertEquals((byte) 0, reg.readRegisterByte(F));
     }
-
-    // TODO: rewrite / add asm tests
 }

@@ -5,7 +5,7 @@ FIX := rgbfix
 ASFLAGS  := -L
 FIXFLAGS := -v -p 0xff
 
-GB := test_alu.zb\
+ZB := test_alu.zb\
 	test_jump.zb\
 	test_call.zb\
 	test_bitwise.zb\
@@ -14,7 +14,7 @@ GB := test_alu.zb\
 	test_sp.zb
 	
 	
-all: $(GB)
+all: $(ZB)
 
 %.zb: %.o
 	$(LD) $< -o $@
