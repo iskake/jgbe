@@ -1,8 +1,7 @@
 package tland.gb.cpu;
 
-import java.util.Arrays;
-import java.util.List;
-
+import tland.Bitwise;
+import tland.gb.GameBoy;
 import tland.gb.Registers.RegisterIndex;
 import tland.gb.cpu.Inst.*;
 
@@ -14,7 +13,6 @@ public class Opcodes {
      * Array containing every (non-prefixed) opcode, with each index of the array
      * being the corresponding opcode.
      */
-    // TODO: Remove 'name' and 'getName()' from Instruction (use regex!!!)
     private final static Instruction[] opcodes = {
 /* 0x00 */ new NOP(),
 
@@ -407,6 +405,40 @@ public class Opcodes {
      */
     public static Instruction getOpcode(int index) {
         return opcodes[index];
+    }
+
+    /**
+     * Get the name of the instruction based on the opcode at the specified memory
+     * address.
+     * 
+     * @param address The address of the instruction.
+     * @return The name of the instruction.
+     */
+    public static String getInstructionName(GameBoy gb, short address) {
+        byte opcode = gb.readMemoryAddress(address);
+
+        String opcodeName;
+
+        Instruction inst = Opcodes.getOpcode(opcode);
+
+        if (inst instanceof Prefixed o) {
+            opcode = gb.readMemoryAddress(Bitwise.toShort(address + 1));
+            opcodeName = o.getPrefixedName(Byte.toUnsignedInt(opcode));
+        } else if (inst instanceof PRINT o) {
+            opcodeName = o.getFixedName(gb);
+        } else {
+            opcodeName = Opcodes.getOpcode(opcode).getName();
+        }
+
+        opcodeName = opcodeName.replace("_N8", "%02x");
+        opcodeName = opcodeName.replace("_N16", "%2$02x%1$02x");
+
+        byte[] operands = {
+                gb.readMemoryAddress(Bitwise.toShort(address + 1)),
+                gb.readMemoryAddress(Bitwise.toShort(address + 2))
+        };
+
+        return String.format(opcodeName, operands[0], operands[1]);
     }
 
 }
