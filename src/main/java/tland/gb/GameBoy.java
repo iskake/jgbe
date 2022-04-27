@@ -124,7 +124,7 @@ public class GameBoy implements Runnable, IGameBoy {
 
     @Override
     public byte readNextByte() {
-        return memoryMap.readByte(pc.inc());
+        return memoryMap.readAddress(pc.inc());
     }
 
     @Override
@@ -136,12 +136,12 @@ public class GameBoy implements Runnable, IGameBoy {
 
     @Override
     public byte readMemoryAddress(short address) {
-        return memoryMap.readByte(address);
+        return memoryMap.readAddress(address);
     }
 
     @Override
     public void writeMemoryAddress(short address, byte value) {
-        memoryMap.writeByte(address, value);
+        memoryMap.writeAddress(address, value);
     }
 
     @Override
@@ -234,11 +234,15 @@ public class GameBoy implements Runnable, IGameBoy {
     @Override
     public void run() {
         if (runInterpreter) {
-            System.out.println("Starting interpreter");
             interpreter = new Interpreter(this);
             interpreter.interpret(sc);
             pc.set((short) 0x0100);
         }
+
+        if (debuggerEnabled) {
+            System.out.println("Debugger is enabled. Type \"help\" or \"h\" for help");
+        }
+
         while (running) {
             if (!debuggerEnabled)
                 cpu.step();
