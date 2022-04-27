@@ -15,12 +15,11 @@ import tland.emu.Registers;
 import tland.emu.Registers.Flags;
 import tland.emu.Registers.RegisterIndex;
 import tland.emu.cpu.Opcodes;
-import tland.emu.mem.CartridgeROM;
-import tland.emu.mem.ROMBank;
+import tland.emu.mem.ROM;
 
 public class GameBoyTest {
-    static final byte[] b = Arrays.copyOf(new byte[0], ROMBank.BANK_SIZE * 2);
-    static Emulator emu = new Emulator(new CartridgeROM(b));
+    static final byte[] b = Arrays.copyOf(new byte[0], ROM.ROM_SIZE);
+    static Emulator emu = new Emulator(new ROM(b));
     static Registers reg;
     final RegisterIndex A = RegisterIndex.A;
     final RegisterIndex F = RegisterIndex.F;
@@ -38,7 +37,7 @@ public class GameBoyTest {
 
     @BeforeAll
     static void initGameBoy() {
-        emu = new Emulator(new CartridgeROM(b));
+        emu = new Emulator(new ROM(b));
         reg = emu.reg();
     }
 

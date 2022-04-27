@@ -9,11 +9,11 @@ import tland.Bitwise;
  * $0000-$ffff ($10000 bytes)
  */
 public class MemoryMap implements WritableMemory<Byte>, ReadableMemory<Byte> {
-    private CartridgeROM rom;
+    private ROM rom;
     private RAM virtualMemory;
     private int fixedAddress;
 
-    public MemoryMap(CartridgeROM rom) {
+    public MemoryMap(ROM rom) {
         this.rom = rom;
 
         if (rom == null) {
@@ -30,7 +30,7 @@ public class MemoryMap implements WritableMemory<Byte>, ReadableMemory<Byte> {
      * 
      * @param rom The ROM file to create a memory map from.
      */
-    public void restart(CartridgeROM rom) {
+    public void restart(ROM rom) {
         if (rom == null) {
             init();
         } else {
@@ -81,10 +81,11 @@ public class MemoryMap implements WritableMemory<Byte>, ReadableMemory<Byte> {
         } else {
             if (address >= 0 && address < 0x8000) {
                 // 0000-7fff
-                // ROM bank0-n,
+                // ROM
                 return rom;
             } else {
                 // 8000-ffff
+                // RAM
                 fixedAddress -= 0x8000;
                 return virtualMemory;
             }

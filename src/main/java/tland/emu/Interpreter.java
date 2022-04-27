@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 import tland.Bitwise;
 import tland.emu.cpu.Opcodes;
-import tland.emu.mem.CartridgeROM;
+import tland.emu.mem.ROM;
 import tland.pair.Pair;
 import tland.pair.Pairs;
 import tland.pair.SimplePair;
@@ -197,7 +197,7 @@ public class Interpreter {
                     byte[] romFile;
                     romFile = Files.readAllBytes(path);
 
-                    CartridgeROM rom = new CartridgeROM(romFile);
+                    ROM rom = new ROM(romFile);
                     emu.restart(rom);
                     finishedInterpreting = true;
                     return true;

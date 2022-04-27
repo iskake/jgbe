@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import tland.emu.Emulator;
-import tland.emu.mem.CartridgeROM;
+import tland.emu.mem.ROM;
 
 public class Main {
     public static void main(String[] args) {
@@ -23,7 +23,7 @@ public class Main {
                 return;
             }
 
-            CartridgeROM rom = new CartridgeROM(romFile);
+            ROM rom = new ROM(romFile);
             Emulator emu = new Emulator(rom);
 
             emu.enableDebugger();

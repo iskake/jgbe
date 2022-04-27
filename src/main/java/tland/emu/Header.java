@@ -3,13 +3,12 @@ package tland.emu;
 import java.util.Arrays;
 
 import tland.Bitwise;
-import tland.emu.mem.CartridgeROM;
-import tland.emu.mem.ROMBank;
+import tland.emu.mem.ROM;
 
 /**
  * Header information and utilities for a Game Boy cartridge header.
  * <p>
- * The header is stored in Bank 0 at the address range $0100-$014f.
+ * The header is stored in ROM at the address range $0100-$014f.
  */
 public class Header {
     /**
@@ -34,18 +33,18 @@ public class Header {
         this.data = data;
     }
 
-    public Header(CartridgeROM ROM) {
-        this.data = getHeaderData(ROM.getROMBank0());
+    public Header(ROM ROM) {
+        this.data = getHeaderData(ROM.getData());
     }
 
     /**
-     * Get the header data from the ROM bank.
+     * Get the header data from the ROM.
      * 
-     * @param bank The bank to get the header data from
-     * @return The header data from the rom bank.
+     * @param data The data to get the header from.
+     * @return The header data from the rom.
      */
-    public static byte[] getHeaderData(ROMBank bank) {
-        return Arrays.copyOfRange(bank.bytes(), 0x100, 0x14f);
+    public static byte[] getHeaderData(byte[] data) {
+        return Arrays.copyOfRange(data, 0x100, 0x14f);
     }
 
     /**
@@ -168,7 +167,7 @@ public class Header {
     /**
      * Check if the Nintendo logo data is valid.
      * 
-     * @param bank The header data to check the logo of.
+     * @param logoData The header data to check the logo of.
      * @return {@code true} if the bytes match, {@code false} otherwise.
      */
     public static boolean validLogo(byte[] logoData) {
@@ -186,14 +185,14 @@ public class Header {
     /**
      * Check if the Nintendo logo data is valid.
      * 
-     * @param bank The ROM bank to get the header and check the logo of.
+     * @param rom The ROM to get the header and check the logo of.
      * @return {@code true} if the bytes match, {@code false} otherwise.
      */
-    public static boolean validLogo(ROMBank bank) {
-        if (bank == null)
+    public static boolean validLogo(ROM rom) {
+        if (rom == null)
             return false;
 
-        byte[] logoData = Arrays.copyOfRange(bank.bytes(), 0x104, 0x134);
+        byte[] logoData = Arrays.copyOfRange(rom.getData(), 0x104, 0x134);
         return validLogo(logoData);
     }
 
@@ -217,15 +216,15 @@ public class Header {
     }
 
     /**
-     * Check if the header checksum of a ROM bank is valid.
+     * Check if the header checksum of a ROM is valid.
      * 
-     * @param bank The ROM bank to get the header and check the checksum of.
+     * @param rom The ROM to get the header and check the checksum of.
      * @return {@code true} if the checksum matches, {@code false} otherwise.
      */
-    public static boolean validHeaderChecksum(ROMBank bank) {
-        if (bank == null)
+    public static boolean validHeaderChecksum(ROM rom) {
+        if (rom == null)
             return false;
 
-        return validHeaderChecksum(Arrays.copyOfRange(bank.bytes(), 0x100, 0x150));
+        return validHeaderChecksum(Arrays.copyOfRange(rom.getData(), 0x100, 0x150));
     }
 }

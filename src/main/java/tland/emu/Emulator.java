@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import tland.Bitwise;
 import tland.emu.cpu.CPU;
-import tland.emu.mem.CartridgeROM;
+import tland.emu.mem.ROM;
 import tland.emu.mem.MemoryMap;
 
 /**
@@ -18,7 +18,7 @@ public class Emulator implements Runnable, IEmulator {
     private final MemoryMap memoryMap;
     private final Scanner sc;
 
-    private CartridgeROM rom;
+    private ROM rom;
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
@@ -26,11 +26,11 @@ public class Emulator implements Runnable, IEmulator {
     private boolean ignoreGB;
     private Interpreter interpreter;
 
-    public Emulator(CartridgeROM rom) {
+    public Emulator(ROM rom) {
         this(rom, false);
     }
 
-    public Emulator(CartridgeROM rom, boolean ignoreGB) {
+    public Emulator(ROM rom, boolean ignoreGB) {
         this.sc = new Scanner(System.in);
         debuggerEnabled = true;
         this.rom = rom;
@@ -52,7 +52,7 @@ public class Emulator implements Runnable, IEmulator {
      * 
      * @param rom The ROM to restart the system with.
      */
-    public void restart(CartridgeROM rom) {
+    public void restart(ROM rom) {
         this.rom = rom;
         memoryMap.restart(rom);
         runInterpreter = (rom == null) ? true : false;
@@ -87,11 +87,11 @@ public class Emulator implements Runnable, IEmulator {
     private void checkGameBoyHeader() {
 
         boolean validGBHeader = false;
-        if (Header.validLogo(rom.getROMBank0())) {
+        if (Header.validLogo(rom)) {
             System.out.println("Valid logo!");
             validGBHeader = true;
         }
-        if (Header.validHeaderChecksum(rom.getROMBank0())) {
+        if (Header.validHeaderChecksum(rom)) {
             System.out.println("Valid checksum!");
             validGBHeader = true;
         }
@@ -252,7 +252,7 @@ public class Emulator implements Runnable, IEmulator {
         }
     }
 
-    public CartridgeROM getROM() {
+    public ROM getROM() {
         return rom;
     }
 
