@@ -3,7 +3,7 @@ package tland.emu.cpu;
 import tland.Bitwise;
 import tland.emu.Emulator;
 import tland.emu.Registers.RegisterIndex;
-import tland.emu.cpu.Inst.*;
+import tland.emu.cpu.inst.*;
 
 /**
  * Class for getting opcodes.
