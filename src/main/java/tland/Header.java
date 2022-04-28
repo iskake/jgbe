@@ -1,8 +1,7 @@
-package tland.emu;
+package tland;
 
 import java.util.Arrays;
 
-import tland.Bitwise;
 import tland.emu.mem.ROM;
 
 /**
@@ -34,7 +33,7 @@ public class Header {
     }
 
     public Header(ROM ROM) {
-        this.data = getHeaderData(ROM.getData());
+        this.data = getHeaderData(ROM.data());
     }
 
     /**
@@ -192,7 +191,7 @@ public class Header {
         if (rom == null)
             return false;
 
-        byte[] logoData = Arrays.copyOfRange(rom.getData(), 0x104, 0x134);
+        byte[] logoData = Arrays.copyOfRange(rom.data(), 0x104, 0x134);
         return validLogo(logoData);
     }
 
@@ -225,6 +224,6 @@ public class Header {
         if (rom == null)
             return false;
 
-        return validHeaderChecksum(Arrays.copyOfRange(rom.getData(), 0x100, 0x150));
+        return validHeaderChecksum(Arrays.copyOfRange(rom.data(), 0x100, 0x150));
     }
 }
