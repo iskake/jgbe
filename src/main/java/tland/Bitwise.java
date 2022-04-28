@@ -242,6 +242,6 @@ public class Bitwise {
         } else if (str.charAt(0) == '%') {
             str = str.replace("%", "0b");
         }
-        return Integer.decode(str);
+        return str.startsWith("0b") ? Integer.parseInt(str, 2, str.length(), 2) : Integer.decode(str);
     }
 }
