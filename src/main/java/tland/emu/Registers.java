@@ -279,7 +279,7 @@ public class Registers {
      * @param reg Register to be read from
      * @return Value pointed to by {@code reg}.
      */
-    public byte readRegisterPtr(RegisterIndex reg) {
+    private byte readRegisterPtr(RegisterIndex reg) {
         checkRegisterShort(reg);
         return emu.readMemoryAddress(readRegisterShort(reg));
     }
@@ -290,7 +290,7 @@ public class Registers {
      * @param reg   Register to be read from
      * @param value Value to write at address pointed to by {@code reg}.
      */
-    public void writeRegisterPtr(RegisterIndex reg, byte value) {
+    private void writeRegisterPtr(RegisterIndex reg, byte value) {
         checkRegisterShort(reg);
         emu.writeMemoryAddress(readRegisterShort(reg), value);
     }
@@ -430,6 +430,26 @@ public class Registers {
     }
 
     /**
+     * Decrement the value stored in the 8-bit register {@code reg}.
+     * 
+     * @param reg The register to decrement the value of.
+     */
+    public void decRegisterByte(RegisterIndex reg) {
+        if (isRegisterShort(reg)) {
+            if (reg.equals(RegisterIndex.HL)) {
+                byte val = readRegisterByte(RegisterIndex.HL);
+                writeRegisterByte(reg, --val);
+                return;
+            } else {
+                // There are no `DEC` instructions for decrementing the address stored in a
+                // short register other than HL (opcode 0x35).
+                checkRegisterByte(reg);
+            }
+        }
+        registerValues[reg.val]--;
+    }
+
+    /**
      * Increment the value stored in the 16-bit register {@code reg}.
      * 
      * @param reg The register to increment the value of.
@@ -449,26 +469,6 @@ public class Registers {
         if (registerValues[lsbOffset] == 0) {
             registerValues[msbOffset]++;
         }
-    }
-
-    /**
-     * Decrement the value stored in the 8-bit register {@code reg}.
-     * 
-     * @param reg The register to decrement the value of.
-     */
-    public void decRegisterByte(RegisterIndex reg) {
-        if (isRegisterShort(reg)) {
-            if (reg.equals(RegisterIndex.HL)) {
-                byte val = readRegisterByte(RegisterIndex.HL);
-                writeRegisterByte(reg, --val);
-                return;
-            } else {
-                // There are no `DEC` instructions for decrementing the address stored in a
-                // short register other than HL (opcode 0x35).
-                checkRegisterByte(reg);
-            }
-        }
-        registerValues[reg.val]--;
     }
 
     /**
