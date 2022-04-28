@@ -1,7 +1,8 @@
 package tland.emu.mem;
 
 /**
- * Barebones memory. Should only be exteded by WritableMemory and ReadableMemory.
+ * Barebones memory interface. Should only be exteded by WritableMemory<T> and
+ * ReadableMemory<T> (that's why this class is package private.)
  */
 interface Memory<T> {
 }
