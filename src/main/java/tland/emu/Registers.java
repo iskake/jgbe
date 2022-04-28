@@ -84,9 +84,9 @@ public class Registers {
      */
     private byte[] registerValues = new byte[8];
 
-    private final Emulator emu;
+    private final IEmulator emu;
 
-    public Registers(Emulator emu) {
+    public Registers(IEmulator emu) {
         this.emu = emu;
     }
 

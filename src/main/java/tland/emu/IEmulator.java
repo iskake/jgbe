@@ -50,16 +50,6 @@ public interface IEmulator {
     void halt(short millis);
 
     /**
-     * Undecided
-     */
-    void undecidedDI();
-
-    /**
-     * Undecided
-     */
-    void undecidedEI();
-
-    /**
      * Get the ProgramCounter stored in the IEmulator object.
      * 
      * @return The program counter object.

@@ -1,7 +1,7 @@
 package tland.emu.cpu;
 
 import tland.Bitwise;
-import tland.emu.Emulator;
+import tland.emu.IEmulator;
 import tland.emu.Registers.RegisterIndex;
 import tland.emu.cpu.inst.*;
 
@@ -414,7 +414,7 @@ public class Opcodes {
      * @param address The address of the instruction.
      * @return The name of the instruction.
      */
-    public static String getInstructionName(Emulator emu, short address) {
+    public static String getInstructionName(IEmulator emu, short address) {
         byte opcode = emu.readMemoryAddress(address);
 
         String opcodeName;

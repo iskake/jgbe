@@ -3,7 +3,10 @@ package tland.emu.cpu.inst;
 import tland.emu.IEmulator;
 
 /**
- * {@code di} and {@code ei} instructions for disabling and enabling
+ * {@code di} and {@code ei} instructions. In the case of JGBE, these instructions
+ * do nothing (equivalent to {@code nop}.)
+ * <p>
+ * In the Game Boy's CPU, the instructions are used for disabling and enabling
  * the Interrupt Master Enable CPU flag respectively.
  * 
  * <p>
@@ -17,11 +20,8 @@ public class Interrupt extends Instruction {
 
     @Override
     public void doOp(IEmulator emu, int opcode) {
-        switch (opcode) {
-            case 0xf3 -> emu.undecidedDI();
-            case 0xfb -> emu.undecidedEI();
-            default -> throw new IllegalInstructionException();
-        }
+        // Since there are no interrupts in JGBE, these instructions
+        // do nothing.
     }
 
 }

@@ -3,6 +3,7 @@ package tland.emu;
 import java.util.Scanner;
 
 import tland.Bitwise;
+import tland.Header;
 import tland.emu.cpu.CPU;
 import tland.emu.mem.ROM;
 import tland.emu.mem.MemoryMap;
@@ -161,23 +162,6 @@ public class Emulator implements Runnable, IEmulator {
         }
     }
 
-    @Override
-    public void undecidedDI() {
-        // ...
-    }
-
-    @Override
-    public void undecidedEI() {
-        // ...
-    }
-
-    /**
-     * Print the HRAM ($ff80-$ffff)
-     */
-    public void printHRAM() {
-        printMemoryRegion(0xff80, 0xffff);
-    }
-
     /**
      * Print the contents at the memory region from {@code start} including
      * {@code end}.
@@ -250,10 +234,6 @@ public class Emulator implements Runnable, IEmulator {
             else
                 dbg.step();
         }
-    }
-
-    public ROM getROM() {
-        return rom;
     }
 
     @Override

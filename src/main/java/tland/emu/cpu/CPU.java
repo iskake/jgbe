@@ -1,11 +1,11 @@
 package tland.emu.cpu;
 
-import tland.emu.Emulator;
+import tland.emu.IEmulator;
 
 public class CPU {
-    private final Emulator emu;
+    private final IEmulator emu;
 
-    public CPU(Emulator emu) {
+    public CPU(IEmulator emu) {
         this.emu = emu;
     }
 

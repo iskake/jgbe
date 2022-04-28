@@ -12,9 +12,9 @@ import tland.Bitwise;
  * decrement the stack pointer by 2.
  */
 public class StackPointer extends Pointer {
-    private final Emulator emu;
+    private final IEmulator emu;
 
-    public StackPointer(Emulator emu, short address) {
+    public StackPointer(IEmulator emu, short address) {
         super(address);
         this.emu = emu;
     }
