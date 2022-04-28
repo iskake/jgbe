@@ -45,7 +45,7 @@ public class Interpreter {
     }
 
     /**
-     * REPL. Each instruction is written to memory.
+     * Command line interpreter 'REPL'
      * 
      * @param sc Scanner to read input from.
      */
@@ -54,20 +54,17 @@ public class Interpreter {
         System.out.println(
                 "Type \"help\" for help, \"cmds\" for a list of commands, \"inst\" for a list of valid instructions.");
         while (!finishedInterpreting) {
-            boolean match = false;
             System.out.print(">>> ");
 
             String line = sc.nextLine().strip();
             String[] inParts = line.split(" ");
-            if (handleCommands(inParts)) {
+
+            if (handleCommands(inParts) || handleSpecialInstruction(line)) {
                 continue;
             }
 
+            boolean match = false;
             for (int i = 0; i < 0x100; i++) {
-                if (handleSpecialInstruction(line)) {
-                    match = true;
-                    break;
-                }
 
                 String opName = Opcodes.getOpcode(i).getName();
 
@@ -80,6 +77,7 @@ public class Interpreter {
                 boolean decodedShort = true;
                 for (int k = 0; k < inParts.length; k++) {
                     if (opParts[k].equals(inParts[k])) {
+                        // If parts match exactly
                         matchingParts[k] = true;
                     } else {
                         // TODO: some opcode reading to fix:
@@ -87,14 +85,24 @@ public class Interpreter {
                         // 'ld a, ptr/ld ptr, a'
                         // 'ei' and 'di' are undefined
                         String fixedName = inParts[k];
-                        if (inParts[k].contains("[") && opParts[k].contains("[")) {
+                        boolean brackets = false;
+                        if (inParts[k].contains("[")
+                                && inParts[k].contains("]")
+                                && opParts[k].contains("[")
+                                && opParts[k].contains("]")) {
                             fixedName = (inParts[k].replaceAll("\\[(.+)\\]", "$1"));
-                        } else if (inParts[k].contains("[") || opParts[k].contains("[")) {
+                            brackets = true;
+                        } else if (inParts[k].contains("[")
+                                || inParts[k].contains("]")
+                                || opParts[k].contains("[")
+                                || opParts[k].contains("]")) {
+                            // If only one has a '[' or ']', then they do not match.
                             break;
                         }
 
-                        if (opParts[k].equals("$_N8")) {
-                            if (fixedName.contains("$")) {
+                        // Byte decoding handle
+                        if (opParts[k].equals("$_N8") || (opParts[k].equals("[$_N8]") && brackets)) {
+                            if ((fixedName.charAt(0) == '$') || (fixedName.charAt(0) == '%')) {
                                 matchingParts[k] = true;
                                 decodedShort = false;
                                 value = Bitwise.decodeInt(fixedName);
@@ -103,8 +111,10 @@ public class Interpreter {
                                 decodedShort = false;
                                 if (opParts[0].equals("jr")) {
                                     // TODO?
+                                    // jr
                                     value = Short.toUnsignedInt(labels.get(fixedName));
                                 } else {
+                                    // Other (e.g. `ld a, label`)
                                     value = Short.toUnsignedInt(labels.get(fixedName));
                                 }
                             } else {
@@ -112,16 +122,21 @@ public class Interpreter {
                                     value = Bitwise.decodeInt(fixedName);
                                     matchingParts[k] = true;
                                     decodedShort = false;
-                                } catch (Exception e) {
+                                } catch (NumberFormatException e) {
                                     // move on...
                                 }
                             }
-                        } else if (opParts[k].equals("$_N16")) {
+                            // Short decoding handle
+                        } else if (opParts[k].equals("$_N16") || (opParts[k].equals("[$_N16]") && brackets)) {
+                            if (brackets) {
+                                System.out.println("AAAA");
+                            }
                             if (fixedName.contains("$")) {
                                 matchingParts[k] = true;
                                 decodedShort = true;
                                 value = Bitwise.decodeInt(fixedName);
                             } else if (stringInIterable(fixedName, labels.keySet())) {
+                                // jp, call, ret
                                 matchingParts[k] = true;
                                 decodedShort = true;
                                 value = Short.toUnsignedInt(labels.get(fixedName));
@@ -130,7 +145,7 @@ public class Interpreter {
                                     value = Bitwise.decodeInt(fixedName);
                                     matchingParts[k] = true;
                                     decodedShort = true;
-                                } catch (Exception e) {
+                                } catch (NumberFormatException e) {
                                     // move on...
                                 }
                             }
@@ -250,7 +265,8 @@ public class Interpreter {
                 }
             }
             case "x", "examine" -> {
-
+                short pcVal = emu.pc().get();
+                emu.printMemoryRegion(pcVal & 0xfff0, ((pcVal + 56) & 0xfff0) - 1);
                 return true;
             }
         }
@@ -321,34 +337,122 @@ public class Interpreter {
             return true;
         }
 
-        if (strParts[0] == "prt") {
-            System.out.println("str: " + str);
+        switch (strParts[0].toLowerCase()) {
+            case "rlc", "rrc", "rl", "rr", "sla", "sra", "swap", "srl" -> {
+                try {
+                    int opcodeType = switch (strParts[0].toLowerCase()) {
+                        case "rlc" -> 0b0000;
+                        case "rrc" -> 0b0001;
+                        case "rl" -> 0b0010;
+                        case "rr" -> 0b0011;
+                        case "sla" -> 0b0100;
+                        case "sra" -> 0b0101;
+                        case "swap" -> 0b0110;
+                        case "srl" -> 0b0111;
+                        default ->
+                            throw new IllegalArgumentException("Invalid rotation instruction format: " + strParts[0]);
+                    };
+                    opcodeType <<= 3;
 
-            boolean validString = validPRTString(str, 4);
-            if (validString) {
-                System.out.println("legal string? " + str);
+                    int regNum = switch (strParts[1].toLowerCase()) {
+                        case "b" -> 0b000;
+                        case "c" -> 0b001;
+                        case "d" -> 0b010;
+                        case "e" -> 0b011;
+                        case "h" -> 0b100;
+                        case "l" -> 0b101;
+                        case "[hl]" -> 0b110;
+                        case "a" -> 0b111;
+                        default -> throw new IllegalArgumentException(
+                                "Invalid " + strParts[0] + " format: '" + strParts[1] + "' is not a valid register.");
+                    };
+                    int value = opcodeType | regNum;
+                    emu.writeMemoryAddress(emu.pc().inc(), (byte) 0xcb);
+                    emu.writeMemoryAddress(emu.pc().inc(), (byte) value);
+                } catch (Exception e) {
+                    if (e instanceof IndexOutOfBoundsException ex) {
+                        System.err.println("Invalid rotation instruction format!");
+                    }
+                    System.err.println(e.getMessage());
+                }
+                return true;
             }
+            case "bit", "res", "set" -> {
+                try {
+                    int opcodeType = switch (strParts[0].toLowerCase()) {
+                        case "bit" -> 0b01;
+                        case "res" -> 0b10;
+                        case "set" -> 0b11;
+                        default ->
+                            throw new IllegalArgumentException("Invalid bitwise instruction format: " + strParts[0]);
+                    };
+                    opcodeType <<= 6;
+                    int bitNum = switch (strParts[1].toLowerCase()) {
+                        case "0," -> 0;
+                        case "1," -> 1;
+                        case "2," -> 2;
+                        case "3," -> 3;
+                        case "4," -> 4;
+                        case "5," -> 5;
+                        case "6," -> 6;
+                        case "7," -> 7;
+                        default -> throw new IllegalArgumentException(
+                                "Invalid " + strParts[0] + " format: '" + strParts[1]
+                                        + "' is invalid: bit must be in range 0-7 (with trailing comma.)");
+                    };
+                    bitNum <<= 3;
+                    int regNum = switch (strParts[2].toLowerCase()) {
+                        case "b" -> 0b000;
+                        case "c" -> 0b001;
+                        case "d" -> 0b010;
+                        case "e" -> 0b011;
+                        case "h" -> 0b100;
+                        case "l" -> 0b101;
+                        case "[hl]" -> 0b110;
+                        case "a" -> 0b111;
+                        default -> throw new IllegalArgumentException(
+                                "Invalid " + strParts[0] + " format: '" + strParts[2] + "' is not a valid register.");
+                    };
+                    int value = opcodeType | bitNum | regNum;
+                    emu.writeMemoryAddress(emu.pc().inc(), (byte) 0xcb);
+                    emu.writeMemoryAddress(emu.pc().inc(), (byte) value);
+                } catch (Exception e) {
+                    if (e instanceof IndexOutOfBoundsException ex) {
+                        System.err.println("Invalid rotation instruction format!");
+                    }
+                    System.err.println(e.getMessage());
+                }
+                return true;
+            }
+            case "prt" -> {
+                System.out.println("str: " + str);
 
-            return true;
-            // TODO!!!!
-            /*
-             * if (strParts.length > 2) {
-             * for (int i = 2; i < strParts.length; i++) {
-             * strParts[i].contains("yo");
-             * }
-             * }
-             * 
-             * int pcVal = Short.toUnsignedInt(emu.pc().get());
-             * emu.writeMemoryAddress(emu.pc().inc(), (byte)0xfc); // opcode
-             * // emu.writeMemoryAddress(emu.pc().inc(), (byte)strParts[1].charAt(i));
-             * emu.writeMemoryAddress(emu.pc().inc(), (byte)0); // null terminated string.
-             * emu.writeMemoryAddress(emu.pc().inc(), (byte)1); // arg length
-             * emu.writeMemoryAddress(emu.pc().inc(), (byte)0); // arg type (a)
-             * 
-             * // emu.printMemoryRegion(pcVal & 0xfff0, ((pcVal + 32) & 0xfff0) - 1);
-             * 
-             * return true;
-             */
+                boolean validString = validPRTString(str, 4);
+                if (validString) {
+                    System.out.println("legal string? " + str);
+                }
+
+                return true;
+                // TODO!!!!
+                /*
+                 * if (strParts.length > 2) {
+                 * for (int i = 2; i < strParts.length; i++) {
+                 * strParts[i].contains("yo");
+                 * }
+                 * }
+                 * 
+                 * int pcVal = Short.toUnsignedInt(emu.pc().get());
+                 * emu.writeMemoryAddress(emu.pc().inc(), (byte)0xfc); // opcode
+                 * // emu.writeMemoryAddress(emu.pc().inc(), (byte)strParts[1].charAt(i));
+                 * emu.writeMemoryAddress(emu.pc().inc(), (byte)0); // null terminated string.
+                 * emu.writeMemoryAddress(emu.pc().inc(), (byte)1); // arg length
+                 * emu.writeMemoryAddress(emu.pc().inc(), (byte)0); // arg type (a)
+                 * 
+                 * // emu.printMemoryRegion(pcVal & 0xfff0, ((pcVal + 32) & 0xfff0) - 1);
+                 * 
+                 * return true;
+                 */
+            }
         }
 
         return false;
@@ -359,9 +463,9 @@ public class Interpreter {
      * 
      * @param str       The string to for valid format.
      * @param startChar The index of the starting char to check
-     * @return The 
+     * @return The
      */
-    public static boolean validPRTString(String str, int startChar) {
+    private boolean validPRTString(String str, int startChar) {
         for (int i = startChar; i < str.length(); i++) {
             if (i == startChar) {
                 if (str.charAt(i) != '"') {
