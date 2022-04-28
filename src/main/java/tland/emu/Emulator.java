@@ -25,21 +25,12 @@ public class Emulator implements Runnable, IEmulator {
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
-    private boolean runInterpreter;
-    private boolean ignoreGB;
     private Interpreter interpreter;
 
     public Emulator(ROM rom) {
-        this(rom, false);
-    }
-
-    public Emulator(ROM rom, boolean ignoreGB) {
         this.sc = new Scanner(System.in);
         debuggerEnabled = true;
         this.rom = rom;
-        this.ignoreGB = ignoreGB;
-
-        runInterpreter = (rom == null) ? true : false;
 
         pc = new ProgramCounter((short) 0x100);
         sp = new StackPointer(this, (short) 0xfffe);
@@ -58,7 +49,6 @@ public class Emulator implements Runnable, IEmulator {
     public void restart(ROM rom) {
         this.rom = rom;
         memoryMap.restart(rom);
-        runInterpreter = (rom == null) ? true : false;
         init();
     }
 
@@ -74,7 +64,11 @@ public class Emulator implements Runnable, IEmulator {
         sp.set((short) 0xfffe);
         memoryMap.init();
 
+        boolean runInterpreter = (rom == null) ? true : false;
+
         if (!runInterpreter) {
+            // If the interpreter should be ran, there is no need to check if the ROM file
+            // is a Game Boy ROM file (because there is none.)
             checkGameBoyHeader();
         }
 
@@ -86,9 +80,14 @@ public class Emulator implements Runnable, IEmulator {
      * Check if the provided file is a valid Game Boy ROM file.
      * <p>
      * If it is, show a warning message.
+     * 
+     * <p>
+     * The reason we check for this, is because JGBE emulates a <i>modified
+     * version</i>
+     * of the Game Boy's CPU, meaning any Game Boy program (that is 32KiB) SHOULD
+     * run as a valid file.
      */
     private void checkGameBoyHeader() {
-
         boolean validGBHeader = false;
         if (Header.validLogo(rom)) {
             System.out.println("Valid logo!");
@@ -100,9 +99,6 @@ public class Emulator implements Runnable, IEmulator {
         }
 
         if (validGBHeader) {
-            if (ignoreGB) {
-                return;
-            }
             System.out.println("Warning: The provided file is in the format of a Game Boy ROM.");
             System.out.println("Although this file may run just fine, JGBE is not designed to run Game Boy ROMs.");
             Header header = new Header(rom);
@@ -220,7 +216,7 @@ public class Emulator implements Runnable, IEmulator {
      */
     @Override
     public void run() {
-        if (runInterpreter) {
+        if (rom == null) {
             interpreter = new Interpreter(this);
             interpreter.interpret(sc);
             pc.set((short) 0x0100);
