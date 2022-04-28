@@ -22,10 +22,5 @@ public class BitwiseTest {
         assertEquals((byte) 0b10110001, Bitwise.flipBit((byte) 0b10110101, 2));
         assertEquals((byte) 0b01001000, Bitwise.setBit((byte) 0b00001000, 6));
         assertEquals((byte) 0b11011111, Bitwise.clearBit((byte) 0b11111111, 5));
-
-        assertEquals("ff", Bitwise.toHexString((byte) 0xff));
-        assertEquals("b256", Bitwise.toHexString((short) 0xb256));
-        assertEquals("11111111", Bitwise.toBinaryString((byte) 0b11111111));
-        assertEquals("1010111110111000", Bitwise.toBinaryString((short) 0b1010111110111000));
     }
 }
