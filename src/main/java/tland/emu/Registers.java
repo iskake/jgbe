@@ -30,12 +30,7 @@ public class Registers {
         // 'Special' 16-bit registers.
 
         /** Stack Pointer. Holds the current memory address of the stack. */
-        SP(0xC),
-        /**
-         * Program Counter (a.k.a. instruction pointer, etc.).
-         * Points to the next instruction to be fetched.
-         */
-        PC(0xD);
+        SP(0xC);
 
         private final int val;
 
