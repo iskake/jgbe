@@ -76,14 +76,4 @@ public class PRINT extends Instruction {
         }
     }
 
-    /**
-     * Get the fixed name of the instruction.
-     * 
-     * @param emu
-     * @return
-     */
-    public String getFixedName(IEmulator emu) {
-        return "prt " + "__TODO__"; // + parseString(gb);
-    }
-
 }

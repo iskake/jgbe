@@ -378,7 +378,8 @@ public class Opcodes {
 
 /* 0xfb */ new Interrupt("ei"),
 
-/* 0xfc */ new PRINT("prt _ARGS"),
+/* 0xfc */ new PRINT("prt"),
+
 /* 0xfd */ new IllegalInst("illegal $fd"), // illegal
 
 /* 0xfe */ new CP_nn("cp $_N8", null),
@@ -424,8 +425,6 @@ public class Opcodes {
         if (inst instanceof Prefixed o) {
             opcode = emu.readMemoryAddress(Bitwise.toShort(address + 1));
             opcodeName = o.getPrefixedName(Byte.toUnsignedInt(opcode));
-        } else if (inst instanceof PRINT o) {
-            opcodeName = o.getFixedName(emu);
         } else {
             opcodeName = Opcodes.getOpcode(opcode).getName();
         }
