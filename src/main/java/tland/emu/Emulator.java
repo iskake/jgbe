@@ -13,7 +13,7 @@ import tland.emu.mem.MemoryMap;
 /**
  * Represents the JGBE emulator/interpreter/virtual machine.
  */
-public class Emulator implements Runnable, IEmulator {
+public class Emulator implements IEmulator {
     private final ProgramCounter pc;
     private final StackPointer sp;
     private final Registers reg;
@@ -214,7 +214,6 @@ public class Emulator implements Runnable, IEmulator {
     /**
      * Run the emulator
      */
-    @Override
     public void run() {
         if (rom == null) {
             interpreter = new Interpreter(this);
