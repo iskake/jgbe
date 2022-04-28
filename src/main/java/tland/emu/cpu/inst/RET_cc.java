@@ -19,10 +19,7 @@ public class RET_cc extends Instruction {
     @Override
     public void doOp(IEmulator emu, int opcode) {
         if (Conditions.conditionSatisfied(emu.reg(), condition)) {
-            if (opcode == 0xd9) {
-                // reti
-                emu.undecidedEI();
-            }
+            // Note: reti does not do anything different in JGBE.
             emu.pc().set(emu.sp().pop());
         }
     }
