@@ -3,8 +3,7 @@ package tland.emu.mem;
 /**
  * Read Only Memory, memory that can only be read from, not written to.
  */
-public class ROM implements ReadableMemory<Byte> {
-    private byte[] data;
+public record ROM(byte[] data) implements ReadableMemory<Byte> {
     public final static int ROM_SIZE = 0x8000;
 
     public ROM(byte[] data) {
@@ -14,10 +13,6 @@ public class ROM implements ReadableMemory<Byte> {
         }
 
         this.data = data;
-    }
-
-    public byte[] getData() {
-        return data;
     }
 
     @Override
