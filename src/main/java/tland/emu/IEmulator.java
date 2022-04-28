@@ -1,5 +1,8 @@
 package tland.emu;
 
+import tland.emu.pointer.ProgramCounter;
+import tland.emu.pointer.StackPointer;
+
 /**
  * Emulator interface.
  */

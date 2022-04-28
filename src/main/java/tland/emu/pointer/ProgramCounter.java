@@ -1,4 +1,4 @@
-package tland.emu;
+package tland.emu.pointer;
 
 /**
  * Program counter, a pointer to a memory address.

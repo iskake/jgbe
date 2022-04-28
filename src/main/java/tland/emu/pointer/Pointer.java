@@ -1,4 +1,4 @@
-package tland.emu;
+package tland.emu.pointer;
 
 /**
  * Class holding a memory address in the range {@code $0000-$ffff}.

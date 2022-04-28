@@ -1,6 +1,7 @@
-package tland.emu;
+package tland.emu.pointer;
 
 import tland.Bitwise;
+import tland.emu.IEmulator;
 
 /**
  * Stack pointer, a pointer to a memory address.

@@ -6,6 +6,8 @@ import tland.Bitwise;
 import tland.Header;
 import tland.emu.cpu.CPU;
 import tland.emu.mem.ROM;
+import tland.emu.pointer.ProgramCounter;
+import tland.emu.pointer.StackPointer;
 import tland.emu.mem.MemoryMap;
 
 /**
