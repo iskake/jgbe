@@ -5,16 +5,19 @@ import java.util.Arrays;
 import tland.emu.mem.ROM;
 
 /**
- * Header information and utilities for a Game Boy cartridge header.
+ * The point of this class is to extract information about ROM files that are
+ * idenitied as Game Boy ROM files (which JGBE _can_ run, but is unsupported) so
+ * we can warn the user they are trying to run a Game Boy ROM (.gb or .gbc file)
+ * instead of a JGBE binary file (.zb file)
  * <p>
  * The header is stored in ROM at the address range $0100-$014f.
+ * See https://gbdev.io/pandocs/The_Cartridge_Header.html for more information.
  * 
  * @author Tarjei Landøy
  */
 public class Header {
     /**
      * Compressed Nintendo logo data.
-     * Each tile of the logo is stored in 2 bytes, as opposed to 16 bytes.
      */
     private final static byte[] logo = {
             (byte) 0xCE, (byte) 0xED, (byte) 0x66, (byte) 0x66, (byte) 0xCC, (byte) 0x0D, (byte) 0x00, (byte) 0x0B,
@@ -44,7 +47,7 @@ public class Header {
      * @param data The data to get the header from.
      * @return The header data from the rom.
      */
-    public static byte[] getHeaderData(byte[] data) {
+    private static byte[] getHeaderData(byte[] data) {
         return Arrays.copyOfRange(data, 0x100, 0x14f);
     }
 
@@ -128,41 +131,6 @@ public class Header {
             case 0x05 -> "64 MiB";
             default -> "Unknown/Invalid";
         };
-    }
-
-    public String getDestinationCode() {
-        return switch (data[0x4a]) {
-            case 0x00 -> "Japan";
-            case 0x01 -> "International";
-            default -> "Invalid";
-        };
-    }
-
-    /**
-     * Get the version number from the header data.
-     * 
-     * @return the version number (stored as an int).
-     */
-    public byte getVersionNumber() {
-        return data[0x4c];
-    }
-
-    /**
-     * Get the header checksum from the header data.
-     * 
-     * @return the header checksum.
-     */
-    public byte getHeaderChecksum() {
-        return data[0x4d];
-    }
-
-    /**
-     * Get the global checksum from the header data.
-     * 
-     * @return the global checksum.
-     */
-    public short getGlobalChecksum() {
-        return Bitwise.toShort(data[0x4e], data[0x4f]);
     }
 
     /**
