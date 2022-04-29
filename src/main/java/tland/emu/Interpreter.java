@@ -213,7 +213,14 @@ public class Interpreter {
                     return true;
                 } catch (Exception e) {
                     System.err
-                            .println("Could not read the file: " + e.getMessage() + "\nReturning to the interpreter.");
+                            .println("Could not read the file because an exception occurred: "
+                                    + e.toString()
+                                    + "\nPossible solution: try writing the filename without quotes."
+                                    + "\nFor example, write"
+                                    + "\n    open src/test/asm/bin/test_alu.zb"
+                                    + "\ninstead of"
+                                    + "\n    open \"src/test/asm/bin/test_alu.zb\""
+                                    + "\n\nReturning to the interpreter.");
                     return true;
                 }
             }
