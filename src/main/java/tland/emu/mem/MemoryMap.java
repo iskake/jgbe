@@ -14,15 +14,7 @@ public class MemoryMap implements WritableMemory<Byte>, ReadableMemory<Byte> {
     private int fixedAddress;
 
     public MemoryMap(ROM rom) {
-        this.rom = rom;
-
-        if (rom == null) {
-            virtualMemory = new RAM(0x10000);
-        } else {
-            virtualMemory = new RAM(0x8000);
-        }
-
-        init();
+        restart(rom);
     }
 
     /**
@@ -32,10 +24,12 @@ public class MemoryMap implements WritableMemory<Byte>, ReadableMemory<Byte> {
      */
     public void restart(ROM rom) {
         if (rom == null) {
+            virtualMemory = new RAM(0x10000);
             init();
         } else {
             this.rom = rom;
-            virtualMemory = new RAM(0x8000);
+            virtualMemory = new RAM(0x10000 - rom.data().length);
+            init();
         }
     }
 
