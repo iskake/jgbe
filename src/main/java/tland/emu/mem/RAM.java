@@ -1,7 +1,6 @@
 package tland.emu.mem;
 
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * Random Access Memory. Implementation of memory that can be both read and
@@ -11,14 +10,11 @@ import java.util.Random;
  */
 public class RAM implements WritableMemory<Byte>, ReadableMemory<Byte> {
     public final int size;
-
     protected byte[] bytes;
-    private final Random rand;
 
     public RAM(int size) {
         this.size = size;
         bytes = new byte[size];
-        rand = new Random();
     }
 
     @Override
