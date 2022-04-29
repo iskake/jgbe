@@ -372,7 +372,7 @@ public class Opcodes {
 
 /* 0xf7 */ new RST_vec("rst $30"),
 
-/* 0xf8 */ new LD_SP("ld hl, sp+$_N8"),
+/* 0xf8 */ new LD_SP("ld hl, sp + $_N8"),
 /* 0xf9 */ new LD_SP("ld sp, hl"),
 /* 0xfa */ new LD_A_ptr("ld a, [$_N16]"),
 
