@@ -13,6 +13,8 @@ import tland.pair.SimplePairs;
 
 /**
  * Simple CLI Emulator debugger.
+ * <p>
+ * Note: the debugger is inspired by GDB, so usage is similar.
  * 
  * @author Tarjei Landøy
  */
