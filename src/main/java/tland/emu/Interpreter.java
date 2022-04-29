@@ -45,6 +45,8 @@ public class Interpreter {
                 "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)"));
         commands.add(new SimplePair<String, String>("setpc",
                 "Set the program counter to a specific address or label."));
+        commands.add(new SimplePair<String, String>("getpc",
+                "Print out the current value of the program counter (to get back from setpc)."));
         commands.add(new SimplePair<String, String>("x, examine",
                 "Examine the memory at the program counter; prints the memory at the program counter."));
 
@@ -271,6 +273,11 @@ public class Interpreter {
                     System.err.println("Invalid syntax: write `setpc [$ADDR/0xADDR/label]`");
                     return true;
                 }
+            }
+            case "getpc" -> {
+                System.out.println(
+                        "The program counter is currently pointing to the address: $" + Integer.toHexString(emu.pc().get()));
+                return true;
             }
             case "x", "examine" -> {
                 short pcVal = emu.pc().get();
