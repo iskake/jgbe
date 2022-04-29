@@ -68,7 +68,7 @@ public class Interpreter {
             String[] inParts = line.split(" ");
 
             // Check for commands or 'special' instructions (prt / prefixed)
-            if (handleCommands(inParts) || handleSpecialInstruction(line)) {
+            if (line == "" || handleCommands(inParts) || handleSpecialInstruction(line)) {
                 continue;
             }
 
@@ -93,66 +93,49 @@ public class Interpreter {
                         // 'ldh' opcodes
                         String fixedName = inParts[k];
                         boolean brackets = false;
-                        if (inParts[k].contains("[")
-                                && inParts[k].contains("]")
-                                && opParts[k].contains("[")
-                                && opParts[k].contains("]")) {
-                            fixedName = (inParts[k].replaceAll("\\[(.+)\\]", "$1"));
+                        if (inParts[k].startsWith("[")
+                                && (inParts[k].endsWith("]") || inParts[k].endsWith("],"))
+                                && opParts[k].startsWith("[")
+                                && (opParts[k].endsWith("]") || opParts[k].endsWith("],"))) {
+                            fixedName = (inParts[k].replaceAll("\\[(.+)\\].?", "$1"));
                             brackets = true;
-                        } else if (inParts[k].contains("[")
-                                || inParts[k].contains("]")
-                                || opParts[k].contains("[")
-                                || opParts[k].contains("]")) {
-                            // If only one has a '[' or ']', then they must not match.
+                        } else if (inParts[k].startsWith("[")
+                                || (inParts[k].endsWith("]") || inParts[k].endsWith("],"))
+                                || opParts[k].startsWith("[")
+                                || (opParts[k].endsWith("]") || opParts[k].endsWith("],"))) {
+                            // If only one has a '[' or ']' (with optional comma), then they must not match.
                             break;
                         }
 
                         // Byte decoding handle
-                        if (opParts[k].equals("$_N8") || (opParts[k].equals("[$_N8]") && brackets)) {
+                        if (opParts[k].equals("$_N8")
+                                || (opParts[k].matches("\\[.+?_N8\\].?") && brackets)
+                                || opParts[k].equals("$_N16")
+                                || (opParts[k].matches("\\[.?_N16\\].?") && brackets)) {
                             if ((fixedName.charAt(0) == '$') || (fixedName.charAt(0) == '%')) {
                                 matchingParts[k] = true;
-                                decodedShort = false;
                                 value = Bitwise.decodeInt(fixedName);
                             } else if (stringInIterable(fixedName, labels.keySet())) {
+                                // Label usage (e.g. `jp label`)
+                                // Note: lower byte is used in byte instructions (`_N8`)
                                 matchingParts[k] = true;
-                                decodedShort = false;
-                                if (opParts[0].equals("jr")) {
-                                    // TODO?
-                                    // jr
-                                    value = Short.toUnsignedInt(labels.get(fixedName));
-                                } else {
-                                    // Other (e.g. `ld a, label`)
-                                    value = Short.toUnsignedInt(labels.get(fixedName));
-                                }
-                            } else {
-                                try {
-                                    value = Bitwise.decodeInt(fixedName);
-                                    matchingParts[k] = true;
-                                    decodedShort = false;
-                                } catch (NumberFormatException e) {
-                                    // move on...
-                                }
-                            }
-                            // Short decoding handle
-                        } else if (opParts[k].equals("$_N16") || (opParts[k].equals("[$_N16]") && brackets)) {
-                            if (fixedName.contains("$")) {
-                                matchingParts[k] = true;
-                                decodedShort = true;
-                                value = Bitwise.decodeInt(fixedName);
-                            } else if (stringInIterable(fixedName, labels.keySet())) {
-                                // jp, call, ret
-                                matchingParts[k] = true;
-                                decodedShort = true;
                                 value = Short.toUnsignedInt(labels.get(fixedName));
                             } else {
+                                // If the input does NOT have a `$` or `%` (so, possibly using decimal vs.
+                                // binary or hex), but the checked instruction DOES have $_N8 (so, the
+                                // instruction expects a number), then try to decode the input as a number.
                                 try {
                                     value = Bitwise.decodeInt(fixedName);
                                     matchingParts[k] = true;
-                                    decodedShort = true;
                                 } catch (NumberFormatException e) {
                                     // move on...
                                 }
                             }
+
+                            decodedShort = (opParts[k].equals("$_N16")
+                                    || (opParts[k].matches("\\[.?_N16\\].?") && brackets))
+                                            ? true
+                                            : false;
                         }
                     }
                 }
@@ -276,7 +259,8 @@ public class Interpreter {
             }
             case "getpc" -> {
                 System.out.println(
-                        "The program counter is currently pointing to the address: $" + Integer.toHexString(emu.pc().get()));
+                        "The program counter is currently pointing to the address: $"
+                                + Integer.toHexString(emu.pc().get()));
                 return true;
             }
             case "x", "examine" -> {
@@ -364,6 +348,21 @@ public class Interpreter {
         }
 
         switch (strParts[0].toLowerCase()) {
+            case "jr" -> {
+                // Not worth implementing, since jp is just a better jr anyway.
+                System.err.println("The `jr` instructions are not supported by the interpreter. Use `jp` instead.");
+                return true;
+            }
+            case "prefixed" -> {
+                // PREFIXED is the 'name' of the prefixed instructions.
+                System.err.println(
+                        "To use prefixed instructions, type any of the instructions prefixed with a $cb byte (see `inst` for a list of instructions.)");
+                return true;
+            }
+            case "illegal" -> {
+                System.err.println("Cannot write illegal opcodes, they are illegal for a reason...");
+                return true;
+            }
             case "rlc", "rrc", "rl", "rr", "sla", "sra", "swap", "srl" -> {
                 try {
                     int opcodeType = switch (strParts[0].toLowerCase()) {
@@ -451,10 +450,7 @@ public class Interpreter {
                 return true;
             }
             case "prt" -> {
-                System.out.println("str: " + str);
-
                 int strLen = PRTStringLength(str, "prt ".length());
-
                 if (strLen == -1) {
                     System.err.println("Invalid print statement: the provided string is incorrectly formatted.");
                     return true;
