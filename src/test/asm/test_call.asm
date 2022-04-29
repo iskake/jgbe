@@ -44,6 +44,8 @@ include "entry.asm"
 
 main:
 
+; Note: in the debugger, use type `s` instead of `n`
+;       to avoid stepping over function calls.
 _call_test:
     call _call1 ; The 'call' instruction calls the address of `_call1` by:
                 ; - pushing the current value of the program counter (PC) to the stack
