@@ -18,7 +18,7 @@ These files should to be manually tested (looking at the output of the program) 
 ## Running
 
 To run these tests, either:
-- Run JGBE and type `open` + the path of the file you wish to run. (e.g. `open src/test/asm/test_alu.zb`)
+- Run JGBE and type `open` + the path of the file you wish to run. (e.g. `open src/test/asm/bin/test_alu.zb`)
 
 ### Note for building
 
