@@ -22,7 +22,6 @@ public class Halt extends Instruction {
         switch (opcode) {
             case 0x10 -> emu.stop();
             case 0x76 -> emu.halt(emu.reg().readRegisterShort(RegisterIndex.HL));
-            default -> throw new IllegalInstructionException();
         }
     }
 }
