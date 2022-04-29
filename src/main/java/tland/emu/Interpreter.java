@@ -94,8 +94,6 @@ public class Interpreter {
                         // If parts match exactly
                         matchingParts[k] = true;
                     } else {
-                        // TODO: some opcode reading to fix:
-                        // 'ldh' opcodes
                         String fixedName = inParts[k];
                         boolean brackets = false;
                         if (inParts[k].startsWith("[")
@@ -137,10 +135,10 @@ public class Interpreter {
                                 }
                             }
 
+                            // A short was decoded only if the opcode name contains '_N16' according to the
+                            // rules below.
                             decodedShort = (opParts[k].equals("$_N16")
-                                    || (opParts[k].matches("\\[.?_N16\\].?") && brackets))
-                                            ? true
-                                            : false;
+                                    || (opParts[k].matches("\\[.?_N16\\].?") && brackets));
                         }
                     }
                 }
@@ -152,7 +150,6 @@ public class Interpreter {
                     }
                     match = true;
                 }
-                // If they do not match
                 if (match) {
                     emu.writeMemoryAddress(emu.pc().inc(), Bitwise.toByte(i));
                     if (value != null) {
@@ -347,10 +344,11 @@ public class Interpreter {
     }
 
     /**
-     * Handle special instructions.
+     * Handle 'special' instructions.
      * 
      * @param str The array to read the tokens from.
-     * @return
+     * @return {@code true} if a special instruction was handled,
+     *         {@code false} otherwise.
      */
     private boolean handleSpecialInstruction(String str) {
         String[] strParts = str.split(" ");
@@ -362,8 +360,11 @@ public class Interpreter {
 
         switch (strParts[0].toLowerCase()) {
             case "jr" -> {
-                // Not worth implementing, since jp is just a better jr anyway.
-                System.err.println("The `jr` instructions are not supported by the interpreter. Use `jp` instead.");
+                // Implementing the `jr` instruction would be needlessly complex for an
+                // instruction that is basically just a worse version of `jp`.
+                // So, the simplest solution is to just ban it from the CLI interpreter
+                // (in assembled (binary) files, this is already handled for us.)
+                System.err.println("The `jr` instructions are not supported by the CLI interpreter. Use `jp` instead.");
                 return true;
             }
             case "prefixed" -> {
@@ -373,10 +374,13 @@ public class Interpreter {
                 return true;
             }
             case "illegal" -> {
-                System.err.println("Cannot write illegal opcodes, they are illegal for a reason...");
+                System.err
+                        .println("Writing illegal opcodes to memory is not allowed, they are illegal for a reason...");
                 return true;
             }
             case "rlc", "rrc", "rl", "rr", "sla", "sra", "swap", "srl" -> {
+                // Encoding the bit shift/rotate instructions can be done by reversing the
+                // procedure used for decoding (see the the ROT class.)
                 try {
                     int opcodeType = switch (strParts[0].toLowerCase()) {
                         case "rlc" -> 0b0000;
@@ -416,6 +420,8 @@ public class Interpreter {
                 return true;
             }
             case "bit", "res", "set" -> {
+                // Encoding the bitwise instructions can be done by reversing the procedure
+                // used for decoding (see the the BIT class.)
                 try {
                     int opcodeType = switch (strParts[0].toLowerCase()) {
                         case "bit" -> 0b01;
@@ -469,36 +475,51 @@ public class Interpreter {
                     return true;
                 }
 
-                String[] strArgs = {};
-                byte[] byteArgs = {};
+                // Find the amount of expected args so we can compare after.
+                int expectedArgs = 0;
+                for (int j = "prt \"".length(); j < "prt \"".length() + strLen; j++) {
+                    if (str.charAt(j) == '%' && str.charAt(j - 1) != '\\') {
+                        expectedArgs++;
+                    }
+                }
 
+                // String arguments handling
+                byte[] byteArgs = {};
                 try {
-                    strArgs = str.substring("prt ".length() + strLen + "\"\"".length() + " ".length()).split(" ");
+                    String[] strArgs = str.substring("prt ".length() + strLen + "\"\"".length() + " ".length())
+                            .split(" ");
                     byteArgs = new byte[strArgs.length];
 
                     for (int i = 0; i < strArgs.length; i++) {
                         byteArgs[i] = switch (strArgs[i].toLowerCase()) {
-                            case "a" -> (byte) 0x00;
-                            case "b" -> (byte) 0x01;
-                            case "c" -> (byte) 0x02;
-                            case "d" -> (byte) 0x03;
-                            case "e" -> (byte) 0x04;
-                            case "h" -> (byte) 0x05;
-                            case "l" -> (byte) 0x06;
-                            case "af" -> (byte) 0x07;
-                            case "bc" -> (byte) 0x08;
-                            case "de" -> (byte) 0x09;
-                            case "hl" -> (byte) 0x0a;
-                            case "sp" -> (byte) 0x0b;
+                            case "a", "a," -> (byte) 0x00;
+                            case "b", "b," -> (byte) 0x01;
+                            case "c", "c," -> (byte) 0x02;
+                            case "d", "d," -> (byte) 0x03;
+                            case "e", "e," -> (byte) 0x04;
+                            case "h", "h," -> (byte) 0x05;
+                            case "l", "l," -> (byte) 0x06;
+                            case "af", "af," -> (byte) 0x07;
+                            case "bc", "bc," -> (byte) 0x08;
+                            case "de", "de," -> (byte) 0x09;
+                            case "hl", "hl," -> (byte) 0x0a;
+                            case "sp", "sp," -> (byte) 0x0b;
                             default ->
-                                throw new IllegalArgumentException("Invalid prt argument format: " + strParts[0]);
+                                throw new IllegalArgumentException("Invalid PRT argument format: " + strParts[0]);
                         };
                     }
-                } catch (StringIndexOutOfBoundsException e) {
+                } catch (Exception e) {
                     if (!(e instanceof StringIndexOutOfBoundsException)) {
                         System.err.println("Invalid arguments/format: " + e.getMessage());
                         return true;
                     }
+                }
+
+                // Check if the amount of args line up.
+                if (expectedArgs > byteArgs.length) {
+                    System.err.println("Invalid PRT argument format: too few arguments. "
+                            + "(expected: " + expectedArgs + ", got: " + byteArgs.length + ")");
+                    return true;
                 }
 
                 emu.writeMemoryAddress(emu.pc().inc(), (byte) 0xfc);

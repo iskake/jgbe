@@ -9,8 +9,8 @@ import tland.emu.Registers.RegisterIndex;
 /**
  * PRT instruction.
  * <p>
- * This instruction is not originally included in the SM83 processor's instruction set (or
- * the z80's or 8080's)
+ * This instruction is not originally included in the SM83 processor's
+ * instruction set (or the z80's or 8080's)
  * 
  * @author Tarjei Landøy
  */
@@ -67,14 +67,10 @@ public class PRINT extends Instruction {
                     case 0x08 -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.BC);
                     case 0x09 -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.DE);
                     case 0x0a -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.HL);
-                    case 0x0b -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.SP);
-                    /*
-                     * case 0x0c -> {
-                     * int strLength = Byte.toUnsignedInt(gb.readNextByte());
-                     * stringArgs[j] = StringHelpers.stringParse(gb, strLength, gb.pc().get());
-                     * }
-                     */
-                    default -> throw new IllegalInstructionException("Invalid print format.");
+                    case 0x0b -> stringArgs[j] = emu.sp().get();
+                    case 0x0c -> stringArgs[j] = emu.pc().get();
+                    default -> throw new IllegalInstructionException("Invalid PRT instruction format: "
+                            + "byte value is not in range 0x00-0x0c.");
                 }
             }
         }
@@ -82,7 +78,12 @@ public class PRINT extends Instruction {
         if (stringArgs == null) {
             return sb.toString();
         } else {
-            return sb.toString().formatted(stringArgs);
+            try {
+                return sb.toString().formatted(stringArgs);
+            } catch (Exception e) {
+                System.err.println("Invalid PRT instruction format!");
+                return "null";
+            }
         }
     }
 
