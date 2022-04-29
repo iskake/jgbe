@@ -39,12 +39,4 @@ public class RAM implements WritableMemory<Byte>, ReadableMemory<Byte> {
         Arrays.fill(bytes, (byte)0);
     }
 
-    /**
-     * Randomize each byte in memory.
-     * Each byte will have a value from $00 to $ff.
-     */
-    public void randomize() {
-        rand.nextBytes(bytes);
-    }
-
 }
