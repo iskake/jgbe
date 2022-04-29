@@ -108,7 +108,7 @@ public class Opcodes {
 /* 0x34 */ new INC_rr("inc [hl]", RegisterIndex.HL),
 /* 0x35 */ new DEC_rr("dec [hl]", RegisterIndex.HL),
 
-/* 0x36 */ new LD_rr_nn("ld [hl], _N8", RegisterIndex.HL),
+/* 0x36 */ new LD_rr_nn("ld [hl], $_N8", RegisterIndex.HL),
 
 /* 0x37 */ new SCF(),
 
@@ -295,7 +295,7 @@ public class Opcodes {
 /* 0xcc */ new CALL_cc_n16("call z, $_N16", Conditions.Z),
 /* 0xcd */ new CALL_cc_n16("call $_N16", Conditions.NONE),
 
-/* 0xce */ new ADD_rr_nn("adc a, $_N8", RegisterIndex.A, null, true),
+/* 0xce */ new ADD_rr_nn("a, $_N8", RegisterIndex.A, null, true),
 
 /* 0xcf */ new RST_vec("rst $08"),
 /* 0xd0 */ new RET_cc("ret nc", Conditions.NC),

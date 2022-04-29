@@ -10,8 +10,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code add a, r8}, {@code add a, $n8},
- * {@code add hl, r16}, {@code add sp, $e8}, {@code adc a, r8} and
- * {@code adc a, $n8}
+ * {@code add hl, r16}, {@code add sp, $e8}, {@code adc r8} and
+ * {@code adc $n8}
  */
 public class ADD_rr_nn extends Instruction {
     private final RegisterIndex r1;
