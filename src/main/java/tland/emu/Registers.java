@@ -79,7 +79,7 @@ public class Registers {
      * The registers' values, with each register having an index
      * of the {@code val} specified in {@code RegisterIndex} (8-bit).
      */
-    private byte[] registerValues = new byte[8];
+    private final byte[] registerValues = new byte[8];
 
     private final IEmulator emu;
 
