@@ -1,4 +1,4 @@
-package tland.pair;
+package tland.jgbe.pair;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -6,6 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+
+import tland.pair.Pair;
+import tland.pair.Pairs;
+import tland.pair.SimplePair;
+import tland.pair.SimplePairs;
 
 public class PairTest {
     @Test

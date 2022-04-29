@@ -1,8 +1,10 @@
-package tland;
+package tland.jgbe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+
+import tland.Bitwise;
 
 public class BitwiseTest {
     @Test

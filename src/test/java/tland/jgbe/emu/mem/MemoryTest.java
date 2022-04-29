@@ -1,8 +1,12 @@
-package tland.emu.mem;
+package tland.jgbe.emu.mem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+
+import tland.emu.mem.MemoryMap;
+import tland.emu.mem.RAM;
+import tland.emu.mem.ROM;
 
 public class MemoryTest {
     

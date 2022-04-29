@@ -1,4 +1,4 @@
-package tland.emu;
+package tland.jgbe.emu;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import tland.emu.Emulator;
+import tland.emu.IEmulator;
+import tland.emu.Registers;
 import tland.emu.Registers.Flags;
 import tland.emu.Registers.RegisterIndex;
 
