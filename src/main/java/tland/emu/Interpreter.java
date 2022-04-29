@@ -438,14 +438,31 @@ public class Interpreter {
                     return true;
                 }
 
-                String[] args = {};
+                String[] strArgs = {};
+                byte[] byteArgs = {};
 
                 try {
-                    args = str.substring("prt ".length() + strLen + "\"\"".length() + " ".length()).split(" ");
+                    strArgs = str.substring("prt ".length() + strLen + "\"\"".length() + " ".length()).split(" ");
                     System.out.println("args:");
+                    byteArgs = new byte[strArgs.length];
 
-                    for (String string : args) {
-                        System.out.println("    " + string.toString());
+                    for (int i = 0; i < strArgs.length; i++) {
+                        System.out.println("    " + strArgs[i].toString());
+                        byteArgs[i] = switch (strArgs[i].toLowerCase()) {
+                            case "a"  -> (byte)0x00;
+                            case "b"  -> (byte)0x01;
+                            case "c"  -> (byte)0x02;
+                            case "d"  -> (byte)0x03;
+                            case "e"  -> (byte)0x04;
+                            case "h"  -> (byte)0x05;
+                            case "l"  -> (byte)0x06;
+                            case "af"  -> (byte)0x07;
+                            case "bc"  -> (byte)0x08;
+                            case "de"  -> (byte)0x09;
+                            case "hl"  -> (byte)0x0a;
+                            case "sp"  -> (byte)0x0b;
+                            default ->  throw new IllegalArgumentException("Invalid prt argument format: " + strParts[0]);
+                        };
                     }
                 } catch (StringIndexOutOfBoundsException e) {
                     if (!(e instanceof StringIndexOutOfBoundsException)) {
@@ -456,10 +473,17 @@ public class Interpreter {
 
                 emu.writeMemoryAddress(emu.pc().inc(), (byte)0xfc);
                 emu.writeMemoryAddress(emu.pc().inc(), (byte)strLen);
-                for (int i = "prt \"".length(); i < "prt \"".length() + strLen; i++) {
-                    emu.writeMemoryAddress(emu.pc().inc(), (byte)str.charAt(i));
+                if (strLen > 0) {
+                    for (int i = "prt \"".length(); i < "prt \"".length() + strLen; i++) {
+                        emu.writeMemoryAddress(emu.pc().inc(), (byte)str.charAt(i));
+                    }
                 }
-                emu.writeMemoryAddress(emu.pc().inc(), (byte)0);
+                emu.writeMemoryAddress(emu.pc().inc(), (byte)byteArgs.length);
+                if (byteArgs.length > 0) {
+                    for (byte b : byteArgs) {
+                        emu.writeMemoryAddress(emu.pc().inc(), b);
+                    }
+                }
 
                 return true;
             }
