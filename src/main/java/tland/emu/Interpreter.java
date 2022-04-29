@@ -34,13 +34,15 @@ public class Interpreter {
         commands.add(new SimplePair<String, String>("inst",
                 "Print out all instructions."));
         commands.add(new SimplePair<String, String>("run",
-                "Run the program written to RAM."));
+                "Run the program written to RAM. Note that this will automatically write a `stop` instruction to memory."));
         commands.add(new SimplePair<String, String>("open",
                 "Open a program and run it. The program should have a '.zb' filename extension"));
         commands.add(new SimplePair<String, String>("undo",
-                "Delete the byte stored at and and decrement the program counter. (WARNING: Unsafe)"));
+                "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)"));
         commands.add(new SimplePair<String, String>("setpc",
                 "Set the program counter to a specific address or label."));
+        commands.add(new SimplePair<String, String>("x, examine",
+                "Examine the memory at the program counter; prints the memory at the program counter."));
 
     }
 
@@ -59,6 +61,7 @@ public class Interpreter {
             String line = sc.nextLine().strip();
             String[] inParts = line.split(" ");
 
+            // Check for commands or 'special' instructions (prt / prefixed)
             if (handleCommands(inParts) || handleSpecialInstruction(line)) {
                 continue;
             }
@@ -82,8 +85,6 @@ public class Interpreter {
                     } else {
                         // TODO: some opcode reading to fix:
                         // 'ldh' opcodes
-                        // 'ld a, ptr/ld ptr, a'
-                        // 'ei' and 'di' are undefined
                         String fixedName = inParts[k];
                         boolean brackets = false;
                         if (inParts[k].contains("[")
@@ -96,7 +97,7 @@ public class Interpreter {
                                 || inParts[k].contains("]")
                                 || opParts[k].contains("[")
                                 || opParts[k].contains("]")) {
-                            // If only one has a '[' or ']', then they do not match.
+                            // If only one has a '[' or ']', then they must not match.
                             break;
                         }
 
@@ -128,9 +129,6 @@ public class Interpreter {
                             }
                             // Short decoding handle
                         } else if (opParts[k].equals("$_N16") || (opParts[k].equals("[$_N16]") && brackets)) {
-                            if (brackets) {
-                                System.out.println("AAAA");
-                            }
                             if (fixedName.contains("$")) {
                                 matchingParts[k] = true;
                                 decodedShort = true;
@@ -152,6 +150,7 @@ public class Interpreter {
                         }
                     }
                 }
+                // Check if the strings (after decoding) match
                 for (boolean validPart : matchingParts) {
                     if (!validPart) {
                         match = false;
@@ -159,6 +158,7 @@ public class Interpreter {
                     }
                     match = true;
                 }
+                // If they do not match
                 if (match) {
                     emu.writeMemoryAddress(emu.pc().inc(), Bitwise.toByte(i));
                     if (value != null) {
@@ -176,7 +176,8 @@ public class Interpreter {
                 }
             }
             if (!match) {
-                System.out.println("Invalid input '" + line + "'");
+                System.out.println("Invalid input: '" + line + "'");
+                System.out.println("Type \"help\" for help.");
             }
         }
     }
@@ -229,16 +230,18 @@ public class Interpreter {
                 return true;
             }
             case "exit" -> {
-                emu.stop();
+                System.exit(0);
                 return true;
             }
             case "debugger" -> {
                 try {
                     if (s[1].equals("enable")) {
                         emu.enableDebugger();
+                        System.out.println("The debugger has been enabled.");
                         return true;
                     } else if (s[1].equals("disable")) {
                         emu.disableDebugger();
+                        System.out.println("The debugger has been disabled.");
                         return true;
                     } else {
                         System.err.println("Invalid syntax: write `debugger [enable/disable]`");
@@ -317,7 +320,7 @@ public class Interpreter {
             if (i == 0xcb) {
                 // Prefixed opcodes
             }
-            System.out.println("%02x".formatted(i) + ": " + Opcodes.getOpcode(i).getName());
+            System.out.println("$%02x".formatted(i) + ": " + Opcodes.getOpcode(i).getName());
         }
     }
 
@@ -427,31 +430,38 @@ public class Interpreter {
             case "prt" -> {
                 System.out.println("str: " + str);
 
-                boolean validString = validPRTString(str, 4);
-                if (validString) {
-                    System.out.println("legal string? " + str);
+                int strLen = PRTStringLength(str, "prt ".length());
+                if (strLen != -1) {
+                    System.out.println("legal string? " + str + " with length " + strLen);
+                } else {
+                    System.err.println("Invalid print statement: the provided string is incorrectly formatted.");
+                    return true;
                 }
 
+                String[] args = {};
+
+                try {
+                    args = str.substring("prt ".length() + strLen + "\"\"".length() + " ".length()).split(" ");
+                    System.out.println("args:");
+
+                    for (String string : args) {
+                        System.out.println("    " + string.toString());
+                    }
+                } catch (StringIndexOutOfBoundsException e) {
+                    if (!(e instanceof StringIndexOutOfBoundsException)) {
+                        System.err.println("Invalid arguments/format: " + e.getMessage());
+                        return true;
+                    }
+                }
+
+                emu.writeMemoryAddress(emu.pc().inc(), (byte)0xfc);
+                emu.writeMemoryAddress(emu.pc().inc(), (byte)strLen);
+                for (int i = "prt \"".length(); i < "prt \"".length() + strLen; i++) {
+                    emu.writeMemoryAddress(emu.pc().inc(), (byte)str.charAt(i));
+                }
+                emu.writeMemoryAddress(emu.pc().inc(), (byte)0);
+
                 return true;
-                // TODO!!!!
-                /*
-                 * if (strParts.length > 2) {
-                 * for (int i = 2; i < strParts.length; i++) {
-                 * strParts[i].contains("yo");
-                 * }
-                 * }
-                 * 
-                 * int pcVal = Short.toUnsignedInt(emu.pc().get());
-                 * emu.writeMemoryAddress(emu.pc().inc(), (byte)0xfc); // opcode
-                 * // emu.writeMemoryAddress(emu.pc().inc(), (byte)strParts[1].charAt(i));
-                 * emu.writeMemoryAddress(emu.pc().inc(), (byte)0); // null terminated string.
-                 * emu.writeMemoryAddress(emu.pc().inc(), (byte)1); // arg length
-                 * emu.writeMemoryAddress(emu.pc().inc(), (byte)0); // arg type (a)
-                 * 
-                 * // emu.printMemoryRegion(pcVal & 0xfff0, ((pcVal + 32) & 0xfff0) - 1);
-                 * 
-                 * return true;
-                 */
             }
         }
 
@@ -465,24 +475,24 @@ public class Interpreter {
      * @param startChar The index of the starting char to check
      * @return The
      */
-    private boolean validPRTString(String str, int startChar) {
+    private int PRTStringLength(String str, int startChar) {
         for (int i = startChar; i < str.length(); i++) {
             if (i == startChar) {
                 if (str.charAt(i) != '"') {
-                    return false;
+                    return -1;
                 }
             } else {
                 if (str.charAt(i) == '"' && str.charAt(i - 1) != '\\') {
                     try {
                         char c = str.charAt(i + 1);
-                        return (c == ' ') ? true : false;
+                        return (c == ' ') ? i - startChar - 1 : -1;
                     } catch (IndexOutOfBoundsException e) {
-                        return true;
+                        return i - startChar - 1;
                     }
                 }
             }
         }
-        return false;
+        return -1;
     }
 
     /**
