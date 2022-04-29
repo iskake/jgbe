@@ -36,7 +36,7 @@ public class Prefixed extends Instruction {
     }
 
     public String getPrefixedName(int opcode) {
-        return (opcode >> 6 == 0) ? ROT_INST.getFixedName(opcode) : BIT_INST.getFixedName(opcode);
+        return (opcode >> 6 == 0) ? ROT.getFixedName(opcode) : BIT.getFixedName(opcode);
     }
 
 }

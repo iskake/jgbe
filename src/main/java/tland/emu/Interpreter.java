@@ -9,6 +9,8 @@ import java.util.Scanner;
 
 import tland.Bitwise;
 import tland.emu.cpu.Opcodes;
+import tland.emu.cpu.inst.BIT;
+import tland.emu.cpu.inst.ROT;
 import tland.emu.mem.ROM;
 import tland.pair.Pair;
 import tland.pair.Pairs;
@@ -38,6 +40,8 @@ public class Interpreter {
         commands.add(new SimplePair<String, String>("open",
                 "Open a program and run it. The program should have a '.zb' filename extension"));
         commands.add(new SimplePair<String, String>("undo",
+                "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)"));
+        commands.add(new SimplePair<String, String>("debugger",
                 "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)"));
         commands.add(new SimplePair<String, String>("setpc",
                 "Set the program counter to a specific address or label."));
@@ -218,7 +222,8 @@ public class Interpreter {
                     finishedInterpreting = true;
                     return true;
                 } catch (Exception e) {
-                    System.err.println("Could not read the file! Returning to the interpreter.");
+                    System.err
+                            .println("Could not read the file: " + e.getMessage() + "\nReturning to the interpreter.");
                     return true;
                 }
             }
@@ -316,11 +321,24 @@ public class Interpreter {
      * Print all valid instructions.
      */
     private void printInstructions() {
+        System.out.println("There are 512 total different instructions, most being variations of another instruction.");
+        System.out.println(
+                "Certain instructions are also 'Prefixed', and are either bitwise instructions or bit shift instructions.");
         for (int i = 0; i < 0x100; i++) {
             if (i == 0xcb) {
-                // Prefixed opcodes
+                System.out.println("$cb: Prefixed instructions:");
+                for (int j = 0; j < 0x100; j++) {
+                    String opName = "";
+                    if (j < 0x40) {
+                        opName = ROT.getFixedName(j);
+                    } else {
+                        opName = BIT.getFixedName(j);
+                    }
+                    System.out.println("    $cb $%02x".formatted(j) + ": " + opName);
+                }
+            } else {
+                System.out.println("$%02x".formatted(i) + ": " + Opcodes.getOpcode(i).getName());
             }
-            System.out.println("$%02x".formatted(i) + ": " + Opcodes.getOpcode(i).getName());
         }
     }
 
@@ -335,8 +353,6 @@ public class Interpreter {
         if (strParts[0].charAt(strParts[0].length() - 1) == ':') {
             String fixedLabel = removeLastChar(strParts[0]);
             labels.put(fixedLabel, emu.pc().get());
-            // System.out.println("Added label: " + strParts[0] + " at: " +
-            // Bitwise.toHexString(emu.pc().get()));
             return true;
         }
 
@@ -431,9 +447,8 @@ public class Interpreter {
                 System.out.println("str: " + str);
 
                 int strLen = PRTStringLength(str, "prt ".length());
-                if (strLen != -1) {
-                    System.out.println("legal string? " + str + " with length " + strLen);
-                } else {
+
+                if (strLen == -1) {
                     System.err.println("Invalid print statement: the provided string is incorrectly formatted.");
                     return true;
                 }
@@ -443,25 +458,24 @@ public class Interpreter {
 
                 try {
                     strArgs = str.substring("prt ".length() + strLen + "\"\"".length() + " ".length()).split(" ");
-                    System.out.println("args:");
                     byteArgs = new byte[strArgs.length];
 
                     for (int i = 0; i < strArgs.length; i++) {
-                        System.out.println("    " + strArgs[i].toString());
                         byteArgs[i] = switch (strArgs[i].toLowerCase()) {
-                            case "a"  -> (byte)0x00;
-                            case "b"  -> (byte)0x01;
-                            case "c"  -> (byte)0x02;
-                            case "d"  -> (byte)0x03;
-                            case "e"  -> (byte)0x04;
-                            case "h"  -> (byte)0x05;
-                            case "l"  -> (byte)0x06;
-                            case "af"  -> (byte)0x07;
-                            case "bc"  -> (byte)0x08;
-                            case "de"  -> (byte)0x09;
-                            case "hl"  -> (byte)0x0a;
-                            case "sp"  -> (byte)0x0b;
-                            default ->  throw new IllegalArgumentException("Invalid prt argument format: " + strParts[0]);
+                            case "a" -> (byte) 0x00;
+                            case "b" -> (byte) 0x01;
+                            case "c" -> (byte) 0x02;
+                            case "d" -> (byte) 0x03;
+                            case "e" -> (byte) 0x04;
+                            case "h" -> (byte) 0x05;
+                            case "l" -> (byte) 0x06;
+                            case "af" -> (byte) 0x07;
+                            case "bc" -> (byte) 0x08;
+                            case "de" -> (byte) 0x09;
+                            case "hl" -> (byte) 0x0a;
+                            case "sp" -> (byte) 0x0b;
+                            default ->
+                                throw new IllegalArgumentException("Invalid prt argument format: " + strParts[0]);
                         };
                     }
                 } catch (StringIndexOutOfBoundsException e) {
@@ -471,14 +485,14 @@ public class Interpreter {
                     }
                 }
 
-                emu.writeMemoryAddress(emu.pc().inc(), (byte)0xfc);
-                emu.writeMemoryAddress(emu.pc().inc(), (byte)strLen);
+                emu.writeMemoryAddress(emu.pc().inc(), (byte) 0xfc);
+                emu.writeMemoryAddress(emu.pc().inc(), (byte) strLen);
                 if (strLen > 0) {
                     for (int i = "prt \"".length(); i < "prt \"".length() + strLen; i++) {
-                        emu.writeMemoryAddress(emu.pc().inc(), (byte)str.charAt(i));
+                        emu.writeMemoryAddress(emu.pc().inc(), (byte) str.charAt(i));
                     }
                 }
-                emu.writeMemoryAddress(emu.pc().inc(), (byte)byteArgs.length);
+                emu.writeMemoryAddress(emu.pc().inc(), (byte) byteArgs.length);
                 if (byteArgs.length > 0) {
                     for (byte b : byteArgs) {
                         emu.writeMemoryAddress(emu.pc().inc(), b);

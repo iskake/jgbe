@@ -15,9 +15,9 @@ public class BIT extends Instruction {
     public int opcode;
 
     // Values from bit 7-6 from opcode
-    private final int BIT_VAL = 0b01;
-    private final int RES_VAL = 0b10;
-    private final int SET_VAL = 0b11;
+    private static final int BIT_VAL = 0b01;
+    private static final int RES_VAL = 0b10;
+    private static final int SET_VAL = 0b11;
 
     public BIT() {
         super("BIT_INST");
@@ -75,7 +75,7 @@ public class BIT extends Instruction {
      * @return The correct name of the instruction, based on the value in
      *         {@code opcode}.
      */
-    public String getFixedName(int opcode) {
+    public static String getFixedName(int opcode) {
         int opcodeType = (opcode >> 6);
         int bitNum = (opcode >> 3) & 0b111;
         int regNum = opcode & 0b111;

@@ -15,14 +15,14 @@ import tland.emu.Registers.RegisterIndex;
 public class ROT extends Instruction {
     private final boolean prefixed;
 
-    private final int RLC_VAL = 0b000;
-    private final int RRC_VAL = 0b001;
-    private final int RL_VAL = 0b010;
-    private final int RR_VAL = 0b011;
-    private final int SLA_VAL = 0b100;
-    private final int SRA_VAL = 0b101;
-    private final int SWAP_VAL = 0b110;
-    private final int SRL_VAL = 0b111;
+    private static final int RLC_VAL = 0b000;
+    private static final int RRC_VAL = 0b001;
+    private static final int RL_VAL = 0b010;
+    private static final int RR_VAL = 0b011;
+    private static final int SLA_VAL = 0b100;
+    private static final int SRA_VAL = 0b101;
+    private static final int SWAP_VAL = 0b110;
+    private static final int SRL_VAL = 0b111;
 
     public ROT() {
         super("ROT_INST");
@@ -77,7 +77,7 @@ public class ROT extends Instruction {
         emu.reg().setFlagConditional(Flags.C, result == 1);
     }
 
-    public String getFixedName(int opcode) {
+    public static String getFixedName(int opcode) {
         int opcodeType = (opcode >> 3);
         int regNum = opcode & 0b111;
 
