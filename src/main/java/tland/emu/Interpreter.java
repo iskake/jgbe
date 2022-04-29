@@ -341,6 +341,13 @@ public class Interpreter {
                 System.out.println("$%02x".formatted(i) + ": " + Opcodes.getOpcode(i).getName());
             }
         }
+
+        System.out.println(
+                "\nFor writing values in the instructions, replace `_N8` and `_N16` with a 8-bit and 16-bit value respectively."
+                        + "\nTo write the instruction `ld hl, $_N16` with the short value $1234, write: `ld hl, $1234`"
+                        + "(note: does not have to be a hex value (starting with `$` or `0x`),"
+                        + "you can also just type a normal decimal number, like so: `ld b, 23`"
+                        + "(or, you can use a binary number with the prefix `%` or `0b` such as: `xor 0b10110101` ).");
     }
 
     /**
