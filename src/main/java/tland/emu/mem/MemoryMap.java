@@ -7,6 +7,8 @@ import tland.Bitwise;
  * <p>
  * The memory map contains the current addressable memory, with a range of
  * $0000-$ffff ($10000 bytes)
+ * 
+ * @author Tarjei Landøy
  */
 public class MemoryMap implements WritableMemory<Byte>, ReadableMemory<Byte> {
     private ROM rom;

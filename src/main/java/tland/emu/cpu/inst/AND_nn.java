@@ -9,6 +9,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code and r8} and {@code and $n8}
+ * 
+ * @author Tarjei Landøy
  */
 public class AND_nn extends Instruction {
     private final RegisterIndex reg;

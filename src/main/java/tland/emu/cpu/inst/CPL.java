@@ -9,6 +9,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcode: {@code cpl}
+ * 
+ * @author Tarjei Landøy
  */
 public class CPL extends Instruction {
 

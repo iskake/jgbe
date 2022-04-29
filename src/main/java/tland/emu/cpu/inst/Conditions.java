@@ -6,6 +6,8 @@ import tland.emu.Registers.Flags;
 /**
  * Conditions for {@code JP}, {@code JR}, {@code CALL}, and {@code RET}
  * instuctions.
+ * 
+ * @author Tarjei Landøy
  */
 public enum Conditions {
     /** No condition (condition always satisfied). */

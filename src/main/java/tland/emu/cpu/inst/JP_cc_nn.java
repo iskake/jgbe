@@ -10,6 +10,8 @@ import tland.emu.Registers.RegisterIndex;
  * Implements opcodes: {@code jp $n16}, {@code jp nz, $n16},
  * {@code jp nc, $n16}, {@code jp z, $n16}, {@code jp c, $n16} and
  * {@code jp hl}
+ * 
+ * @author Tarjei Landøy
  */
 public class JP_cc_nn extends Instruction {
     private final Conditions condition;

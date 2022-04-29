@@ -4,8 +4,10 @@ import tland.emu.IEmulator;
 
 /**
  * No operation instruction.
+ * <p>
+ * The instruction does the following: nothing.
  * 
- * <p> Note: the operation still takes 
+ * @author Tarjei Landøy
  */
 public class NOP extends Instruction {
 

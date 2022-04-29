@@ -9,6 +9,8 @@ import tland.emu.Registers.Flags;
  * 
  * <p>
  * Implements opcode: {@code scf}.
+ * 
+ * @author Tarjei Landøy
  */
 public class SCF extends Instruction {
 

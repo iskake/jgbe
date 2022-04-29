@@ -8,6 +8,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code stop} and {@code halt}
+ * 
+ * @author Tarjei Landøy
  */
 public class Halt extends Instruction {
 

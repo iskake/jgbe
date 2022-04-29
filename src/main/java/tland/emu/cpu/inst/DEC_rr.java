@@ -10,6 +10,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code dec r8}, {@code dec [hl]} and {@code dec r16}
+ * 
+ * @author Tarjei Landøy
  */
 public class DEC_rr extends Instruction {
     private final RegisterIndex reg;

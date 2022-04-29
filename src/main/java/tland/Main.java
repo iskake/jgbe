@@ -7,6 +7,11 @@ import java.nio.file.Paths;
 import tland.emu.Emulator;
 import tland.emu.mem.ROM;
 
+/**
+ * Main class
+ * 
+ * @author Tarjei Landøy
+ */
 public class Main {
     public static void main(String[] args) {
         if (args.length == 0) {

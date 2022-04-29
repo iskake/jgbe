@@ -2,6 +2,11 @@ package tland.emu.cpu;
 
 import tland.emu.IEmulator;
 
+/**
+ * Represents a modified SM83 processor.
+ * 
+ * @author Tarjei Landøy
+ */
 public class CPU {
     private final IEmulator emu;
 

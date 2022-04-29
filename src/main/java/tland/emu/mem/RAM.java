@@ -6,6 +6,8 @@ import java.util.Random;
 /**
  * Random Access Memory. Implementation of memory that can be both read and
  * written to.
+ * 
+ * @author Tarjei Landøy
  */
 public class RAM implements WritableMemory<Byte>, ReadableMemory<Byte> {
     public final int size;

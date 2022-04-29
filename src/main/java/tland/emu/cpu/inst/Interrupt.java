@@ -11,6 +11,8 @@ import tland.emu.IEmulator;
  * 
  * <p>
  * Implements opcodes: {@code di} and {@code ei}
+ * 
+ * @author Tarjei Landøy
  */
 public class Interrupt extends Instruction {
 

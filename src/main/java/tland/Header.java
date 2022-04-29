@@ -8,6 +8,8 @@ import tland.emu.mem.ROM;
  * Header information and utilities for a Game Boy cartridge header.
  * <p>
  * The header is stored in ROM at the address range $0100-$014f.
+ * 
+ * @author Tarjei Landøy
  */
 public class Header {
     /**

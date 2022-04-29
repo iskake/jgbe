@@ -2,6 +2,8 @@ package tland.emu.mem;
 
 /**
  * Read Only Memory, memory that can only be read from, not written to.
+ * 
+ * @author Tarjei Landøy
  */
 public record ROM(byte[] data) implements ReadableMemory<Byte> {
     public final static int ROM_SIZE = 0x8000;

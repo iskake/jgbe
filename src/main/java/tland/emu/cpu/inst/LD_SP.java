@@ -9,6 +9,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code ld hl, sp+$e8} and {@code ld sp, hl}
+ * 
+ * @author Tarjei Landøy
  */
 public class LD_SP extends Instruction {
 

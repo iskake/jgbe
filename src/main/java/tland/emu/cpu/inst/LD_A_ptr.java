@@ -10,6 +10,8 @@ import tland.emu.Registers.RegisterIndex;
  * <p>
  * Implements opcodes: {@code ld a, [$n16]}, {@code ldh a, [$n16]} and
  * {@code ldh a, [c]}
+ * 
+ * @author Tarjei Landøy
  */
 public class LD_A_ptr extends Instruction {
     private final RegisterIndex reg;

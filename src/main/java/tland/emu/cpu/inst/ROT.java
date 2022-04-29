@@ -11,6 +11,8 @@ import tland.emu.Registers.RegisterIndex;
  * Implements opcodes: {@code rlc r8}, {@code rrc r8},
  * {@code rl r8}, {@code rr r8}, {@code sla r8}, {@code sra r8},
  * {@code swap r8}, and {@code srl r8}
+ * 
+ * @author Tarjei Landøy
  */
 public class ROT extends Instruction {
     private final boolean prefixed;

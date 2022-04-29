@@ -5,6 +5,11 @@ import tland.emu.pointer.StackPointer;
 
 /**
  * Emulator interface.
+ * <p>
+ * Should be used instead of the Emulator class (unless special access is needed
+ * (for example, Interpreter or Debugger vs. Instruction.))
+ * 
+ * @author Tarjei Landøy
  */
 public interface IEmulator {
     /**

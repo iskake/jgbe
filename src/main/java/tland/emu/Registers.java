@@ -4,6 +4,8 @@ import tland.Bitwise;
 
 /**
  * The CPU registers in the modified SM83 processor.
+ * 
+ * @author Tarjei Landøy
  */
 public class Registers {
     /**

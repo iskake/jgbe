@@ -3,7 +3,9 @@ package tland.emu.cpu.inst;
 import tland.emu.IEmulator;
 
 /**
- * Abstract implementation of an instruction
+ * Abstract implementation of an instruction.
+ * 
+ * @author Tarjei Landøy
  */
 public abstract class Instruction {
     private String name;

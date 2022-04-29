@@ -2,6 +2,8 @@ package tland.pair;
 
 /**
  * Interface containing multiple pairs.
+ * 
+ * @author Tarjei Landøy
  */
 public interface Pairs<T1, T2> extends Iterable<Pair<T1, T2>> {
     /**

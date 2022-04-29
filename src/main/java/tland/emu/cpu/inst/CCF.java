@@ -9,6 +9,8 @@ import tland.emu.Registers.Flags;
  * 
  * <p>
  * Implements opcode: {@code ccf}.
+ * 
+ * @author Tarjei Landøy
  */
 public class CCF extends Instruction {
 

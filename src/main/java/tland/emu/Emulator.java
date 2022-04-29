@@ -12,6 +12,8 @@ import tland.emu.mem.MemoryMap;
 
 /**
  * Represents the JGBE emulator/interpreter/virtual machine.
+ * 
+ * @author Tarjei Landøy
  */
 public class Emulator implements IEmulator {
     private final ProgramCounter pc;

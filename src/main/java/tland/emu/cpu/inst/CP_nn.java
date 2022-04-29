@@ -10,6 +10,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code cp r8} and {@code cp $n8}
+ * 
+ * @author Tarjei Landøy
  */
 public class CP_nn extends Instruction {
     public final RegisterIndex reg;

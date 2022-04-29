@@ -10,6 +10,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * Implements opcodes: {@code bit u3, r8}, {@code res u3, r8} and
  * {@code set u3, r8}
+ * 
+ * @author Tarjei Landøy
  */
 public class BIT extends Instruction {
     public int opcode;

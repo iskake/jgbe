@@ -11,6 +11,8 @@ import tland.emu.IEmulator;
  * <p>
  * 'Popping' the stack pointer will return the short at the stack pointer and
  * decrement the stack pointer by 2.
+ * 
+ * @author Tarjei Landøy
  */
 public class StackPointer extends Pointer {
     private final IEmulator emu;

@@ -5,6 +5,8 @@ package tland.emu.pointer;
  * <p>
  * As an example, (in the emulator's memory map,) a pointer with the value
  * {@code $fffe} points to the last byte of HRAM.
+ * 
+ * @author Tarjei Landøy
  */
 public abstract class Pointer {
     protected short ptr;

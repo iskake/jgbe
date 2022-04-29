@@ -6,6 +6,8 @@ import tland.emu.IEmulator;
  * Prefixed instructions.
  * 
  * Implements opcodes: {@code $CB $xx}
+ * 
+ * @author Tarjei Landøy
  */
 public class Prefixed extends Instruction {
     private final static ROT ROT_INST = new ROT();

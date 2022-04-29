@@ -9,6 +9,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code sub r8}, {@code sub $n8}, {@code sbc r8} and {@code sbc $n8}
+ * 
+ * @author Tarjei Landøy
  */
 public class SUB_rr_nn extends Instruction {
     private final RegisterIndex r1;

@@ -11,6 +11,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcode: {@code daa}
+ * 
+ * @author Tarjei Landøy
  */
 public class DAA extends Instruction {
 

@@ -10,6 +10,8 @@ import tland.emu.IEmulator;
  * Implements opcodes: {@code RST $00}, {@code RST $08}, {@code RST $10},
  * {@code RST $18}, {@code RST $20}, {@code RST $28}, {@code RST $30}, and
  * {@code RST $38}
+ * 
+ * @author Tarjei Landøy
  */
 public class RST_vec extends Instruction {
 

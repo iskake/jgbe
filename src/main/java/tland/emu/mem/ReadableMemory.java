@@ -4,6 +4,8 @@ package tland.emu.mem;
  * Interface for memory that can be read from (but not necessarily written to).
  * 
  * @see WritableMemory
+ * 
+ * @author Tarjei Landøy
  */
 public interface ReadableMemory<T> extends Memory<T> {
     /**

@@ -9,6 +9,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code pop r16}
+ * 
+ * @author Tarjei Landøy
  */
 public class POP_r16 extends Instruction {
     private final RegisterIndex reg;

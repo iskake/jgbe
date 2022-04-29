@@ -2,6 +2,8 @@ package tland;
 
 /**
  * Class containing methods for bitwise/number operations.
+ * 
+ * @author Tarjei Landøy
  */
 public class Bitwise {
     /**

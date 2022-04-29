@@ -4,6 +4,8 @@ import java.util.Objects;
 
 /**
  * Simple class representing a pair of two elements.
+ * 
+ * @author Tarjei Landøy
  */
 public class SimplePair<T1, T2> implements Pair<T1, T2> {
     private final T1 t1;

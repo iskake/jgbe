@@ -17,6 +17,11 @@ import tland.pair.Pairs;
 import tland.pair.SimplePair;
 import tland.pair.SimplePairs;
 
+/**
+ * Command line interpreter.
+ * 
+ * @author Tarjei Landøy
+ */
 public class Interpreter {
 
     private boolean finishedInterpreting;

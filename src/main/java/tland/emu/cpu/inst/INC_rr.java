@@ -10,6 +10,8 @@ import tland.emu.Registers.RegisterIndex;
  * 
  * <p>
  * Implements opcodes: {@code inc r8}, {@code inc [hl]} and {@code inc r16}
+ * 
+ * @author Tarjei Landøy
  */
 public class INC_rr extends Instruction {
     private final RegisterIndex reg;

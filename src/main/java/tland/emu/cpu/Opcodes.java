@@ -6,7 +6,9 @@ import tland.emu.Registers.RegisterIndex;
 import tland.emu.cpu.inst.*;
 
 /**
- * Class for getting opcodes.
+ * Class for accessing opcodes and their names.
+ * 
+ * @author Tarjei Landøy
  */
 public class Opcodes {
     /** 

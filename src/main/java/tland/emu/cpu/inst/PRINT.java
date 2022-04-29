@@ -6,6 +6,14 @@ import java.util.List;
 import tland.emu.IEmulator;
 import tland.emu.Registers.RegisterIndex;
 
+/**
+ * PRT instruction.
+ * <p>
+ * This instruction is not originally included in the SM83 processor's instruction set (or
+ * the z80's or 8080's)
+ * 
+ * @author Tarjei Landøy
+ */
 public class PRINT extends Instruction {
     public PRINT(String name) {
         super(name);
@@ -25,11 +33,11 @@ public class PRINT extends Instruction {
     public String parseString(IEmulator emu) {
         /*
          * The prt instruction format is as follows:
-         *     byte 0: opcode
-         *     byte 1: length
-         *     byte 2..k: string
-         *     byte k+1: args length
-         *     byte k+2..n: args
+         * byte 0: opcode
+         * byte 1: length
+         * byte 2..k: string
+         * byte k+1: args length
+         * byte k+2..n: args
          */
         List<Character> buf = new ArrayList<>();
         byte length = emu.readNextByte();
@@ -60,10 +68,12 @@ public class PRINT extends Instruction {
                     case 0x09 -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.DE);
                     case 0x0a -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.HL);
                     case 0x0b -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.SP);
-                    /* case 0x0c -> {
-                        int strLength = Byte.toUnsignedInt(gb.readNextByte());
-                        stringArgs[j] = StringHelpers.stringParse(gb, strLength, gb.pc().get());
-                    } */
+                    /*
+                     * case 0x0c -> {
+                     * int strLength = Byte.toUnsignedInt(gb.readNextByte());
+                     * stringArgs[j] = StringHelpers.stringParse(gb, strLength, gb.pc().get());
+                     * }
+                     */
                     default -> throw new IllegalInstructionException("Invalid print format.");
                 }
             }

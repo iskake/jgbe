@@ -7,6 +7,8 @@ import tland.emu.IEmulator;
  * 
  * <p>
  * Implements opcodes: {@code ret}, {@code ret cc} and {@code reti}
+ * 
+ * @author Tarjei Landøy
  */
 public class RET_cc extends Instruction {
     private final Conditions condition;

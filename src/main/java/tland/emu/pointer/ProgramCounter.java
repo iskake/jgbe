@@ -5,6 +5,8 @@ package tland.emu.pointer;
  * <p>
  * The program counter points to the memory address of the next instruction to
  * be executed.
+ * 
+ * @author Tarjei Landøy
  */
 public class ProgramCounter extends Pointer {
 

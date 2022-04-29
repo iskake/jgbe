@@ -2,6 +2,8 @@ package tland.pair;
 
 /**
  * Interface representing a pair of two elements.
+ * 
+ * @author Tarjei Landøy
  */
 public interface Pair<T1, T2> {
     /**

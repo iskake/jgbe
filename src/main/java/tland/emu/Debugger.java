@@ -13,6 +13,8 @@ import tland.pair.SimplePairs;
 
 /**
  * Simple CLI Emulator debugger.
+ * 
+ * @author Tarjei Landøy
  */
 public class Debugger {
 

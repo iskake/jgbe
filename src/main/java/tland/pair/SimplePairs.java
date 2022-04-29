@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 /**
  * Simple class containing multiple simple pairs.
+ * 
+ * @author Tarjei Landøy
  */
 public class SimplePairs<T1, T2> implements Pairs<T1, T2> {
     ArrayList<Pair<T1, T2>> pairs = new ArrayList<>();
