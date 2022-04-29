@@ -60,6 +60,9 @@ public class Debugger {
                         + "If no address is specified, the memory at the PC is printed instead."));
         commands.add(new SimplePair<String, String>("p",
                 "Toggle printing for each instruction after continuing to run (after typing `c` or `continue`.)"));
+        commands.add(new SimplePair<String, String>("<nothing>",
+                "Simply pressing enter (no command) will run the last command instead."
+                        + "For example, if the last command was `n`, then pressing enter will have the same effect as typing `n` and pressing enter."));
     }
 
     /**
@@ -111,10 +114,10 @@ public class Debugger {
 
         System.out.println("The information below (`AF: ...`) shows the current values of the registers.");
         System.out.println(
-                "For example (if registers are cleared), after running the instruction `ld bc, $34a7`, the output is:\n");
+                "For example (if registers are cleared), after running the instruction `ld bc, $34a7` (type: `n` or `s`), the output is:\n");
         System.out.println("    AF: 0000  Flags: ----\n    BC: 34a7\n    DE: 0000\n    ...");
         System.out.println(
-                "If then another instruction is run, such as `ld a, $ff`, the values will adjust accordingly:\n");
+                "If then another instruction is run, such as `ld a, $ff` (either type: `n` or `s` or simply press enter), the values will adjust accordingly:\n");
         System.out.println("    AF: ff00  Flags: ----\n    BC: 34a7\n    DE: 0000\n    ...");
         System.out.println(
                 "The flags register (F) will also adjust based on the instruction as well. After running `inc a`:\n");
