@@ -19,8 +19,9 @@ To run JGBE:
 Running programs can be done in two different ways:
 
 - Running an interactive shell (or, 'CLI interpreter')
-- Running a binary file (.zb filename extension)
-    - Binary files can also be ran using the interactive shell, by typing `open path/to/file`
+- Running a binary file (.zb filename extension) by:
+    - Passing the path of the file as a parameter when starting the program (for example when running as a jar (in linux): `java -jar jgbe.jar path/to/file.zb`)
+    - Binary files can also be ran using the interactive shell, by typing `open path/to/file.zb`
 
 ## Example usage
 
