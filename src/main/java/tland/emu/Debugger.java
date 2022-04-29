@@ -40,6 +40,8 @@ public class Debugger {
                 "Print this help information."));
         commands.add(new SimplePair<String, String>("q, quit, exit",
                 "Quit JGBE."));
+        commands.add(new SimplePair<String, String>("disable",
+                "Disable the debugger. The program will automatically start running after issuing this command."));
         commands.add(new SimplePair<String, String>("c, continue",
                 "Continue running until the program exits or a breakpoint is hit."));
         commands.add(new SimplePair<String, String>("s, step",
@@ -51,14 +53,16 @@ public class Debugger {
                         + "To create a breakpoint, include a parameter of which address to break at (e.g. type `b $0102` to set a breakpoint at address 0x0102.)"));
         commands.add(new SimplePair<String, String>("d, delete",
                 "Delete a breakpoint. If no parameter (the address of the breakpoint) is specified, the first breakpoint in the list is deleted."));
-        commands.add(new SimplePair<String, String>("x",
-                "'Examine' the memory at the specified address (e.g. typing `x $ffd0` will print all bytes 0xffd0-0xffff)"));
+        commands.add(new SimplePair<String, String>("x, examine",
+                "'Examine' the memory at the specified address (e.g. typing `x $ffd0` will print all bytes 0xffd0-0xffff)"
+                        + "If no address is specified, the memory at the PC is printed instead."));
         commands.add(new SimplePair<String, String>("p",
                 "Toggle printing for each instruction after continuing to run (after typing `c` or `continue`.)"));
     }
 
     /**
-     * Step the debugger. This method should be invoked in the Emulator.run() method.
+     * Step the debugger. This method should be invoked in the Emulator.run()
+     * method.
      * 
      * @see Emulator#run()
      * @see CPU#step()
@@ -82,12 +86,13 @@ public class Debugger {
         switch (input[0]) {
             case "h", "help" -> printHelp();
             case "q", "quit", "exit" -> emu.stopRunning();
+            case "disable" -> emu.disableDebugger();
             case "c", "continue" -> continueRunning();
             case "s", "step" -> stepInto();
             case "n", "next" -> stepOver();
             case "b", "break" -> handleBreakpoints(input);
             case "d", "delete" -> handleBreakpointDeletion(input);
-            case "x" -> examine(input);
+            case "x", "examine" -> examine(input);
             case "p", "print" -> enablePrinting();
             case "reg" -> printCPUInfo();
             default -> System.err.println("Unknown command: " + input[0]);
@@ -278,22 +283,26 @@ public class Debugger {
     }
 
     /**
-     * Examine data at the specified address.
+     * Examine data at the specified address, or the program counter.
      * 
      * @param in The input to read the address from.
      */
     private void examine(String[] in) {
-        try {
-            if (in[1].charAt(0) == '$') {
-                in[1] = in[1].replace("$", "0x");
-            } else if (in[1].charAt(0) == '%') {
-                in[1] = in[1].replace("%", "0b");
+        if (in.length < 2) {
+            emu.printMemoryRegion(emu.pc().get(), emu.pc().get() + 47);
+        } else {
+            try {
+                if (in[1].charAt(0) == '$') {
+                    in[1] = in[1].replace("$", "0x");
+                } else if (in[1].charAt(0) == '%') {
+                    in[1] = in[1].replace("%", "0b");
+                }
+                int addr = Integer.decode(in[1]);
+                addr &= 0xfff0;
+                emu.printMemoryRegion(addr, addr + 47);
+            } catch (Exception e) {
+                System.err.println("Invalid syntax. Usage: `x [ |$|0x|%|0b]{MEM_ADDR}`");
             }
-            int addr = Integer.decode(in[1]);
-            addr &= 0xfff0;
-            emu.printMemoryRegion(addr, addr + 47);
-        } catch (Exception e) {
-            System.err.println("Invalid syntax. Usage: `x [ |$|0x|%|0b]{MEM_ADDR}`");
         }
     }
 
