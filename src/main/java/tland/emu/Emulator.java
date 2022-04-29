@@ -31,7 +31,7 @@ public class Emulator implements IEmulator {
 
     public Emulator(ROM rom) {
         this.sc = new Scanner(System.in);
-        debuggerEnabled = true;
+        debuggerEnabled = false;
         this.rom = rom;
 
         pc = new ProgramCounter((short) 0x100);

@@ -43,7 +43,7 @@ public class Interpreter {
         commands.add(new SimplePair<String, String>("run",
                 "Run the program written to RAM. Note that this will automatically write a `stop` instruction to memory."));
         commands.add(new SimplePair<String, String>("open",
-                "Open a program and run it. The program should have a '.zb' filename extension"));
+                "Open a program and run it. The program should have a '.zb' filename extension.\nNote: opening a file will automatically enable the debugger."));
         commands.add(new SimplePair<String, String>("undo",
                 "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)"));
         commands.add(new SimplePair<String, String>("debugger [enable/disable]",
@@ -208,6 +208,7 @@ public class Interpreter {
                     romFile = Files.readAllBytes(path);
 
                     ROM rom = new ROM(romFile);
+                    emu.enableDebugger();
                     emu.restart(rom);
                     finishedInterpreting = true;
                     return true;
@@ -215,7 +216,7 @@ public class Interpreter {
                     System.err
                             .println("Could not read the file because an exception occurred: "
                                     + e.toString()
-                                    + "\nPossible solution: try writing the filename without quotes."
+                                    + "\nPossible solution if a file could not be read: try writing the filename without quotes."
                                     + "\nFor example, write"
                                     + "\n    open src/test/asm/bin/test_alu.zb"
                                     + "\ninstead of"
