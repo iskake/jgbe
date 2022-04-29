@@ -2,10 +2,11 @@
 
 JGBE is a SM83 CPU emulator/interpreter/virtual machine for assembly programs and scripts (see instruction set / assembly language section below.)
 
+[Video Demonstration](demonstration.mp4)
+
 ## Running JGBE
 
 To run JGBE:
-
 
 - Clone/download this repository: `git clone https://github.com/iskake/jgbe`
 - To run in an IDE:
@@ -104,6 +105,35 @@ This is also the case with the `sp` and `pc` registers. They are not stored in t
 
 **Pointers**: Some instructions includes brackets (`[]`). Any value enclosed in brackets is a pointer, so `[$1234]` means the value at the memory address `$1234`. For example if the a register holds the value `$42`, and the memory address `$1234` holds the value `$99`, the instruction, `ld [$1234], a` will load `$42` into `$1234`, overwriting `$99`.
 This also applies to registers, so if the hl register has the value `4321`, `[hl]` would be equivelent to `[$4321]`. 
+
+## Tests
+
+Running assembly tests can be done as so:
+- Open JGBE
+- Write: `open src/test/asm/bin/<FILENAME>.zb`
+- To step over the next instruction: press `n` in the debugger, and check that the result in the corresponding assembly file is correct.
+
+Testing of instructions have to be done manually (see the [`src/test/asm/`](src/test/asm/) directory), otherwise each java test file would have to do something such as:
+
+```java
+cpu.step()
+assertEquals(/* ... */) // check that the register is set to 0
+cpu.step()
+assertEquals(/* ... */) // check that the register is increased by 1
+/* ... */
+cpu.step()
+assertEquals(/* ... */) // check something else...
+```
+
+instead each instruction is commented in the corresponding assembly file.
+
+## Class diagram
+
+See entry at the bottom (with notes.)
+
+![class_diagram](class_diagram.png)
+
+(also available in [.pdf](class_diagram.pdf) and [.drawio](class_diagram.drawio) formats.)
 
 
 ## References
