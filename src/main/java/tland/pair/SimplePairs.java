@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Simple class containing multiple simple pairs.
+ * Simple class containing multiple pairs.
  * 
  * @author Tarjei Landøy
  */

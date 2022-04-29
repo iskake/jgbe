@@ -3,7 +3,7 @@ package tland.pair;
 import java.util.Objects;
 
 /**
- * Simple class representing a pair of two elements.
+ * Simple class representing a immutable pair of two elements.
  * 
  * @author Tarjei Landøy
  */
