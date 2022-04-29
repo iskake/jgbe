@@ -295,7 +295,7 @@ public class Opcodes {
 /* 0xcc */ new CALL_cc_n16("call z, $_N16", Conditions.Z),
 /* 0xcd */ new CALL_cc_n16("call $_N16", Conditions.NONE),
 
-/* 0xce */ new ADD_rr_nn("a, $_N8", RegisterIndex.A, null, true),
+/* 0xce */ new ADD_rr_nn("adc $_N8", RegisterIndex.A, null, true),
 
 /* 0xcf */ new RST_vec("rst $08"),
 /* 0xd0 */ new RET_cc("ret nc", Conditions.NC),
