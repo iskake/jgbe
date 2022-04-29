@@ -224,7 +224,7 @@ public class Emulator implements IEmulator {
         }
 
         if (debuggerEnabled) {
-            System.out.println("Debugger is enabled. Type \"help\" or \"h\" for help");
+            System.out.println("Debugger is enabled. Type \"help\" or \"h\" for help, \"disable\" to disable.");
         }
 
         while (running) {

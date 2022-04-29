@@ -46,8 +46,8 @@ public class Interpreter {
                 "Open a program and run it. The program should have a '.zb' filename extension"));
         commands.add(new SimplePair<String, String>("undo",
                 "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)"));
-        commands.add(new SimplePair<String, String>("debugger",
-                "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)"));
+        commands.add(new SimplePair<String, String>("debugger [enable/disable]",
+                "Enable or disable the debugger."));
         commands.add(new SimplePair<String, String>("setpc",
                 "Set the program counter to a specific address or label."));
         commands.add(new SimplePair<String, String>("getpc",
