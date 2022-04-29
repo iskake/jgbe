@@ -93,6 +93,11 @@ public class Registers {
      * @return {@code true} if the bit is set, {@code false} otherwise.
      */
     public boolean isBitSet(RegisterIndex reg, int bitNum) {
+        // Check for [hl] bitwise instructions (HL is the only short register to be
+        // used in pointer bitwise opcodes.)
+        if (!reg.equals(RegisterIndex.HL)) {
+            checkRegisterByte(reg);
+        }
         return Bitwise.isBitSet(readRegisterByte(reg), bitNum);
     }
 
@@ -102,6 +107,11 @@ public class Registers {
      * @param bitNum The bit to set.
      */
     public void setBit(RegisterIndex reg, int bitNum) {
+        // Check for [hl] bitwise instructions (HL is the only short register to be
+        // used in pointer bitwise opcodes.)
+        if (!reg.equals(RegisterIndex.HL)) {
+            checkRegisterByte(reg);
+        }
         writeRegisterByte(reg, Bitwise.setBit(readRegisterByte(reg), bitNum));
     }
 
@@ -111,6 +121,12 @@ public class Registers {
      * @param bitNum The bit to reset.
      */
     public void resetBit(RegisterIndex reg, int bitNum) {
+
+        // Check for [hl] bitwise instructions (HL is the only short register to be
+        // used in pointer bitwise opcodes.)
+        if (!reg.equals(RegisterIndex.HL)) {
+            checkRegisterByte(reg);
+        }
         writeRegisterByte(reg, Bitwise.clearBit(readRegisterByte(reg), bitNum));
     }
 
@@ -176,6 +192,11 @@ public class Registers {
      * @return The overflow bit for carry.
      */
     private int bitShiftLeft(RegisterIndex reg, boolean shift, boolean carry) {
+        // Check for [hl] shift/rotate instructions (HL is the only short register to be
+        // used in pointer shift/rotate opcodes.)
+        if (!reg.equals(RegisterIndex.HL)) {
+            checkRegisterByte(reg);
+        }
         int oldValue = Byte.toUnsignedInt(readRegisterByte(reg));
         int c;
         if (carry) {
@@ -200,6 +221,11 @@ public class Registers {
      * @return The overflow bit for carry.
      */
     private int bitShiftRight(RegisterIndex reg, boolean shift, boolean logical, boolean carry) {
+        // Check for [hl] shift/rotate instructions (HL is the only short register to be
+        // used in pointer shift/rotate opcodes.)
+        if (!reg.equals(RegisterIndex.HL)) {
+            checkRegisterByte(reg);
+        }
         int oldValue = Byte.toUnsignedInt(readRegisterByte(reg));
         int c;
         if (carry) {
@@ -215,7 +241,8 @@ public class Registers {
     }
 
     /**
-     * Rotate the bits in the specified register left by 1.
+     * Rotate the bits in the specified register (or the byte pointed to by the
+     * register, in the case of [hl]) left by 1.
      * 
      * @param reg   The register to rotate left.
      * @param carry Wether to rotate thought carry or not.
@@ -226,7 +253,8 @@ public class Registers {
     }
 
     /**
-     * Rotate the bits in the specified register right by 1.
+     * Rotate the bits in the specified register (or the byte pointed to by the
+     * register, in the case of [hl]) right by 1.
      * 
      * @param reg   The register to rotate right.
      * @param carry Wether to rotate thought carry or not.
@@ -237,7 +265,8 @@ public class Registers {
     }
 
     /**
-     * Shift (arithmetic) the bits in the specified register left by 1.
+     * Shift (arithmetic) the bits in the specified register (or the byte pointed to
+     * by the register, in the case of [hl]) left by 1.
      * 
      * @param reg The register to shift left.
      * @return The overflow bit for carry.
@@ -247,7 +276,8 @@ public class Registers {
     }
 
     /**
-     * Shift the bits in the specified register right by 1.
+     * Shift the bits in the specified register (or the byte pointed to by the
+     * register, in the case of [hl]) right by 1.
      * 
      * @param reg     The register to shift right.
      * @param logical Wether to use logical shifting or not.
@@ -258,10 +288,12 @@ public class Registers {
     }
 
     /**
-     * Swap the higher and lower 4 bits in the specified register.
+     * Swap the higher and lower 4 bits in the (or the byte pointed to by the
+     * register, in the case of [hl]) specified register.
      * 
      * @param reg The register to swap the bits in.
-     * @return 0 (Note: this is used in the bitwise rotation instructions)
+     * @return 0 (Note: this is used for consistency with the other bitwise
+     *         shift/rotate instructions)
      */
     public int swap(RegisterIndex reg) {
         writeRegisterByte(reg, Bitwise.swapBits(readRegisterByte(reg)));
