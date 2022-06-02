@@ -1,0 +1,26 @@
+package iskake.gb.cpu.inst;
+
+import iskake.gb.IGameBoy;
+import iskake.gb.Registers.Flags;
+
+/**
+ * Complement Carry Flag, toggles the carry flag ({@code Flags.C}) and
+ * resets {@code Flags.N} and {@code Flags.H}.
+ * 
+ * <p>
+ * Implements opcode: {@code ccf}.
+ */
+public class CCF extends Instruction {
+
+    public CCF() {
+        super("ccf");
+    }
+
+    @Override
+    public void doOp(IGameBoy emu, int opcode) {
+        emu.reg().resetFlag(Flags.N);
+        emu.reg().resetFlag(Flags.H);
+        emu.reg().complementFlag(Flags.C);
+    }
+
+}
