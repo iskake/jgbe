@@ -378,8 +378,7 @@ public class Opcodes {
 
 /* 0xfb */ new Interrupt("ei"),
 
-/* 0xfc */ new PRINT("prt"),
-
+/* 0xfc */ new IllegalInst("illegal $fc"), // illegal
 /* 0xfd */ new IllegalInst("illegal $fd"), // illegal
 
 /* 0xfe */ new CP_nn("cp $_N8", null),
