@@ -1,4 +1,4 @@
-package iskake.jgbe.emu.mem;
+package iskake.jgbe.gb.mem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

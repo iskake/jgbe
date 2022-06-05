@@ -20,17 +20,17 @@ public class JP_cc_nn extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         short address;
 
         if (opcode == 0xe9) {
-            address = emu.reg().readRegisterShort(RegisterIndex.HL);
+            address = gb.reg().readRegisterShort(RegisterIndex.HL);
         } else {
-            address = emu.readNextShort();
+            address = gb.readNextShort();
         }
 
-        if (Conditions.conditionSatisfied(emu.reg(), condition)) {
-            emu.pc().set(address);
+        if (Conditions.conditionSatisfied(gb.reg(), condition)) {
+            gb.pc().set(address);
         }
     }
 

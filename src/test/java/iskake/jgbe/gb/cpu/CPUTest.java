@@ -1,4 +1,4 @@
-package iskake.jgbe.emu.cpu;
+package iskake.jgbe.gb.cpu;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,43 +32,43 @@ public class CPUTest {
         b[8] = (byte)0xd1; // push bc      - 1 byte
         b[9] = (byte)0x10; // stop         - 1 byte
 
-        GameBoy emu = new GameBoy(new ROM(b));
-        CPU cpu = new CPU(emu);
+        GameBoy gb = new GameBoy(new ROM(b));
+        CPU cpu = new CPU(gb);
 
-        assertTrue(emu.isRunning());
+        assertTrue(gb.isRunning());
 
-        emu.pc().set((short)0);
-        assertEquals((short)0, emu.pc().get());
-
-        cpu.step(); // pc -> nop
-        assertEquals((short)0x1, emu.pc().get());
+        gb.pc().set((short)0);
+        assertEquals((short)0, gb.pc().get());
 
         cpu.step(); // pc -> nop
-        assertEquals((short)0x2, emu.pc().get());
+        assertEquals((short)0x1, gb.pc().get());
+
+        cpu.step(); // pc -> nop
+        assertEquals((short)0x2, gb.pc().get());
 
         cpu.step(); // pc -> ld a, $12
-        assertEquals((short)0x4, emu.pc().get());
-        assertEquals((byte)0x12, emu.reg().readRegisterByte(RegisterIndex.A));
+        assertEquals((short)0x4, gb.pc().get());
+        assertEquals((byte)0x12, gb.reg().readRegisterByte(RegisterIndex.A));
 
         cpu.step(); // pc -> ld bc, $1234
-        assertEquals((short)0x7, emu.pc().get());
-        assertEquals((short)0x1234, emu.reg().readRegisterShort(RegisterIndex.BC));
+        assertEquals((short)0x7, gb.pc().get());
+        assertEquals((short)0x1234, gb.reg().readRegisterShort(RegisterIndex.BC));
 
-        assertEquals((short)0xfffe, emu.sp().get());
+        assertEquals((short)0xfffe, gb.sp().get());
         cpu.step(); // pc -> push bc
-        assertEquals((short)0x8, emu.pc().get());
-        assertEquals((short)0x1234, emu.reg().readRegisterShort(RegisterIndex.BC));
-        assertEquals((short)0xfffc, emu.sp().get());
+        assertEquals((short)0x8, gb.pc().get());
+        assertEquals((short)0x1234, gb.reg().readRegisterShort(RegisterIndex.BC));
+        assertEquals((short)0xfffc, gb.sp().get());
 
         cpu.step(); // pc -> pop, de
-        assertEquals((short)0x9, emu.pc().get());
-        assertEquals((short)0x1234, emu.reg().readRegisterShort(RegisterIndex.DE));
-        assertEquals((short)0xfffe, emu.sp().get());
+        assertEquals((short)0x9, gb.pc().get());
+        assertEquals((short)0x1234, gb.reg().readRegisterShort(RegisterIndex.DE));
+        assertEquals((short)0xfffe, gb.sp().get());
 
-        assertTrue(emu.isRunning());
+        assertTrue(gb.isRunning());
         cpu.step(); // pc -> stop
-        assertEquals((short)0xa, emu.pc().get());
+        assertEquals((short)0xa, gb.pc().get());
 
-        assertFalse(emu.isRunning());
+        assertFalse(gb.isRunning());
     }
 }

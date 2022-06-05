@@ -415,15 +415,15 @@ public class Opcodes {
      * @param address The address of the instruction.
      * @return The name of the instruction.
      */
-    public static String getInstructionName(IGameBoy emu, short address) {
-        byte opcode = emu.readMemoryAddress(address);
+    public static String getInstructionName(IGameBoy gb, short address) {
+        byte opcode = gb.readMemoryAddress(address);
 
         String opcodeName;
 
         Instruction inst = Opcodes.getOpcode(opcode);
 
         if (inst instanceof Prefixed o) {
-            opcode = emu.readMemoryAddress(Bitwise.toShort(address + 1));
+            opcode = gb.readMemoryAddress(Bitwise.toShort(address + 1));
             opcodeName = o.getPrefixedName(Byte.toUnsignedInt(opcode));
         } else {
             opcodeName = Opcodes.getOpcode(opcode).getName();
@@ -433,8 +433,8 @@ public class Opcodes {
         opcodeName = opcodeName.replace("_N16", "%2$02x%1$02x");
 
         byte[] operands = {
-                emu.readMemoryAddress(Bitwise.toShort(address + 1)),
-                emu.readMemoryAddress(Bitwise.toShort(address + 2))
+                gb.readMemoryAddress(Bitwise.toShort(address + 1)),
+                gb.readMemoryAddress(Bitwise.toShort(address + 2))
         };
 
         return String.format(opcodeName, operands[0], operands[1]);

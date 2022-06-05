@@ -19,34 +19,34 @@ public class DAA extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        int value = Byte.toUnsignedInt(emu.reg().readRegisterByte(RegisterIndex.A));
-        if (!emu.reg().isFlagSet(Flags.N)) {
+    public void doOp(IGameBoy gb, int opcode) {
+        int value = Byte.toUnsignedInt(gb.reg().readRegisterByte(RegisterIndex.A));
+        if (!gb.reg().isFlagSet(Flags.N)) {
             // Adjust value for additions
-            if (emu.reg().isFlagSet(Flags.H) || (value & 0b1111) > 0x09) {
+            if (gb.reg().isFlagSet(Flags.H) || (value & 0b1111) > 0x09) {
                 // carry or overflow in lower digit
                 value += 0x06;
             }
 
-            if (emu.reg().isFlagSet(Flags.C) || value > 0x99) {
+            if (gb.reg().isFlagSet(Flags.C) || value > 0x99) {
                 // carry or overflow in higher digit
                 value += 0x60;
             }
         } else {
             // Adjust value for subtractions (note: only carry and half carry)
-            if (emu.reg().isFlagSet(Flags.H)) {
+            if (gb.reg().isFlagSet(Flags.H)) {
                 value -= 0x06;
             }
 
-            if (emu.reg().isFlagSet(Flags.C)) {
+            if (gb.reg().isFlagSet(Flags.C)) {
                 value -= 0x60;
             }
         }
 
-        emu.reg().writeRegisterByte(RegisterIndex.A, value);
-        emu.reg().setFlagConditional(Flags.Z, Bitwise.intAsByte(value) == 0);
-        emu.reg().resetFlag(Flags.H);
-        emu.reg().setFlagConditional(Flags.C, value > 0x99);
+        gb.reg().writeRegisterByte(RegisterIndex.A, value);
+        gb.reg().setFlagConditional(Flags.Z, Bitwise.intAsByte(value) == 0);
+        gb.reg().resetFlag(Flags.H);
+        gb.reg().setFlagConditional(Flags.C, value > 0x99);
     }
 
 }

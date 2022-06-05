@@ -14,8 +14,8 @@ public class Main {
     public static void main(String[] args) {
         if (args.length == 0) {
             // Interpreter
-            GameBoy emu = new GameBoy(null);
-            emu.run();
+            GameBoy gb = new GameBoy(null);
+            gb.run();
         } else if (args.length == 1) {
             Path path = Paths.get(args[0]);
             byte[] romFile;
@@ -27,10 +27,10 @@ public class Main {
             }
 
             ROM rom = new ROM(romFile);
-            GameBoy emu = new GameBoy(rom);
+            GameBoy gb = new GameBoy(rom);
 
-            emu.enableDebugger();
-            emu.run();
+            gb.enableDebugger();
+            gb.run();
         } else {
             // Invalid
             System.err.println("Invalid arguments.\nUsage: jgbe [file]");

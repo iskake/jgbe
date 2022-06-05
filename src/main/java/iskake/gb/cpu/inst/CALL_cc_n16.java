@@ -18,12 +18,12 @@ public class CALL_cc_n16 extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        short address = emu.readNextShort();
+    public void doOp(IGameBoy gb, int opcode) {
+        short address = gb.readNextShort();
 
-        if (Conditions.conditionSatisfied(emu.reg(), condition)) {
-            emu.sp().push(emu.pc().get());
-            emu.pc().set(address);
+        if (Conditions.conditionSatisfied(gb.reg(), condition)) {
+            gb.sp().push(gb.pc().get());
+            gb.pc().set(address);
         }
     }
 

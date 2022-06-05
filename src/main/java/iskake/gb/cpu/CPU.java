@@ -6,22 +6,22 @@ import iskake.gb.IGameBoy;
  * Represents a modified SM83 processor.
  */
 public class CPU {
-    private final IGameBoy emu;
+    private final IGameBoy gb;
 
-    public CPU(IGameBoy emu) {
-        this.emu = emu;
+    public CPU(IGameBoy gb) {
+        this.gb = gb;
     }
 
     /**
      * 'Step' the CPU forward by a single instruction.
      */
     public void step() {
-        short oldPC = emu.pc().get();
+        short oldPC = gb.pc().get();
 
-        byte opcode = emu.readNextByte();
-        Opcodes.getOpcode(opcode).doOp(emu, Byte.toUnsignedInt(opcode));
+        byte opcode = gb.readNextByte();
+        Opcodes.getOpcode(opcode).doOp(gb, Byte.toUnsignedInt(opcode));
 
-        short newPC = emu.pc().get();
+        short newPC = gb.pc().get();
 
         if (oldPC == newPC) {
             System.out.println("\nInfinite loop detected! Exiting.");
@@ -33,9 +33,9 @@ public class CPU {
      * Print the name of the next instruction to be extecuted.
      */
     public void printNextInstruction() {
-        short address = emu.pc().get();
-        byte opcode = emu.readMemoryAddress(address);
-        System.out.printf("%02x -> %s\n", opcode, Opcodes.getInstructionName(emu, address));
+        short address = gb.pc().get();
+        byte opcode = gb.readMemoryAddress(address);
+        System.out.printf("%02x -> %s\n", opcode, Opcodes.getInstructionName(gb, address));
     }
 
 }

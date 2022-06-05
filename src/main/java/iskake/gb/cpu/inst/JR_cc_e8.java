@@ -18,12 +18,12 @@ public class JR_cc_e8 extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        short value = emu.readNextByte();
+    public void doOp(IGameBoy gb, int opcode) {
+        short value = gb.readNextByte();
 
-        if (Conditions.conditionSatisfied(emu.reg(), condition)) {
-            short address = emu.pc().get();
-            emu.pc().set((short) (address + value));
+        if (Conditions.conditionSatisfied(gb.reg(), condition)) {
+            short address = gb.pc().get();
+            gb.pc().set((short) (address + value));
         }
     }
 

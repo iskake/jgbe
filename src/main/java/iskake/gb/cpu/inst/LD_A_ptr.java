@@ -21,7 +21,7 @@ public class LD_A_ptr extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         byte value;
 
         // Because the three implemented opcodes (see javadoc above class) all load a
@@ -29,15 +29,15 @@ public class LD_A_ptr extends Instruction {
         // same class for all three opcodes.
         short address = switch (opcode) {
             // ldh a, [$n16] (a.k.a. `ld a, [$ff00+n8]`)
-            case 0xF0 -> Bitwise.toShort((byte) 0xff, emu.readNextByte());
+            case 0xF0 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh a, [c] (a.k.a. `ld a, [$ff00+c]`)
-            case 0xF2 -> Bitwise.toShort((byte) 0xff, emu.reg().readRegisterByte(RegisterIndex.C));
+            case 0xF2 -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(RegisterIndex.C));
             // ld a, [$n16]
-            default -> emu.readNextShort();
+            default -> gb.readNextShort();
         };
 
-        value = emu.readMemoryAddress(address);
-        emu.reg().writeRegisterByte(reg, value);
+        value = gb.readMemoryAddress(address);
+        gb.reg().writeRegisterByte(reg, value);
     }
 
 }

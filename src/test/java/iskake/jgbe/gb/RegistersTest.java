@@ -1,4 +1,4 @@
-package iskake.jgbe.emu;
+package iskake.jgbe.gb;
 
 import static iskake.gb.Registers.RegisterIndex.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,8 +19,8 @@ import iskake.gb.Registers.RegisterIndex;
 public class RegistersTest {
     final RegisterIndex[] byteRegisters = { A, F, B, C, D, E, H, L };
     final RegisterIndex[] shortRegisters = { AF, BC, DE, HL, SP };
-    IGameBoy emu = new GameBoy(null);
-    Registers reg = new Registers(emu);
+    IGameBoy gb = new GameBoy(null);
+    Registers reg = new Registers(gb);
 
     @Test
     void byteRegisterTest() {
@@ -125,7 +125,7 @@ public class RegistersTest {
         reg.writeRegisterShort(HL, 0x8000);
         reg.writeRegisterByte(HL, 0x42);
         assertEquals((byte)0x42, reg.readRegisterByte(HL));
-        assertEquals((byte)0x42, emu.readMemoryAddress((short)0x8000));
+        assertEquals((byte)0x42, gb.readMemoryAddress((short)0x8000));
     }
 
     @Test

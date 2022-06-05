@@ -18,11 +18,11 @@ public class RST_vec extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         short vector = Bitwise.toShort(opcode & 0b111000);
 
-        emu.sp().push(emu.pc().get());
-        emu.pc().set(vector);
+        gb.sp().push(gb.pc().get());
+        gb.pc().set(vector);
     }
 
 }

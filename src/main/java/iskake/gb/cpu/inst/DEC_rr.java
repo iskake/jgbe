@@ -20,19 +20,19 @@ public class DEC_rr extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         // 0x35 -> dec [hl]
         if (Registers.isRegisterByte(reg) || opcode == 0x35) {
-            emu.reg().decRegisterByte(reg);
+            gb.reg().decRegisterByte(reg);
 
-            byte value = emu.reg().readRegisterByte(reg);
+            byte value = gb.reg().readRegisterByte(reg);
 
-            emu.reg().setFlagConditional(Flags.Z, value == 0);
-            emu.reg().setFlag(Flags.N);
-            emu.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0b1111);
+            gb.reg().setFlagConditional(Flags.Z, value == 0);
+            gb.reg().setFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0b1111);
 
         } else {
-            emu.reg().decRegisterShort(reg);
+            gb.reg().decRegisterShort(reg);
         }
     }
 

@@ -24,7 +24,7 @@ public class BIT extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         /*
          * The prefixed Bitwise opcodes can be indexed like so:
          * 40-ff => Bitwise instructions
@@ -43,14 +43,14 @@ public class BIT extends Instruction {
 
         switch (opcodeType) {
             case BIT_VAL -> {
-                boolean bitIsSet = emu.reg().isBitSet(reg, bitNum);
+                boolean bitIsSet = gb.reg().isBitSet(reg, bitNum);
 
-                emu.reg().setFlagConditional(Flags.Z, !bitIsSet);
-                emu.reg().resetFlag(Flags.N);
-                emu.reg().setFlag(Flags.H);
+                gb.reg().setFlagConditional(Flags.Z, !bitIsSet);
+                gb.reg().resetFlag(Flags.N);
+                gb.reg().setFlag(Flags.H);
             }
-            case RES_VAL -> emu.reg().resetBit(reg, bitNum);
-            case SET_VAL -> emu.reg().setBit(reg, bitNum);
+            case RES_VAL -> gb.reg().resetBit(reg, bitNum);
+            case SET_VAL -> gb.reg().setBit(reg, bitNum);
             default -> throw new IllegalInstructionException(
                     "Value %02x is not a valid bitwise instruction.".formatted(opcodeType));
         }

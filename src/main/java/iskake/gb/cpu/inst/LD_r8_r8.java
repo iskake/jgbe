@@ -22,16 +22,16 @@ public final class LD_r8_r8 extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        emu.reg().writeRegisterByte(r1, emu.reg().readRegisterByte(r2));
+    public void doOp(IGameBoy gb, int opcode) {
+        gb.reg().writeRegisterByte(r1, gb.reg().readRegisterByte(r2));
 
         // Handle HLI and HLD opcodes
         if (opcode == 0x22 || opcode == 0x2a) {
             // HLI
-            emu.reg().incRegisterShort(RegisterIndex.HL);
+            gb.reg().incRegisterShort(RegisterIndex.HL);
         } else if (opcode == 0x32 || opcode == 0x3a) {
             // HLD
-            emu.reg().decRegisterShort(RegisterIndex.HL);
+            gb.reg().decRegisterShort(RegisterIndex.HL);
         }
     }
 

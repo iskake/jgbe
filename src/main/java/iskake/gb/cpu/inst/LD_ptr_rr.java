@@ -21,27 +21,27 @@ public class LD_ptr_rr extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         // Because the three implemented opcodes (see javadoc above class) all load the
         // value in the A register to an address (hence, `LD_ptr_A`), we can use the
         // same class for all three opcodes.
         short address = switch (opcode) {
             // ldh [$n16], a (a.k.a. `ld [$ff00+n8], a`)
-            case 0xE0 -> Bitwise.toShort((byte) 0xff, emu.readNextByte());
+            case 0xE0 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh [c], a (a.k.a. `ld [$ff00+c], a`)
-            case 0xE2 -> Bitwise.toShort((byte) 0xff, emu.reg().readRegisterByte(RegisterIndex.C));
+            case 0xE2 -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(RegisterIndex.C));
             // ld [$n16], a and ld [$n16], sp
-            default -> emu.readNextShort();
+            default -> gb.readNextShort();
         };
 
         if (opcode == 0x08) {
             // ld [$n16], sp
-            short sp = emu.sp().get();
-            emu.writeMemoryAddress(address, Bitwise.getLowByte(sp));
-            emu.writeMemoryAddress((short)(address + 1), Bitwise.getHighByte(sp));
+            short sp = gb.sp().get();
+            gb.writeMemoryAddress(address, Bitwise.getLowByte(sp));
+            gb.writeMemoryAddress((short)(address + 1), Bitwise.getHighByte(sp));
         } else {
-            byte value = emu.reg().readRegisterByte(reg);
-            emu.writeMemoryAddress(address, value);
+            byte value = gb.reg().readRegisterByte(reg);
+            gb.writeMemoryAddress(address, value);
         }
     }
 

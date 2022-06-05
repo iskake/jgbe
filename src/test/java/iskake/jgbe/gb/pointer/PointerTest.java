@@ -1,4 +1,4 @@
-package iskake.jgbe.emu.pointer;
+package iskake.jgbe.gb.pointer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,59 +41,59 @@ public class PointerTest {
     }
 
     // Test that push and pop function properly
-    void checkStackPointerPopPush(IGameBoy emu, StackPointer sp, short valueToPush) {
+    void checkStackPointerPopPush(IGameBoy gb, StackPointer sp, short valueToPush) {
         short initialAddress = sp.get();
         sp.push(valueToPush); // push decrements twice and writes the specified value. 
         byte lo = Bitwise.getLowByte(valueToPush);
         byte hi = Bitwise.getHighByte(valueToPush);
-        assertEquals(hi, emu.readMemoryAddress((short)(initialAddress - 1)));
-        assertEquals(lo, emu.readMemoryAddress((short)(initialAddress - 2)));
+        assertEquals(hi, gb.readMemoryAddress((short)(initialAddress - 1)));
+        assertEquals(lo, gb.readMemoryAddress((short)(initialAddress - 2)));
         assertEquals((short)(initialAddress - 2), sp.get());
         assertEquals(valueToPush, sp.pop());
     }
 
     @Test
     void testStackPointer() {
-        IGameBoy emu = new GameBoy(null);
-        StackPointer sp = new StackPointer(emu, (short)0xfffe);
+        IGameBoy gb = new GameBoy(null);
+        StackPointer sp = new StackPointer(gb, (short)0xfffe);
         simplePointerTest(sp, (short)0xfffe);
 
         // Test for specific addresses
         sp.set((short)0xfffe);
-        checkStackPointerPopPush(emu, sp, (short)0x1234);
-        assertEquals((byte)0x12, emu.readMemoryAddress((short)(0xfffe - 1)));
-        assertEquals((byte)0x34, emu.readMemoryAddress((short)(0xfffe - 2)));
+        checkStackPointerPopPush(gb, sp, (short)0x1234);
+        assertEquals((byte)0x12, gb.readMemoryAddress((short)(0xfffe - 1)));
+        assertEquals((byte)0x34, gb.readMemoryAddress((short)(0xfffe - 2)));
 
         sp.set((short)0x6781);
-        checkStackPointerPopPush(emu, sp, (short)0x5678);
-        assertEquals((byte)0x56, emu.readMemoryAddress((short)(0x6781 - 1)));
-        assertEquals((byte)0x78, emu.readMemoryAddress((short)(0x6781 - 2)));
+        checkStackPointerPopPush(gb, sp, (short)0x5678);
+        assertEquals((byte)0x56, gb.readMemoryAddress((short)(0x6781 - 1)));
+        assertEquals((byte)0x78, gb.readMemoryAddress((short)(0x6781 - 2)));
 
         sp.set((short)0x4945);
-        checkStackPointerPopPush(emu, sp, (short)0x90ab);
-        assertEquals((byte)0x90, emu.readMemoryAddress((short)(0x4945 - 1)));
-        assertEquals((byte)0xab, emu.readMemoryAddress((short)(0x4945 - 2)));
+        checkStackPointerPopPush(gb, sp, (short)0x90ab);
+        assertEquals((byte)0x90, gb.readMemoryAddress((short)(0x4945 - 1)));
+        assertEquals((byte)0xab, gb.readMemoryAddress((short)(0x4945 - 2)));
 
         sp.set((short)0xefff);
-        checkStackPointerPopPush(emu, sp, (short)0xcdef);
-        assertEquals((byte)0xcd, emu.readMemoryAddress((short)(0xefff - 1)));
-        assertEquals((byte)0xef, emu.readMemoryAddress((short)(0xefff - 2)));
+        checkStackPointerPopPush(gb, sp, (short)0xcdef);
+        assertEquals((byte)0xcd, gb.readMemoryAddress((short)(0xefff - 1)));
+        assertEquals((byte)0xef, gb.readMemoryAddress((short)(0xefff - 2)));
 
         sp.set((short)0xffff);
-        checkStackPointerPopPush(emu, sp, (short)0xdead);
-        assertEquals((byte)0xde, emu.readMemoryAddress((short)(0xffff - 1)));
-        assertEquals((byte)0xad, emu.readMemoryAddress((short)(0xffff - 2)));
+        checkStackPointerPopPush(gb, sp, (short)0xdead);
+        assertEquals((byte)0xde, gb.readMemoryAddress((short)(0xffff - 1)));
+        assertEquals((byte)0xad, gb.readMemoryAddress((short)(0xffff - 2)));
 
         sp.set((short)0x0000);
-        checkStackPointerPopPush(emu, sp, (short)0xbeef);
-        assertEquals((byte)0xbe, emu.readMemoryAddress((short)(0x0000 - 1)));
-        assertEquals((byte)0xef, emu.readMemoryAddress((short)(0x0000 - 2)));
+        checkStackPointerPopPush(gb, sp, (short)0xbeef);
+        assertEquals((byte)0xbe, gb.readMemoryAddress((short)(0x0000 - 1)));
+        assertEquals((byte)0xef, gb.readMemoryAddress((short)(0x0000 - 2)));
 
         // Test for random addresses
         Random rand = new Random();
         for (int i = 0; i < 10_000_000; i++) {
             sp.set((short)rand.nextInt(0,0x10_000));
-            checkStackPointerPopPush(emu, sp, (short)rand.nextInt(0,0x10_000));
+            checkStackPointerPopPush(gb, sp, (short)rand.nextInt(0,0x10_000));
         }
     }
 }

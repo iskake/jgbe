@@ -18,7 +18,7 @@ import iskake.pair.SimplePairs;
  */
 public class Debugger {
 
-    private final GameBoy emu;
+    private final GameBoy gb;
     private final CPU cpu;
 
     private Scanner sc;
@@ -28,8 +28,8 @@ public class Debugger {
     private boolean print;
     private Pairs<String, String> commands = new SimplePairs<>();
 
-    public Debugger(GameBoy emu, CPU cpu) {
-        this.emu = emu;
+    public Debugger(GameBoy gb, CPU cpu) {
+        this.gb = gb;
         this.cpu = cpu;
 
         sc = new Scanner(System.in);
@@ -76,7 +76,7 @@ public class Debugger {
         System.out.print("> ");
         input = sc.nextLine().split(" ");
 
-        if (!emu.isRunning()) {
+        if (!gb.isRunning()) {
             return;
         }
 
@@ -88,8 +88,8 @@ public class Debugger {
 
         switch (input[0]) {
             case "h", "help" -> printHelp();
-            case "q", "quit", "exit" -> emu.stopRunning();
-            case "disable" -> emu.disableDebugger();
+            case "q", "quit", "exit" -> gb.stopRunning();
+            case "disable" -> gb.disableDebugger();
             case "c", "continue" -> continueRunning();
             case "s", "step" -> stepInto();
             case "n", "next" -> stepOver();
@@ -153,7 +153,7 @@ public class Debugger {
      * Print information about the CPU and registers.
      */
     private void printCPUInfo() {
-        emu.reg().printRegisters();
+        gb.reg().printRegisters();
         cpu.printNextInstruction();
     }
 
@@ -223,7 +223,7 @@ public class Debugger {
      */
     private boolean checkBreakpointHit() {
         for (Integer breakPoint : breakPoints) {
-            if (emu.pc().get() == Bitwise.toShort(breakPoint)) {
+            if (gb.pc().get() == Bitwise.toShort(breakPoint)) {
                 System.out.printf("Hit breakpoint at $%04x\n", breakPoint);
                 return true;
             }
@@ -240,22 +240,22 @@ public class Debugger {
      * is executed), then the debugger will stop stepping over.
      */
     private void stepOver() {
-        byte opcode = emu.readMemoryAddress(emu.pc().get());
+        byte opcode = gb.readMemoryAddress(gb.pc().get());
         String name = Opcodes.getOpcode(opcode).getName();
         cpu.step();
         if (name.startsWith("call") || name.startsWith("rst")) {
-            while (true && emu.isRunning()) {
+            while (true && gb.isRunning()) {
                 if (checkBreakpointHit()) {
                     break;
                 }
 
-                opcode = emu.readMemoryAddress(emu.pc().get());
+                opcode = gb.readMemoryAddress(gb.pc().get());
                 name = Opcodes.getOpcode(opcode).getName();
 
                 if (name.startsWith("ret")) {
-                    short oldPC = emu.pc().get();
+                    short oldPC = gb.pc().get();
                     cpu.step();
-                    short newPC = emu.pc().get();
+                    short newPC = gb.pc().get();
 
                     if ((short) (oldPC + 1) != newPC) {
                         break;
@@ -274,7 +274,7 @@ public class Debugger {
         cpu.step();
 
         boolean run = true;
-        while (run && emu.isRunning()) {
+        while (run && gb.isRunning()) {
             run = !checkBreakpointHit();
             if (run) {
                 cpu.step();
@@ -292,7 +292,7 @@ public class Debugger {
      */
     private void examine(String[] in) {
         if (in.length < 2) {
-            emu.printMemoryRegion(emu.pc().get(), emu.pc().get() + 47);
+            gb.printMemoryRegion(gb.pc().get(), gb.pc().get() + 47);
         } else {
             try {
                 if (in[1].charAt(0) == '$') {
@@ -302,7 +302,7 @@ public class Debugger {
                 }
                 int addr = Integer.decode(in[1]);
                 addr &= 0xfff0;
-                emu.printMemoryRegion(addr, addr + 47);
+                gb.printMemoryRegion(addr, addr + 47);
             } catch (Exception e) {
                 System.err.println("Invalid syntax. Usage: `x [ |$|0x|%|0b]{MEM_ADDR}`");
             }

@@ -19,7 +19,7 @@ public class Interrupt extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         // Since there are no interrupts in JGBE, these instructions
         // do nothing.
     }

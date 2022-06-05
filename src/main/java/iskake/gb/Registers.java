@@ -79,10 +79,10 @@ public class Registers {
      */
     private final byte[] registerValues = new byte[8];
 
-    private final IGameBoy emu;
+    private final IGameBoy gb;
 
-    public Registers(IGameBoy emu) {
-        this.emu = emu;
+    public Registers(IGameBoy gb) {
+        this.gb = gb;
     }
 
     /**
@@ -308,7 +308,7 @@ public class Registers {
      */
     private byte readRegisterPtr(RegisterIndex reg) {
         checkRegisterShort(reg);
-        return emu.readMemoryAddress(readRegisterShort(reg));
+        return gb.readMemoryAddress(readRegisterShort(reg));
     }
 
     /**
@@ -319,7 +319,7 @@ public class Registers {
      */
     private void writeRegisterPtr(RegisterIndex reg, byte value) {
         checkRegisterShort(reg);
-        emu.writeMemoryAddress(readRegisterShort(reg), value);
+        gb.writeMemoryAddress(readRegisterShort(reg), value);
     }
 
     /**
@@ -376,7 +376,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.equals(RegisterIndex.SP)) {
-            return emu.sp().get();
+            return gb.sp().get();
         }
 
         int index = getShortRegisterIndex(reg);
@@ -397,7 +397,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.equals(RegisterIndex.SP)) {
-            emu.sp().set(value);
+            gb.sp().set(value);
             return;
         }
 
@@ -485,7 +485,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.equals(RegisterIndex.SP)) {
-            emu.sp().inc();
+            gb.sp().inc();
             return;
         }
 
@@ -507,7 +507,7 @@ public class Registers {
         checkRegisterShort(reg);
 
         if (reg.equals(RegisterIndex.SP)) {
-            emu.sp().dec();
+            gb.sp().dec();
             return;
         }
 
@@ -621,7 +621,7 @@ public class Registers {
         System.out.printf("BC: %04x\n", readRegisterShort(RegisterIndex.BC));
         System.out.printf("DE: %04x\n", readRegisterShort(RegisterIndex.DE));
         System.out.printf("HL: %04x\n", readRegisterShort(RegisterIndex.HL));
-        System.out.printf("SP: %04x\n", emu.sp().get());
-        System.out.printf("PC: %04x\n", emu.pc().get());
+        System.out.printf("SP: %04x\n", gb.sp().get());
+        System.out.printf("PC: %04x\n", gb.pc().get());
     }
 }

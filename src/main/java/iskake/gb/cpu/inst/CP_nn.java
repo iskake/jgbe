@@ -20,21 +20,21 @@ public class CP_nn extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         byte value;
 
         if (reg == null) {
-            value = emu.readNextByte();
+            value = gb.readNextByte();
         } else {
-            value = emu.reg().readRegisterByte(reg);
+            value = gb.reg().readRegisterByte(reg);
         }
 
-        byte a = emu.reg().readRegisterByte(RegisterIndex.A);
+        byte a = gb.reg().readRegisterByte(RegisterIndex.A);
 
-        emu.reg().setFlagConditional(Flags.Z, a - value == 0);
-        emu.reg().setFlag(Flags.N);
-        emu.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < (Byte.toUnsignedInt(value) & 0b1111));
-        emu.reg().setFlagConditional(Flags.C, Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value));
+        gb.reg().setFlagConditional(Flags.Z, a - value == 0);
+        gb.reg().setFlag(Flags.N);
+        gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < (Byte.toUnsignedInt(value) & 0b1111));
+        gb.reg().setFlagConditional(Flags.C, Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value));
     }
 
 }

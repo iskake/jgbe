@@ -17,10 +17,10 @@ public class RET_cc extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        if (Conditions.conditionSatisfied(emu.reg(), condition)) {
+    public void doOp(IGameBoy gb, int opcode) {
+        if (Conditions.conditionSatisfied(gb.reg(), condition)) {
             // Note: reti does not do anything different in JGBE.
-            emu.pc().set(emu.sp().pop());
+            gb.pc().set(gb.sp().pop());
         }
     }
 

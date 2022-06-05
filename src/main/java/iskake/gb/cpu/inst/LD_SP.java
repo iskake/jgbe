@@ -17,22 +17,22 @@ public class LD_SP extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         if (opcode == 0xf8) {
             // ld hl, sp+$e8
-            short sp = emu.sp().get();
-            byte value = emu.readNextByte();
+            short sp = gb.sp().get();
+            byte value = gb.readNextByte();
 
-            emu.reg().writeRegisterShort(RegisterIndex.HL, sp + value);
+            gb.reg().writeRegisterShort(RegisterIndex.HL, sp + value);
 
-            emu.reg().resetFlag(Flags.Z);
-            emu.reg().resetFlag(Flags.N);
-            emu.reg().setFlagConditional(Flags.H,
+            gb.reg().resetFlag(Flags.Z);
+            gb.reg().resetFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H,
                     (Short.toUnsignedInt(sp) & 0b111) + (Byte.toUnsignedInt(value) & 0b111) > 0b111);
-            emu.reg().setFlagConditional(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
+            gb.reg().setFlagConditional(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
             // ld sp, hl
-            emu.sp().set(emu.reg().readRegisterShort(RegisterIndex.HL));
+            gb.sp().set(gb.reg().readRegisterShort(RegisterIndex.HL));
         }
     }
 

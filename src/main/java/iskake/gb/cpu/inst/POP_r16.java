@@ -19,9 +19,9 @@ public class POP_r16 extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        short value = emu.sp().pop();
-        emu.reg().writeRegisterShort(reg, value);
+    public void doOp(IGameBoy gb, int opcode) {
+        short value = gb.sp().pop();
+        gb.reg().writeRegisterShort(reg, value);
     }
 
 }

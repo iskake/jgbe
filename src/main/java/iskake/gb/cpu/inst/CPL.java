@@ -17,10 +17,10 @@ public class CPL extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        emu.reg().writeRegisterByte(RegisterIndex.A, ~emu.reg().readRegisterByte(RegisterIndex.A));
-        emu.reg().setFlag(Flags.N);
-        emu.reg().setFlag(Flags.H);
+    public void doOp(IGameBoy gb, int opcode) {
+        gb.reg().writeRegisterByte(RegisterIndex.A, ~gb.reg().readRegisterByte(RegisterIndex.A));
+        gb.reg().setFlag(Flags.N);
+        gb.reg().setFlag(Flags.H);
     }
     
 }

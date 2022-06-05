@@ -35,7 +35,7 @@ public class ROT extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         /*
          * The prefixed rotate/shift opcodes can be indexed like so:
          * 00-3f => Rotate/shift instructions
@@ -54,27 +54,27 @@ public class ROT extends Instruction {
         RegisterIndex reg = RegisterIndex.tableIndex[regNum];
 
         int result = switch (opcodeType) {
-            case RLC_VAL -> emu.reg().rotateLeft(reg, false);
-            case RRC_VAL -> emu.reg().rotateRight(reg, false);
-            case RL_VAL -> emu.reg().rotateLeft(reg, true);
-            case RR_VAL -> emu.reg().rotateRight(reg, true);
-            case SLA_VAL -> emu.reg().shiftLeft(reg);
-            case SRA_VAL -> emu.reg().shiftRight(reg, false);
-            case SWAP_VAL -> emu.reg().swap(reg);
-            case SRL_VAL -> emu.reg().shiftRight(reg, true);
+            case RLC_VAL -> gb.reg().rotateLeft(reg, false);
+            case RRC_VAL -> gb.reg().rotateRight(reg, false);
+            case RL_VAL -> gb.reg().rotateLeft(reg, true);
+            case RR_VAL -> gb.reg().rotateRight(reg, true);
+            case SLA_VAL -> gb.reg().shiftLeft(reg);
+            case SRA_VAL -> gb.reg().shiftRight(reg, false);
+            case SWAP_VAL -> gb.reg().swap(reg);
+            case SRL_VAL -> gb.reg().shiftRight(reg, true);
             default -> throw new IllegalInstructionException(
                     "Value %d is not a valid bitwise instruction.".formatted(opcodeType));
         };
 
         if (prefixed) {
-            emu.reg().setFlagConditional(Flags.Z, emu.reg().readRegisterByte(reg) == 0);
+            gb.reg().setFlagConditional(Flags.Z, gb.reg().readRegisterByte(reg) == 0);
         } else {
-            emu.reg().resetFlag(Flags.Z);
+            gb.reg().resetFlag(Flags.Z);
         }
 
-        emu.reg().resetFlag(Flags.N);
-        emu.reg().resetFlag(Flags.H);
-        emu.reg().setFlagConditional(Flags.C, result == 1);
+        gb.reg().resetFlag(Flags.N);
+        gb.reg().resetFlag(Flags.H);
+        gb.reg().setFlagConditional(Flags.C, result == 1);
     }
 
     public static String getFixedName(int opcode) {

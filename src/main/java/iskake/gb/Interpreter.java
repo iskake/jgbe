@@ -23,12 +23,12 @@ import iskake.pair.SimplePairs;
 public class Interpreter {
 
     private boolean finishedInterpreting;
-    private GameBoy emu;
+    private GameBoy gb;
     private Map<String, Short> labels;
     private Pairs<String, String> commands = new SimplePairs<>();
 
-    public Interpreter(GameBoy emu) {
-        this.emu = emu;
+    public Interpreter(GameBoy gb) {
+        this.gb = gb;
         finishedInterpreting = false;
         labels = new HashMap<>();
 
@@ -149,16 +149,16 @@ public class Interpreter {
                     match = true;
                 }
                 if (match) {
-                    emu.writeMemoryAddress(emu.pc().inc(), Bitwise.toByte(i));
+                    gb.writeMemoryAddress(gb.pc().inc(), Bitwise.toByte(i));
                     if (value != null) {
                         if (decodedShort) {
                             byte lo = (byte) ((value & 0xff00) >> 8);
                             byte hi = (byte) (value & 0xff);
-                            emu.writeMemoryAddress(emu.pc().inc(), hi);
-                            emu.writeMemoryAddress(emu.pc().inc(), lo);
+                            gb.writeMemoryAddress(gb.pc().inc(), hi);
+                            gb.writeMemoryAddress(gb.pc().inc(), lo);
                         } else {
                             byte lo = (byte) (value & 0xff);
-                            emu.writeMemoryAddress(emu.pc().inc(), lo);
+                            gb.writeMemoryAddress(gb.pc().inc(), lo);
                         }
                     }
                     break;
@@ -192,7 +192,7 @@ public class Interpreter {
                 return true;
             }
             case "run" -> {
-                emu.writeMemoryAddress(emu.pc().get(), (byte) 0x10); // stop
+                gb.writeMemoryAddress(gb.pc().get(), (byte) 0x10); // stop
                 finishedInterpreting = true;
                 return true;
             }
@@ -203,8 +203,8 @@ public class Interpreter {
                     romFile = Files.readAllBytes(path);
 
                     ROM rom = new ROM(romFile);
-                    emu.enableDebugger();
-                    emu.restart(rom);
+                    gb.enableDebugger();
+                    gb.restart(rom);
                     finishedInterpreting = true;
                     return true;
                 } catch (Exception e) {
@@ -221,9 +221,9 @@ public class Interpreter {
                 }
             }
             case "undo" -> {
-                short pc = emu.pc().get();
-                byte value = emu.readMemoryAddress(pc);
-                emu.writeMemoryAddress(emu.pc().dec(), (byte) 0);
+                short pc = gb.pc().get();
+                byte value = gb.readMemoryAddress(pc);
+                gb.writeMemoryAddress(gb.pc().dec(), (byte) 0);
                 System.out.printf("Undo of value: $%02x at address $%04x\n", value, pc);
                 return true;
             }
@@ -234,11 +234,11 @@ public class Interpreter {
             case "debugger" -> {
                 try {
                     if (s[1].equals("enable")) {
-                        emu.enableDebugger();
+                        gb.enableDebugger();
                         System.out.println("The debugger has been enabled.");
                         return true;
                     } else if (s[1].equals("disable")) {
-                        emu.disableDebugger();
+                        gb.disableDebugger();
                         System.out.println("The debugger has been disabled.");
                         return true;
                     } else {
@@ -253,11 +253,11 @@ public class Interpreter {
             case "setpc" -> {
                 try {
                     if (labels.containsKey(s[1])) {
-                        emu.pc().set(labels.get(s[1]));
-                        emu.enableDebugger();
+                        gb.pc().set(labels.get(s[1]));
+                        gb.enableDebugger();
                         return true;
                     } else {
-                        emu.pc().set(Bitwise.toShort(Bitwise.decodeInt(s[1])));
+                        gb.pc().set(Bitwise.toShort(Bitwise.decodeInt(s[1])));
                         return true;
                     }
                 } catch (Exception e) {
@@ -268,12 +268,12 @@ public class Interpreter {
             case "getpc" -> {
                 System.out.println(
                         "The program counter is currently pointing to the address: $"
-                                + Integer.toHexString(emu.pc().get()));
+                                + Integer.toHexString(gb.pc().get()));
                 return true;
             }
             case "x", "examine" -> {
-                short pcVal = emu.pc().get();
-                emu.printMemoryRegion(pcVal & 0xfff0, ((pcVal + 56) & 0xfff0) - 1);
+                short pcVal = gb.pc().get();
+                gb.printMemoryRegion(pcVal & 0xfff0, ((pcVal + 56) & 0xfff0) - 1);
                 return true;
             }
         }
@@ -359,7 +359,7 @@ public class Interpreter {
         String[] strParts = str.split(" ");
         if (strParts[0].charAt(strParts[0].length() - 1) == ':') {
             String fixedLabel = removeLastChar(strParts[0]);
-            labels.put(fixedLabel, emu.pc().get());
+            labels.put(fixedLabel, gb.pc().get());
             return true;
         }
 
@@ -414,8 +414,8 @@ public class Interpreter {
                                 "Invalid " + strParts[0] + " format: '" + strParts[1] + "' is not a valid register.");
                     };
                     int value = opcodeType | regNum;
-                    emu.writeMemoryAddress(emu.pc().inc(), (byte) 0xcb);
-                    emu.writeMemoryAddress(emu.pc().inc(), (byte) value);
+                    gb.writeMemoryAddress(gb.pc().inc(), (byte) 0xcb);
+                    gb.writeMemoryAddress(gb.pc().inc(), (byte) value);
                 } catch (Exception e) {
                     if (e instanceof IndexOutOfBoundsException ex) {
                         System.err.println("Invalid rotation instruction format!");
@@ -463,8 +463,8 @@ public class Interpreter {
                                 "Invalid " + strParts[0] + " format: '" + strParts[2] + "' is not a valid register.");
                     };
                     int value = opcodeType | bitNum | regNum;
-                    emu.writeMemoryAddress(emu.pc().inc(), (byte) 0xcb);
-                    emu.writeMemoryAddress(emu.pc().inc(), (byte) value);
+                    gb.writeMemoryAddress(gb.pc().inc(), (byte) 0xcb);
+                    gb.writeMemoryAddress(gb.pc().inc(), (byte) value);
                 } catch (Exception e) {
                     if (e instanceof IndexOutOfBoundsException ex) {
                         System.err.println("Invalid rotation instruction format!");
@@ -527,17 +527,17 @@ public class Interpreter {
                     return true;
                 }
 
-                emu.writeMemoryAddress(emu.pc().inc(), (byte) 0xfc);
-                emu.writeMemoryAddress(emu.pc().inc(), (byte) strLen);
+                gb.writeMemoryAddress(gb.pc().inc(), (byte) 0xfc);
+                gb.writeMemoryAddress(gb.pc().inc(), (byte) strLen);
                 if (strLen > 0) {
                     for (int i = "prt \"".length(); i < "prt \"".length() + strLen; i++) {
-                        emu.writeMemoryAddress(emu.pc().inc(), (byte) str.charAt(i));
+                        gb.writeMemoryAddress(gb.pc().inc(), (byte) str.charAt(i));
                     }
                 }
-                emu.writeMemoryAddress(emu.pc().inc(), (byte) byteArgs.length);
+                gb.writeMemoryAddress(gb.pc().inc(), (byte) byteArgs.length);
                 if (byteArgs.length > 0) {
                     for (byte b : byteArgs) {
-                        emu.writeMemoryAddress(emu.pc().inc(), b);
+                        gb.writeMemoryAddress(gb.pc().inc(), b);
                     }
                 }
 

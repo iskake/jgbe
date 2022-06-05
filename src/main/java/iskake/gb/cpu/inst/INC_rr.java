@@ -20,19 +20,19 @@ public class INC_rr extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         // 0x34 -> inc [hl]
         if (Registers.isRegisterByte(reg) || opcode == 0x34) {
-            emu.reg().incRegisterByte(reg);
+            gb.reg().incRegisterByte(reg);
 
-            byte value = emu.reg().readRegisterByte(reg);
+            byte value = gb.reg().readRegisterByte(reg);
 
-            emu.reg().setFlagConditional(Flags.Z, value == 0);
-            emu.reg().resetFlag(Flags.N);
-            emu.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0);
+            gb.reg().setFlagConditional(Flags.Z, value == 0);
+            gb.reg().resetFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0);
 
         } else {
-            emu.reg().incRegisterShort(reg);
+            gb.reg().incRegisterShort(reg);
         }
     }
 

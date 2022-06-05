@@ -13,11 +13,11 @@ import iskake.gb.IGameBoy;
  * decrement the stack pointer by 2.
  */
 public class StackPointer extends Pointer {
-    private final IGameBoy emu;
+    private final IGameBoy gb;
 
-    public StackPointer(IGameBoy emu, short address) {
+    public StackPointer(IGameBoy gb, short address) {
         super(address);
-        this.emu = emu;
+        this.gb = gb;
     }
 
     /**
@@ -30,9 +30,9 @@ public class StackPointer extends Pointer {
      */
     public void push(short value) {
         dec();
-        emu.writeMemoryAddress(ptr, Bitwise.getHighByte(value));
+        gb.writeMemoryAddress(ptr, Bitwise.getHighByte(value));
         dec();
-        emu.writeMemoryAddress(ptr, Bitwise.getLowByte(value));
+        gb.writeMemoryAddress(ptr, Bitwise.getLowByte(value));
     }
 
     /**
@@ -44,9 +44,9 @@ public class StackPointer extends Pointer {
      * @return The value 'popped' off the stack.
      */
     public short pop() {
-        byte lo = emu.readMemoryAddress(ptr);
+        byte lo = gb.readMemoryAddress(ptr);
         inc();
-        byte hi = emu.readMemoryAddress(ptr);
+        byte hi = gb.readMemoryAddress(ptr);
         inc();
         return Bitwise.toShort(hi, lo);
     }

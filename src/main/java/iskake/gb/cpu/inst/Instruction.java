@@ -20,10 +20,10 @@ public abstract class Instruction {
     /**
      * Do the operation of the instruction.
      * 
-     * @param emu    IGameBoy object to read/write values.
+     * @param gb    IGameBoy object to read/write values.
      * @param opcode The opcode of the instruction, used for special cases.
      */
-    public abstract void doOp(IGameBoy emu, int opcode);
+    public abstract void doOp(IGameBoy gb, int opcode);
 
     /**
      * Get the name of the instruction.

@@ -16,7 +16,7 @@ public class Prefixed extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         /*
          * Instead of creating a whole table to hold all prefixed opcodes (as in [1]),
          * it is possible to find each 'instruction type' by looking at the value of the
@@ -28,11 +28,11 @@ public class Prefixed extends Instruction {
          * 
          * [1] https://gbdev.io/gb-opcodes/optables/#prefixed
          */
-        opcode = Byte.toUnsignedInt(emu.readNextByte());
+        opcode = Byte.toUnsignedInt(gb.readNextByte());
         Instruction inst;
 
         inst = (opcode >> 6 == 0) ? ROT_INST : BIT_INST;
-        inst.doOp(emu, opcode);
+        inst.doOp(gb, opcode);
     }
 
     public String getPrefixedName(int opcode) {

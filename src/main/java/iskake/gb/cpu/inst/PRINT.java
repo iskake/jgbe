@@ -18,17 +18,17 @@ public class PRINT extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        System.out.println(parseString(emu));
+    public void doOp(IGameBoy gb, int opcode) {
+        System.out.println(parseString(gb));
     }
 
     /**
      * Parse the string in memory, according to the print instruction format.
      * 
-     * @param emu The IGameBoy object to read memory from.
+     * @param gb The IGameBoy object to read memory from.
      * @return The parsed string.
      */
-    public String parseString(IGameBoy emu) {
+    public String parseString(IGameBoy gb) {
         /*
          * The prt instruction format is as follows:
          * byte 0: opcode
@@ -38,9 +38,9 @@ public class PRINT extends Instruction {
          * byte k+2..n: args
          */
         List<Character> buf = new ArrayList<>();
-        byte length = emu.readNextByte();
+        byte length = gb.readNextByte();
         for (int j = 0; j < length; j++) {
-            buf.add((char) emu.readNextByte());
+            buf.add((char) gb.readNextByte());
         }
 
         StringBuilder sb = new StringBuilder();
@@ -48,25 +48,25 @@ public class PRINT extends Instruction {
             sb.append(c);
         }
 
-        int argLen = Byte.toUnsignedInt(emu.readNextByte());
+        int argLen = Byte.toUnsignedInt(gb.readNextByte());
         Object[] stringArgs = null;
         if (argLen > 0) {
             stringArgs = new Object[argLen];
             for (int j = 0; j < argLen; j++) {
-                switch (Byte.toUnsignedInt(emu.readNextByte())) {
-                    case 0x00 -> stringArgs[j] = emu.reg().readRegisterByte(RegisterIndex.A);
-                    case 0x01 -> stringArgs[j] = emu.reg().readRegisterByte(RegisterIndex.B);
-                    case 0x02 -> stringArgs[j] = emu.reg().readRegisterByte(RegisterIndex.C);
-                    case 0x03 -> stringArgs[j] = emu.reg().readRegisterByte(RegisterIndex.D);
-                    case 0x04 -> stringArgs[j] = emu.reg().readRegisterByte(RegisterIndex.E);
-                    case 0x05 -> stringArgs[j] = emu.reg().readRegisterByte(RegisterIndex.H);
-                    case 0x06 -> stringArgs[j] = emu.reg().readRegisterByte(RegisterIndex.L);
-                    case 0x07 -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.AF);
-                    case 0x08 -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.BC);
-                    case 0x09 -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.DE);
-                    case 0x0a -> stringArgs[j] = emu.reg().readRegisterShort(RegisterIndex.HL);
-                    case 0x0b -> stringArgs[j] = emu.sp().get();
-                    case 0x0c -> stringArgs[j] = emu.pc().get();
+                switch (Byte.toUnsignedInt(gb.readNextByte())) {
+                    case 0x00 -> stringArgs[j] = gb.reg().readRegisterByte(RegisterIndex.A);
+                    case 0x01 -> stringArgs[j] = gb.reg().readRegisterByte(RegisterIndex.B);
+                    case 0x02 -> stringArgs[j] = gb.reg().readRegisterByte(RegisterIndex.C);
+                    case 0x03 -> stringArgs[j] = gb.reg().readRegisterByte(RegisterIndex.D);
+                    case 0x04 -> stringArgs[j] = gb.reg().readRegisterByte(RegisterIndex.E);
+                    case 0x05 -> stringArgs[j] = gb.reg().readRegisterByte(RegisterIndex.H);
+                    case 0x06 -> stringArgs[j] = gb.reg().readRegisterByte(RegisterIndex.L);
+                    case 0x07 -> stringArgs[j] = gb.reg().readRegisterShort(RegisterIndex.AF);
+                    case 0x08 -> stringArgs[j] = gb.reg().readRegisterShort(RegisterIndex.BC);
+                    case 0x09 -> stringArgs[j] = gb.reg().readRegisterShort(RegisterIndex.DE);
+                    case 0x0a -> stringArgs[j] = gb.reg().readRegisterShort(RegisterIndex.HL);
+                    case 0x0b -> stringArgs[j] = gb.sp().get();
+                    case 0x0c -> stringArgs[j] = gb.pc().get();
                     default -> throw new IllegalInstructionException("Invalid PRT instruction format: "
                             + "byte value is not in range 0x00-0x0c.");
                 }

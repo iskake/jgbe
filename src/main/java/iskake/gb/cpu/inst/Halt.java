@@ -16,10 +16,10 @@ public class Halt extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
+    public void doOp(IGameBoy gb, int opcode) {
         switch (opcode) {
-            case 0x10 -> emu.stop();
-            case 0x76 -> emu.halt(emu.reg().readRegisterShort(RegisterIndex.HL));
+            case 0x10 -> gb.stop();
+            case 0x76 -> gb.halt(gb.reg().readRegisterShort(RegisterIndex.HL));
         }
     }
 }

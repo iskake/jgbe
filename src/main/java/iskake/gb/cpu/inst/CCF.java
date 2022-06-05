@@ -17,10 +17,10 @@ public class CCF extends Instruction {
     }
 
     @Override
-    public void doOp(IGameBoy emu, int opcode) {
-        emu.reg().resetFlag(Flags.N);
-        emu.reg().resetFlag(Flags.H);
-        emu.reg().complementFlag(Flags.C);
+    public void doOp(IGameBoy gb, int opcode) {
+        gb.reg().resetFlag(Flags.N);
+        gb.reg().resetFlag(Flags.H);
+        gb.reg().complementFlag(Flags.C);
     }
 
 }
