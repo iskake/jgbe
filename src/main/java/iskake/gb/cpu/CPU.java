@@ -3,7 +3,7 @@ package iskake.gb.cpu;
 import iskake.Bitwise;
 import iskake.gb.GameBoy;
 import iskake.gb.InterruptHandler;
-import iskake.gb.cpu.Inst.Prefixed;
+import iskake.gb.cpu.inst.Prefixed;
 
 public class CPU {
     private final GameBoy gb;

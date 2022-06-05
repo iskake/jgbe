@@ -1,7 +1,7 @@
 package iskake.gb.cpu;
 
 import iskake.gb.Registers.RegisterIndex;
-import iskake.gb.cpu.Inst.*;
+import iskake.gb.cpu.inst.*;
 
 /**
  * Class for getting opcodes.
