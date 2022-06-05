@@ -52,12 +52,12 @@ public class GameBoy implements IGameBoy, Runnable, GameBoyViewable {
 
         memoryMap = new MemoryMap(hwreg, vram, oam);
 
+        pc = new ProgramCounter(this, (short) 0x100);
+        sp = new StackPointer(this, (short) 0xfffe);
+
         interrupts = new InterruptHandler(this, hwreg);
         cpu = new CPU(this, interrupts);
         timing = new Timing(this, hwreg, dmaControl, interrupts, ppu);
-
-        pc = new ProgramCounter(timing, (short) 0x100);
-        sp = new StackPointer(this, (short) 0xfffe);
     }
 
     /**
