@@ -1,5 +1,8 @@
 package iskake.gb;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import iskake.Bitwise;
 import iskake.gb.HardwareRegisters.HardwareRegisterIndex;
 import iskake.gb.Registers.Flags;
@@ -253,11 +256,15 @@ public class GameBoy implements IGameBoy, Runnable, GameBoyViewable {
     // Temporary: print the current frame (each dot as a byte).
     public void printFrame() {
         byte[][] scanlines = ppu.getFrame();
-        for (int i = 0; i < scanlines.length; i++) {
-            for (int j = 0; j < scanlines[i].length; j++) {
-                System.out.printf("%02x", scanlines[i][j]);
+        try (FileWriter writer = new FileWriter("image")) {
+            for (int i = 0; i < scanlines.length; i++) {
+                for (int j = 0; j < scanlines[i].length; j++) {
+                    writer.write("%02x".formatted(scanlines[i][j]));
+                }
             }
-            System.out.println();
+            System.out.println("Saved screenshot to file.");
+        } catch (IOException e) {
+            System.err.println("Could not save screenshot to file.");;
         }
     }
 
