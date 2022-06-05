@@ -12,46 +12,42 @@ import iskake.gb.cpu.Opcodes;
 import iskake.gb.cpu.inst.BIT;
 import iskake.gb.cpu.inst.ROT;
 import iskake.gb.mem.CartridgeROM;
-import iskake.pair.Pair;
-import iskake.pair.Pairs;
-import iskake.pair.SimplePair;
-import iskake.pair.SimplePairs;
 
 /**
  * Command line interpreter.
  */
 public class Interpreter {
-
+    // TODO: Remove this class / rework into a minimal assembler.
     private boolean finishedInterpreting;
     private GameBoy gb;
     private Map<String, Short> labels;
-    private Pairs<String, String> commands = new SimplePairs<>();
+    private HashMap<String, String> commands = new HashMap<>();
 
     public Interpreter(GameBoy gb) {
         this.gb = gb;
         finishedInterpreting = false;
         labels = new HashMap<>();
 
-        commands.add(new SimplePair<String, String>("help",
-                "Show the help dialog."));
-        commands.add(new SimplePair<String, String>("cmds",
-                "Show the commands dialog (the one you are currently reading)."));
-        commands.add(new SimplePair<String, String>("inst",
-                "Print out all instructions."));
-        commands.add(new SimplePair<String, String>("run",
-                "Run the program written to RAM. Note that this will automatically write a `stop` instruction to memory."));
-        commands.add(new SimplePair<String, String>("open",
-                "Open a program and run it. The program should have a '.zb' filename extension.\nNote: opening a file will automatically enable the debugger."));
-        commands.add(new SimplePair<String, String>("undo",
-                "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)"));
-        commands.add(new SimplePair<String, String>("debugger [enable/disable]",
-                "Enable or disable the debugger."));
-        commands.add(new SimplePair<String, String>("setpc",
-                "Set the program counter to a specific address or label."));
-        commands.add(new SimplePair<String, String>("getpc",
-                "Print out the current value of the program counter (to get back from setpc)."));
-        commands.add(new SimplePair<String, String>("x, examine",
-                "Examine the memory at the program counter; prints the memory at the program counter."));
+        commands.put("help",
+                "Show the help dialog.");
+        commands.put("cmds",
+                "Show the commands dialog (the one you are currently reading).");
+        commands.put("inst",
+                "Print out all instructions.");
+        commands.put("run",
+                "Run the program written to RAM. Note that this will automatically write a `stop` instruction to memory.");
+        commands.put("open",
+                "Open a program and run it. The program should have a '.zb' filename extension.\nNote: opening a file will automatically enable the debugger.");
+        commands.put("undo",
+                "Delete the byte stored at the pc and and decrement the pc. (WARNING: Unsafe)");
+        commands.put("debugger [enable/disable]",
+                "Enable or disable the debugger.");
+        commands.put("setpc",
+                "Set the program counter to a specific address or label.");
+        commands.put("getpc",
+                "Print out the current value of the program counter (to get back from setpc).");
+        commands.put("x, examine",
+                "Examine the memory at the program counter; prints the memory at the program counter.");
 
     }
 
@@ -310,9 +306,9 @@ public class Interpreter {
      */
     private void printCommands() {
         System.out.println("List of commands:");
-        for (Pair<String, String> simplePair : commands) {
-            System.out.println(simplePair.getFirst() + ":");
-            System.out.println("    " + simplePair.getSecond());
+        for (String s : commands.keySet()) {
+            System.out.println(s + ":");
+            System.out.println("    " + commands.get(s));
         }
     }
 
