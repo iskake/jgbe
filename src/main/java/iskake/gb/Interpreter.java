@@ -11,7 +11,7 @@ import iskake.Bitwise;
 import iskake.gb.cpu.Opcodes;
 import iskake.gb.cpu.inst.BIT;
 import iskake.gb.cpu.inst.ROT;
-import iskake.gb.mem.ROM;
+import iskake.gb.mem.CartridgeROM;
 import iskake.pair.Pair;
 import iskake.pair.Pairs;
 import iskake.pair.SimplePair;
@@ -202,7 +202,7 @@ public class Interpreter {
                     byte[] romFile;
                     romFile = Files.readAllBytes(path);
 
-                    ROM rom = new ROM(romFile);
+                    CartridgeROM rom = new CartridgeROM(romFile);
                     gb.enableDebugger();
                     gb.restart(rom);
                     finishedInterpreting = true;

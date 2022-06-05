@@ -1,15 +1,18 @@
 package iskake.gb.cpu;
 
 import iskake.gb.IGameBoy;
+import iskake.gb.InterruptHandler;
 
-/**
- * Represents a modified SM83 processor.
- */
 public class CPU {
     private final IGameBoy gb;
+    private final InterruptHandler interrupts;
 
-    public CPU(IGameBoy gb) {
-        this.gb = gb;
+    /** The CPU clock speed, measured in Hz. */
+    public static final int CLOCK_SPEED = 0x400000;
+
+    public CPU(IGameBoy gameBoy, InterruptHandler interrupts) {
+        this.gb = gameBoy;
+        this.interrupts = interrupts;
     }
 
     /**
@@ -17,14 +20,25 @@ public class CPU {
      */
     public void step() {
         short oldPC = gb.pc().get();
+        boolean ime_wait = interrupts.waitingIME();
+        
+        // Call waiting interrupts (if any)
+        if (interrupts.callWaiting()) {
+            return;
+        }
 
         byte opcode = gb.readNextByte();
         Opcodes.getOpcode(opcode).doOp(gb, Byte.toUnsignedInt(opcode));
 
+        if (ime_wait) {
+            interrupts.enable(false);
+        }
+
         short newPC = gb.pc().get();
 
-        if (oldPC == newPC) {
-            System.out.println("\nInfinite loop detected! Exiting.");
+        // Temp.
+        if (oldPC == newPC && !interrupts.enabled()) {
+            System.out.println("\nInfinite loop! Exiting.");
             System.exit(0);
         }
     }

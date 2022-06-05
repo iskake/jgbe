@@ -1,15 +1,13 @@
 package iskake.gb;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import iskake.Bitwise;
+import iskake.gb.HardwareRegisters.HardwareRegisterIndex;
 import iskake.gb.cpu.CPU;
 import iskake.gb.cpu.Opcodes;
-import iskake.pair.Pair;
-import iskake.pair.Pairs;
-import iskake.pair.SimplePair;
-import iskake.pair.SimplePairs;
 
 /**
  * Simple CLI debugger.
@@ -20,47 +18,50 @@ public class Debugger {
 
     private final GameBoy gb;
     private final CPU cpu;
+    private final HardwareRegisters hwreg;
 
     private Scanner sc;
     private String[] input;
     private String[] lastInput = { "c" };
     private ArrayList<Integer> breakPoints;
     private boolean print;
-    private Pairs<String, String> commands = new SimplePairs<>();
+    private HashMap<String, String> commands;
 
-    public Debugger(GameBoy gb, CPU cpu) {
+    public Debugger(GameBoy gb, CPU cpu, HardwareRegisters hwreg) {
         this.gb = gb;
         this.cpu = cpu;
+        this.hwreg = hwreg;
 
         sc = new Scanner(System.in);
         breakPoints = new ArrayList<>();
         print = false;
 
-        commands.add(new SimplePair<String, String>("h, help",
-                "Print this help information."));
-        commands.add(new SimplePair<String, String>("q, quit, exit",
-                "Quit JGBE."));
-        commands.add(new SimplePair<String, String>("disable",
-                "Disable the debugger. The program will automatically start running after issuing this command."));
-        commands.add(new SimplePair<String, String>("c, continue",
-                "Continue running until the program exits or a breakpoint is hit."));
-        commands.add(new SimplePair<String, String>("s, step",
-                "'Step into'. Will step a single instruction forward, including through function calls."));
-        commands.add(new SimplePair<String, String>("n, next",
-                "'Step over'. Will step a single instruction forward, stepping over function calls ('skipping them'.)"));
-        commands.add(new SimplePair<String, String>("b, break",
+        commands = new HashMap<>();
+        commands.put("h, help",
+                "Print this help information.");
+        commands.put("q, quit, exit",
+                "Quit JGBE.");
+        commands.put("disable",
+                "Disable the debugger. The program will automatically start running after issuing this command.");
+        commands.put("c, continue",
+                "Continue running until the program exits or a breakpoint is hit.");
+        commands.put("s, step",
+                "'Step into'. Will step a single instruction forward, including through function calls.");
+        commands.put("n, next",
+                "'Step over'. Will step a single instruction forward, stepping over function calls ('skipping them'.)");
+        commands.put("b, break",
                 "Create or list all breakpoints. To list all breakpoints, don't include any parameters (simply type `b`.) "
-                        + "To create a breakpoint, include a parameter of which address to break at (e.g. type `b $0102` to set a breakpoint at address 0x0102.)"));
-        commands.add(new SimplePair<String, String>("d, delete",
-                "Delete a breakpoint. If no parameter (the address of the breakpoint) is specified, the first breakpoint in the list is deleted."));
-        commands.add(new SimplePair<String, String>("x, examine",
+                        + "To create a breakpoint, include a parameter of which address to break at (e.g. type `b $0102` to set a breakpoint at address 0x0102.)");
+        commands.put("d, delete",
+                "Delete a breakpoint. If no parameter (the address of the breakpoint) is specified, the first breakpoint in the list is deleted.");
+        commands.put("x, examine",
                 "'Examine' the memory at the specified address (e.g. typing `x $ffd0` will print all bytes 0xffd0-0xffff)"
-                        + "If no address is specified, the memory at the PC is printed instead."));
-        commands.add(new SimplePair<String, String>("p",
-                "Toggle printing for each instruction after continuing to run (after typing `c` or `continue`.)"));
-        commands.add(new SimplePair<String, String>("<nothing>",
+                        + "If no address is specified, the memory at the PC is printed instead.");
+        commands.put("p",
+                "Toggle printing for each instruction after continuing to run (after typing `c` or `continue`.)");
+        commands.put("<nothing>",
                 "Simply pressing enter (no command) will run the last command instead."
-                        + "For example, if the last command was `n`, then pressing enter will have the same effect as typing `n` and pressing enter."));
+                        + "For example, if the last command was `n`, then pressing enter will have the same effect as typing `n` and pressing enter.");
     }
 
     /**
@@ -95,9 +96,12 @@ public class Debugger {
             case "n", "next" -> stepOver();
             case "b", "break" -> handleBreakpoints(input);
             case "d", "delete" -> handleBreakpointDeletion(input);
-            case "x", "examine" -> examine(input);
+            case "x" -> examine(input);
             case "p", "print" -> enablePrinting();
             case "reg" -> printCPUInfo();
+            case "_image" -> debugCreateImage(); // Temp!!
+            case "_jp" -> debugJump(input); // Temp!!
+            case "_ld" -> debugLoad(input); // Temp!!
             default -> System.err.println("Unknown command: " + input[0]);
         }
     }
@@ -105,9 +109,9 @@ public class Debugger {
     private void printHelp() {
         System.out.println("To use the debugger, type a command, optionally followed by a parameter.\n");
         System.out.println("List of commands:");
-        for (Pair<String, String> pair : commands) {
-            System.out.println(pair.getFirst() + ":");
-            printStringWithLengthAndLeading(pair.getSecond(), 80, "   ");
+        for (String s : commands.keySet()) {
+            System.out.println(s + ":");
+            printStringWithLengthAndLeading(commands.get(s), 80, "   ");
         }
 
         System.out.println("The information below (`AF: ...`) shows the current values of the registers.");
@@ -149,11 +153,27 @@ public class Debugger {
         System.out.println();
     }
 
+    private void debugLoad(String[] in) {
+        gb.writeMemoryNoCycle(Bitwise.toShort(Bitwise.decodeInt(in[1])), Bitwise.toByte(Bitwise.decodeInt(in[2])));
+    }
+
+    private void debugJump(String[] in) {
+        gb.pc().setNoCycle(Bitwise.toShort(Bitwise.decodeInt(in[1])));
+    }
+
+    // Temp: print frame.
+    private void debugCreateImage() {
+        gb.printFrame();
+    }
+
     /**
      * Print information about the CPU and registers.
      */
     private void printCPUInfo() {
-        gb.reg().printRegisters();
+        gb.reg.printRegisters();
+        System.out.println("Mode: " + (hwreg.readRegister(HardwareRegisterIndex.STAT) & 0b11)
+                + " LY: " + hwreg.readRegisterInt(HardwareRegisterIndex.LY));
+        System.out.println("Cycles: " + gb.timing.getCycles());
         cpu.printNextInstruction();
     }
 

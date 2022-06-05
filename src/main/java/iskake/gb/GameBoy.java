@@ -1,163 +1,150 @@
 package iskake.gb;
 
-import java.util.Scanner;
-
 import iskake.Bitwise;
-import iskake.Header;
+import iskake.gb.HardwareRegisters.HardwareRegisterIndex;
+import iskake.gb.Registers.Flags;
+import iskake.gb.Registers.RegisterIndex;
 import iskake.gb.cpu.CPU;
+import iskake.gb.joypad.IJoypad;
+import iskake.gb.mem.CartridgeROM;
 import iskake.gb.mem.MemoryMap;
-import iskake.gb.mem.ROM;
+import iskake.gb.mem.OAM;
+import iskake.gb.mem.VRAM;
 import iskake.gb.pointer.ProgramCounter;
 import iskake.gb.pointer.StackPointer;
+import iskake.gb.ppu.PPU;
+import iskake.gb.ppu.PPUController;
+import iskake.gb.timing.Timing;
+import iskake.gb.view.GameBoyViewable;
 
 /**
- * Represents the JGBE GameBoy/interpreter/virtual machine.
+ * Represents a Game Boy (model 'DMG')
  */
-public class GameBoy implements IGameBoy {
-    private final ProgramCounter pc;
-    private final StackPointer sp;
-    private final Registers reg;
-    private final CPU cpu;
-    private final MemoryMap memoryMap;
-    private final Scanner sc;
+public class GameBoy implements IGameBoy, Runnable, GameBoyViewable {
+    // TODO: joypad handling+dma+video
+    public final ProgramCounter pc;
+    public final StackPointer sp;
+    public final Registers reg;
+    public final Timing timing; // TODO: fix having to pass GameBoy to constructors just to access timing?
 
-    private ROM rom;
+    private CartridgeROM rom;
+    private final CPU cpu;
+    private final PPU ppu;
+    private final HardwareRegisters hwreg;
+    private MemoryMap memoryMap;
+    private final InterruptHandler interrupts;
+
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
-    private Interpreter interpreter;
 
-    public GameBoy(ROM rom) {
-        this.sc = new Scanner(System.in);
-        debuggerEnabled = false;
-        this.rom = rom;
+    public GameBoy(IJoypad joypad) {
+        debuggerEnabled = true;
 
-        pc = new ProgramCounter((short) 0x100);
-        sp = new StackPointer(this, (short) 0xfffe);
+        DMAController dmaControl = new DMAController(this);
         reg = new Registers(this);
-        memoryMap = new MemoryMap(rom);
-        cpu = new CPU(this);
+        hwreg = new HardwareRegisters(dmaControl, joypad);
 
-        init();
+        PPUController ppuControl = new PPUController(hwreg);
+        VRAM vram = new VRAM(0x2000, ppuControl);
+        OAM oam = new OAM(40 * 4, ppuControl);
+        ppu = new PPU(vram, oam, hwreg, ppuControl);
+
+        memoryMap = new MemoryMap(hwreg, vram, oam);
+
+        interrupts = new InterruptHandler(this, hwreg);
+        cpu = new CPU(this, interrupts);
+        timing = new Timing(this, hwreg, dmaControl, interrupts, ppu);
+
+        pc = new ProgramCounter(timing, (short) 0x100);
+        sp = new StackPointer(this, (short) 0xfffe);
     }
 
     /**
-     * Restart the system with a new ROM file
-     * 
-     * @param rom The ROM to restart the system with.
-     */
-    public void restart(ROM rom) {
-        this.rom = rom;
-        memoryMap.restart(rom);
-        init();
-    }
-
-    /**
-     * Initialize the GameBoy.
-     * This method should be used in the constructor and when the GameBoy is reset
+     * Initialize the Game Boy.
+     * This method should be used in the constructor and when the Game Boy is reset
      * ('powered on').
      */
-    private void init() {
-        reg.clearAll();
+    private void init(CartridgeROM rom) {
+        this.rom = rom;
 
-        pc.set((short) 0x0100);
+        // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
+        // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
+        reg.writeRegisterByte(RegisterIndex.A, 0x01);
+        reg.setFlag(Flags.Z);
+        reg.resetFlag(Flags.N);
+        reg.setFlag(Flags.H);
+        reg.setFlag(Flags.C);
+        reg.writeRegisterShort(RegisterIndex.BC, (short) 0x0013);
+        reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
+        reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
+
+        pc.setNoCycle((short) 0x100);
         sp.set((short) 0xfffe);
-        memoryMap.init();
+        memoryMap.init(rom);
+        hwreg.init();
+        timing.init();
 
-        boolean runInterpreter = (rom == null) ? true : false;
-
-        if (!runInterpreter) {
-            // If the interpreter should be ran, there is no need to check if the ROM file
-            // is a Game Boy ROM file (because there is none.)
-            checkGameBoyHeader();
+        boolean willStop = false;
+        try {
+            if (!ROMHeader.validLogo(rom.getROMBank0())) {
+                System.out.println("Invalid logo!");
+                willStop = true;
+            }
+            if (!ROMHeader.validHeaderChecksum(rom.getROMBank0())) {
+                System.out.println("Invalid checksum!");
+                willStop = true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println(e);
+            willStop = true;
         }
 
-        dbg = new Debugger(this, cpu);
+        if (willStop) {
+            System.out.println("The provided ROM file is invalid or corrupted.");
+            stopRunning();
+            return;
+        }
+
+        dbg = new Debugger(this, cpu, hwreg);
         running = true;
     }
 
-    /**
-     * Check if the provided file is a valid Game Boy ROM file.
-     * <p>
-     * If it is, show a warning message.
-     * 
-     * <p>
-     * The reason we check for this, is because JGBE emulates a <i>modified
-     * version</i>
-     * of the Game Boy's CPU, meaning any Game Boy program (that is 32KiB) SHOULD
-     * run as a valid file.
-     */
-    private void checkGameBoyHeader() {
-        boolean validGBHeader = false;
-        if (Header.validLogo(rom)) {
-            System.out.println("Valid logo!");
-            validGBHeader = true;
-        }
-        if (Header.validHeaderChecksum(rom)) {
-            System.out.println("Valid checksum!");
-            validGBHeader = true;
-        }
-
-        if (validGBHeader) {
-            System.out.println("Warning: The provided file is in the format of a Game Boy ROM.");
-            System.out.println("Although this file may run just fine, JGBE is not designed to run Game Boy ROMs.");
-            Header header = new Header(rom);
-            System.out.println("\nInternal ROM Information:");
-            System.out.println("    Name: '" + header.getTitle().strip() + "'");
-            System.out.println("    ROM size: " + header.getROMSizeString());
-            System.out.println("    RAM size: " + header.getRAMSizeString());
-            System.out.print("\nDo you still wish to continue (y/n)?  ");
-
-            boolean invalidInput = true;
-            while (invalidInput) {
-                String answer = sc.nextLine();
-                if (answer.toLowerCase().equals("y")) {
-                    invalidInput = false;
-                } else if (answer.toLowerCase().equals("n")) {
-                    stopRunning();
-                    return;
-                } else {
-                    System.out.print("\nInvalid input (y/n)  ");
-                }
-            }
-        }
+    public void restart(CartridgeROM rom) {
+        init(rom);
     }
 
-    @Override
+    public CartridgeROM getROM() {
+        return rom;
+    }
+
     public byte readNextByte() {
-        return memoryMap.readAddress(pc.inc());
+        timing.incCycles();
+        return memoryMap.readByte(pc().inc());
     }
 
-    @Override
     public short readNextShort() {
         byte lo = readNextByte();
         byte hi = readNextByte();
         return Bitwise.toShort(hi, lo);
     }
 
-    @Override
-    public byte readMemoryAddress(short address) {
-        return memoryMap.readAddress(address);
-    }
-
-    @Override
     public void writeMemoryAddress(short address, byte value) {
-        memoryMap.writeAddress(address, value);
+        timing.incCycles();
+        memoryMap.writeByte(address, value);
     }
 
-    @Override
-    public void stop() {
-        stopRunning();
+    public void writeMemoryNoCycle(short address, byte value) {
+        memoryMap.writeByte(address, value);
     }
 
-    @Override
-    public void halt(short millis) {
-        try {
-            // Max 65.535 seconds
-            Thread.sleep(Short.toUnsignedInt(millis));
-        } catch (InterruptedException e) {
-            System.out.println("Sleep was interrupted.");
-        }
+    public byte readMemoryNoCycle(short address) {
+        return memoryMap.readByte(address);
+    }
+
+    public byte readMemoryAddress(short address) {
+        timing.incCycles();
+        return memoryMap.readByte(address);
     }
 
     /**
@@ -175,7 +162,7 @@ public class GameBoy implements IGameBoy {
             if (c % 16 == 0) {
                 System.out.printf("\n%04x  ", (short) i);
             }
-            System.out.printf("%02x ", readMemoryAddress((short) i));
+            System.out.printf("%02x ", readMemoryNoCycle((short) i));
             c++;
         }
         System.out.println("\n");
@@ -215,12 +202,6 @@ public class GameBoy implements IGameBoy {
      * Run the Game Boy
      */
     public void run() {
-        if (rom == null) {
-            interpreter = new Interpreter(this);
-            interpreter.interpret(sc);
-            pc.set((short) 0x0100);
-        }
-
         if (debuggerEnabled) {
             System.out.println("Debugger is enabled. Type \"help\" or \"h\" for help, \"disable\" to disable.");
         }
@@ -232,6 +213,89 @@ public class GameBoy implements IGameBoy {
                 dbg.step();
         }
     }
+    /**
+     * Halt ('stop') all operations of the Game Boy until the system is reset or any
+     * input is pressed.
+     * <p>
+     * Note that the stop instruction is actually 2 bytes long, with the second byte
+     * being ignored.
+     */
+    public void stop() {
+        // TODO
+        pc.inc(); // stop ignores the next instruction, so
+
+    }
+
+    /**
+     * Halt CPU instruction execution
+     */
+    public void halt() {
+        // TODO
+    }
+
+    /**
+     * Disables all interrupts by setting the IME flag to 0.
+     */
+    public void disableInterrupts() {
+        interrupts.disable();
+    }
+
+    /**
+     * Enables all interrupts enabled in the IE hardware register by setting the IME
+     * flag to 1.
+     * 
+     * @param wait If interrupts should be enabled after waiting one M-cycle.
+     */
+    public void enableInterrupts(boolean wait) {
+        interrupts.enable(wait);
+    }
+
+    // Temporary: print the current frame (each dot as a byte).
+    public void printFrame() {
+        byte[][] scanlines = ppu.getFrame();
+        for (int i = 0; i < scanlines.length; i++) {
+            for (int j = 0; j < scanlines[i].length; j++) {
+                System.out.printf("%02x", scanlines[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    @Override
+    public byte[] getFrame() {
+        byte[][] in = ppu.getFrame();
+        byte[] out = new byte[in.length * in[0].length];
+        for(int i = 0; i < in.length; i ++) {
+            for(int j = 0; j < in[0].length; j ++) {
+                out[(i * in.length) + j] = in[i][j];
+            }
+        }
+        return out;
+    }
+
+    private int[] mappedColors = {
+        0xffffff,
+        0xaaaaaa,
+        0x555555,
+        0x000000,
+    };
+
+    @Override
+    public int[] getFrameInt() {
+        byte[][] in = ppu.getFrame();
+        int[] out = new int[in.length * in[0].length];
+        for(int i = 0; i < in.length; i ++) {
+            for(int j = 0; j < in[0].length; j ++) {
+                out[(i * in.length) + j] = mappedColors[in[i][j]];
+            }
+        }
+        return out;
+    }
+
+	@Override
+	public boolean canGetFrame() {
+		return hwreg.readRegisterInt(HardwareRegisterIndex.LY) >= 144;
+	}
 
     @Override
     public ProgramCounter pc() {

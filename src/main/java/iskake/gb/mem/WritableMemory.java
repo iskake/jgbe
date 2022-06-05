@@ -5,7 +5,7 @@ package iskake.gb.mem;
  * 
  * @see ReadableMemory
  */
-public interface WritableMemory<T> extends Memory<T> {
+public interface WritableMemory {
     /**
      * Write {@code value} to the address {@code address} memory.
      * 
@@ -13,5 +13,5 @@ public interface WritableMemory<T> extends Memory<T> {
      * @param value   The value to write.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    void writeAddress(int address, T value) throws IndexOutOfBoundsException;
+    void writeByte(int address, byte value) throws IndexOutOfBoundsException;
 }

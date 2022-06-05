@@ -1,21 +1,19 @@
-package iskake;
+package iskake.gb;
 
 import java.util.Arrays;
 
-import iskake.gb.mem.ROM;
+import iskake.Bitwise;
+import iskake.gb.mem.ROMBank;
 
 /**
- * The point of this class is to extract information about ROM files that are
- * idenitied as Game Boy ROM files (which JGBE _can_ run, but is unsupported) so
- * we can warn the user they are trying to run a Game Boy ROM (.gb or .gbc file)
- * instead of a JGBE binary file (.zb file)
+ * Header information and utilities for a Game Boy cartridge header.
  * <p>
- * The header is stored in ROM at the address range $0100-$014f.
- * See https://gbdev.io/pandocs/The_Cartridge_Header.html for more information.
+ * The header is stored in Bank 0 at the address range $0100-$014f.
  */
-public class Header {
+public class ROMHeader {
     /**
      * Compressed Nintendo logo data.
+     * Each tile of the logo is stored in 2 bytes, as opposed to 16 bytes.
      */
     private final static byte[] logo = {
             (byte) 0xCE, (byte) 0xED, (byte) 0x66, (byte) 0x66, (byte) 0xCC, (byte) 0x0D, (byte) 0x00, (byte) 0x0B,
@@ -31,22 +29,22 @@ public class Header {
      */
     private byte[] data;
 
-    public Header(byte[] data) {
+    public ROMHeader(byte[] data) {
         this.data = data;
     }
 
-    public Header(ROM ROM) {
-        this.data = getHeaderData(ROM.data());
+    public ROMHeader(ROMBank bank) {
+        this.data = getHeaderData(bank);
     }
 
     /**
-     * Get the header data from the ROM.
+     * Get the header data from the ROM bank.
      * 
-     * @param data The data to get the header from.
-     * @return The header data from the rom.
+     * @param bank The bank to get the header data from
+     * @return The header data from the rom bank.
      */
-    private static byte[] getHeaderData(byte[] data) {
-        return Arrays.copyOfRange(data, 0x100, 0x14f);
+    public static byte[] getHeaderData(ROMBank bank) {
+        return Arrays.copyOfRange(bank.bytes(), 0x104, 0x134);
     }
 
     /**
@@ -55,8 +53,7 @@ public class Header {
      * @return The ROM title.
      */
     public String getTitle() {
-        byte[] str = Arrays.copyOfRange(data, 0x34, 0x44);
-        return new String(str);
+        return new String(Arrays.copyOfRange(data, 0x34, 0x44));
     }
 
     /**
@@ -131,10 +128,45 @@ public class Header {
         };
     }
 
+    public String getDestinationCode() {
+        return switch (data[0x4a]) {
+            case 0x00 -> "Japan";
+            case 0x01 -> "International";
+            default -> "Invalid";
+        };
+    }
+
+    /**
+     * Get the version number from the header data.
+     * 
+     * @return the version number (stored as an int).
+     */
+    public byte getVersionNumber() {
+        return data[0x4c];
+    }
+
+    /**
+     * Get the header checksum from the header data.
+     * 
+     * @return the header checksum.
+     */
+    public byte getHeaderChecksum() {
+        return data[0x4d];
+    }
+
+    /**
+     * Get the global checksum from the header data.
+     * 
+     * @return the global checksum.
+     */
+    public short getGlobalChecksum() {
+        return Bitwise.toShort(data[0x4e], data[0x4f]);
+    }
+
     /**
      * Check if the Nintendo logo data is valid.
      * 
-     * @param logoData The header data to check the logo of.
+     * @param bank The header data to check the logo of.
      * @return {@code true} if the bytes match, {@code false} otherwise.
      */
     public static boolean validLogo(byte[] logoData) {
@@ -152,14 +184,14 @@ public class Header {
     /**
      * Check if the Nintendo logo data is valid.
      * 
-     * @param rom The ROM to get the header and check the logo of.
+     * @param bank The ROM bank to get the header and check the logo of.
      * @return {@code true} if the bytes match, {@code false} otherwise.
      */
-    public static boolean validLogo(ROM rom) {
-        if (rom == null)
+    public static boolean validLogo(ROMBank bank) {
+        if (bank == null)
             return false;
 
-        byte[] logoData = Arrays.copyOfRange(rom.data(), 0x104, 0x134);
+        byte[] logoData = Arrays.copyOfRange(bank.bytes(), 0x104, 0x134);
         return validLogo(logoData);
     }
 
@@ -183,15 +215,15 @@ public class Header {
     }
 
     /**
-     * Check if the header checksum of a ROM is valid.
+     * Check if the header checksum of a ROM bank is valid.
      * 
-     * @param rom The ROM to get the header and check the checksum of.
+     * @param bank The ROM bank to get the header and check the checksum of.
      * @return {@code true} if the checksum matches, {@code false} otherwise.
      */
-    public static boolean validHeaderChecksum(ROM rom) {
-        if (rom == null)
+    public static boolean validHeaderChecksum(ROMBank bank) {
+        if (bank == null)
             return false;
 
-        return validHeaderChecksum(Arrays.copyOfRange(rom.data(), 0x100, 0x150));
+        return validHeaderChecksum(Arrays.copyOfRange(bank.bytes(), 0x100, 0x150));
     }
 }

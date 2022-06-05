@@ -1,5 +1,7 @@
 package iskake.gb.pointer;
 
+import iskake.gb.timing.Timing;
+
 /**
  * Program counter, a pointer to a memory address.
  * <p>
@@ -8,7 +10,20 @@ package iskake.gb.pointer;
  */
 public class ProgramCounter extends Pointer {
 
-    public ProgramCounter(short address) {
+    private final Timing timing;
+
+    public ProgramCounter(Timing timing, short address) {
         super(address);
+        this.timing = timing;
+    }
+
+    @Override
+    public void set(short address) {
+        timing.incCycles();
+        super.set(address);
+    }
+
+    public void setNoCycle(short address) {
+        super.set(address);
     }
 }

@@ -5,13 +5,13 @@ package iskake.gb.mem;
  * 
  * @see WritableMemory
  */
-public interface ReadableMemory<T> extends Memory<T> {
+public interface ReadableMemory {
     /**
-     * Read the T at address {@code address} in memory.
+     * Read the byte at address {@code address} in memory.
      * 
-     * @param address The address of the element to read.
-     * @return The element at the address of {@code address}.
+     * @param address The address of the byte to be read from.
+     * @return The byte at the address of {@code address}.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    T readAddress(int address) throws IndexOutOfBoundsException;
+    byte readByte(int address) throws IndexOutOfBoundsException;
 }

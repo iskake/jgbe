@@ -33,7 +33,15 @@ public interface IGameBoy {
     byte readMemoryAddress(short address);
 
     /**
-     * Wrire the specified value to the specified memory address.
+     * Read the byte at the specified memory address, without increasing the cycle
+     * count.
+     * 
+     * @return The byte stored at the specified memory address.
+     */
+    byte readMemoryNoCycle(short address);
+
+    /**
+     * Write the specified value to the specified memory address.
      * 
      * @param address The address to write to.
      * @param value   The value to write to the memory address.
@@ -41,7 +49,16 @@ public interface IGameBoy {
     void writeMemoryAddress(short address, byte value);
 
     /**
-     * Halt ('stop') all operations of the GameBoy.
+     * Write the specified value to the specified memory address, without increasing
+     * the cycle count.
+     * 
+     * @param address The address to write to.
+     * @param value   The value to write to the memory address.
+     */
+    void writeMemoryNoCycle(short address, byte value);
+
+    /**
+     * Stop opcode all operations of the GameBoy.
      * <p>
      * Note that the stop instruction is actually 2 bytes long, with the second byte
      * being ignored.
@@ -49,11 +66,9 @@ public interface IGameBoy {
     void stop();
 
     /**
-     * Halt CPU instruction execution for some time in milliseconds.
-     * 
-     * @param millis The time (in ms) to halt the CPU for.
+     * Halt CPU instruction execution.
      */
-    void halt(short millis);
+    void halt();
 
     /**
      * Get the ProgramCounter stored in the IGameBoy object.

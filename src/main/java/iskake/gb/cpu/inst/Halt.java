@@ -1,7 +1,6 @@
 package iskake.gb.cpu.inst;
 
 import iskake.gb.IGameBoy;
-import iskake.gb.Registers.RegisterIndex;
 
 /**
  * Opcodes that 'halt' the operation of the GameBoy.
@@ -19,7 +18,7 @@ public class Halt extends Instruction {
     public void doOp(IGameBoy gb, int opcode) {
         switch (opcode) {
             case 0x10 -> gb.stop();
-            case 0x76 -> gb.halt(gb.reg().readRegisterShort(RegisterIndex.HL));
+            case 0x76 -> gb.halt();
         }
     }
 }

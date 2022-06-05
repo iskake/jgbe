@@ -1,12 +1,10 @@
 package iskake.gb.cpu.inst;
 
+import iskake.gb.GameBoy;
 import iskake.gb.IGameBoy;
 
 /**
- * {@code di} and {@code ei} instructions. In the case of JGBE, these instructions
- * do nothing (equivalent to {@code nop}.)
- * <p>
- * In the Game Boy's CPU, the instructions are used for disabling and enabling
+ * {@code di} and {@code ei} instructions for disabling and enabling
  * the Interrupt Master Enable CPU flag respectively.
  * 
  * <p>
@@ -20,8 +18,13 @@ public class Interrupt extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        // Since there are no interrupts in JGBE, these instructions
-        // do nothing.
+        if (gb instanceof GameBoy gameboy) { // TODO!!!
+            switch (opcode) {
+                case 0xf3 -> gameboy.disableInterrupts();
+                case 0xfb -> gameboy.enableInterrupts(true);
+                default -> throw new IllegalInstructionException();
+            }
+        }
     }
 
 }
