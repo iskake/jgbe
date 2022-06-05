@@ -5,19 +5,21 @@ FIX := rgbfix
 ASFLAGS  := -L
 FIXFLAGS := -v -p 0xff
 
-ZB := test_alu.zb\
-	test_jump.zb\
-	test_call.zb\
-	test_bitwise.zb\
-	test_cpl_daa.zb\
-	test_stop.zb\
-	test_sp.zb
+GB := test_alu.gb\
+	test_jump.gb\
+	test_call.gb\
+	test_bitwise.gb\
+	test_cpl_daa.gb\
+	test_stop.gb\
+	test_sp.gb\
+	test_tile.gb\
+	test_interrupts.gb
 	
-	
-all: $(ZB)
+all: $(GB)
 
-%.zb: %.o
+%.gb: %.o
 	$(LD) $< -o $@
+	$(FIX) $(FIXFLAGS) $@
 	mkdir -p bin/
 	mv $@ bin/
 
@@ -25,4 +27,4 @@ all: $(ZB)
 	$(AS) $< $(ASFLAGS) -o $@
 
 clean:
-	rm -rf *.zb *.o bin/
+	rm -rf *.gb *.o bin/
