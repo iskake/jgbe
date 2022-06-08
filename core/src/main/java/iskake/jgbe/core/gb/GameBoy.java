@@ -33,7 +33,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private final CPU cpu;
     private final PPU ppu;
     private final HardwareRegisters hwreg;
-    private MemoryMap memoryMap;
+    private final MemoryMap memoryMap;
     private final InterruptHandler interrupts;
 
     private Debugger dbg;
@@ -222,6 +222,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
      * Note that the stop instruction is actually 2 bytes long, with the second byte
      * being ignored.
      */
+    @Override
     public void stop() {
         // TODO
         pc.inc(); // stop ignores the next instruction, so
@@ -231,23 +232,17 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     /**
      * Halt CPU instruction execution
      */
+    @Override
     public void halt() {
         // TODO
     }
 
-    /**
-     * Disables all interrupts by setting the IME flag to 0.
-     */
+    @Override
     public void disableInterrupts() {
         interrupts.disable();
     }
 
-    /**
-     * Enables all interrupts enabled in the IE hardware register by setting the IME
-     * flag to 1.
-     * 
-     * @param wait If interrupts should be enabled after waiting one M-cycle.
-     */
+    @Override
     public void enableInterrupts(boolean wait) {
         interrupts.enable(wait);
     }
