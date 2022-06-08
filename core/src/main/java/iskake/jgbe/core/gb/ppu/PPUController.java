@@ -1,7 +1,7 @@
 package iskake.jgbe.core.gb.ppu;
 
 import iskake.jgbe.core.gb.HardwareRegisters;
-import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex;
+import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 import iskake.jgbe.core.Bitwise;
 
 /**
@@ -22,7 +22,7 @@ public class PPUController {
      * @return The value in LCDC.
      */
     private int getLCDC() {
-        return hwreg.readRegisterInt(HardwareRegisterIndex.LCDC);
+        return hwreg.readRegisterInt(HardwareRegister.LCDC);
     }
 
     /**
@@ -125,7 +125,7 @@ public class PPUController {
      * @return {@code true} if the VRAM is accessable, {@code false} otherwise.
      */
     public boolean isVRAMAccessable() {
-        int i = hwreg.readRegisterInt(HardwareRegisterIndex.STAT) & 0b11;
+        int i = hwreg.readRegisterInt(HardwareRegister.STAT) & 0b11;
         return (i != 3) || (!lcdEnabled);
     }
 
@@ -135,7 +135,7 @@ public class PPUController {
      * @return {@code true} if the OAM is accessable, {@code false} otherwise.
      */
     public boolean isOAMAccessable() {
-        int i = hwreg.readRegisterInt(HardwareRegisterIndex.STAT) & 0b11;
+        int i = hwreg.readRegisterInt(HardwareRegister.STAT) & 0b11;
         return (i <= 1) || (!lcdEnabled);
     }
 

@@ -1,7 +1,7 @@
 package iskake.jgbe.core.gb.timing;
 
 import iskake.jgbe.core.gb.HardwareRegisters;
-import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex;
+import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 import iskake.jgbe.core.gb.cpu.CPU;
 import iskake.jgbe.core.Bitwise;
 
@@ -17,7 +17,7 @@ public class Timers {
      * @return {@code true} if bit 2 is set, {@code false} otherwise.
      */
     public static boolean isTIMAEnabled(HardwareRegisters hwreg) {
-        int val = hwreg.readRegisterInt(HardwareRegisterIndex.TAC);
+        int val = hwreg.readRegisterInt(HardwareRegister.TAC);
         return Bitwise.isBitSet(val, 2);
     }
 
@@ -29,7 +29,7 @@ public class Timers {
      * @return The frequency specified in the TAC register.
      */
     public static int getTACFrequency(HardwareRegisters hwreg) {
-        int val = hwreg.readRegisterInt(HardwareRegisterIndex.TAC);
+        int val = hwreg.readRegisterInt(HardwareRegister.TAC);
 
         return switch (val & 0b11) {
             case 0b00 -> CPU.CLOCK_SPEED / 0x400;

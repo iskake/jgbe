@@ -2,7 +2,7 @@ package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 
 /**
  * Subtraction instruction.
@@ -11,11 +11,11 @@ import iskake.jgbe.core.gb.Registers.RegisterIndex;
  * Implements opcodes: {@code sub r8}, {@code sub $n8}, {@code sbc r8} and {@code sbc $n8}
  */
 public class SUB_rr_nn extends Instruction {
-    private final RegisterIndex r1;
-    private final RegisterIndex r2;
+    private final Register r1;
+    private final Register r2;
     public final boolean carry;
 
-    public SUB_rr_nn(String name, RegisterIndex r1, RegisterIndex r2, boolean carry) {
+    public SUB_rr_nn(String name, Register r1, Register r2, boolean carry) {
         super(name);
         this.r1 = r1;
         this.r2 = r2;

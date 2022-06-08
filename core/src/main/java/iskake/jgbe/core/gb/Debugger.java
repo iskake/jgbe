@@ -1,6 +1,6 @@
 package iskake.jgbe.core.gb;
 
-import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex;
+import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 import iskake.jgbe.core.gb.cpu.CPU;
 import iskake.jgbe.core.gb.cpu.Opcodes;
 import iskake.jgbe.core.Bitwise;
@@ -160,8 +160,8 @@ public class Debugger {
      */
     private void printCPUInfo() {
         gb.reg.printRegisters();
-        System.out.println("Mode: " + (hwreg.readRegister(HardwareRegisterIndex.STAT) & 0b11)
-                + " LY: " + hwreg.readRegisterInt(HardwareRegisterIndex.LY));
+        System.out.println("Mode: " + (hwreg.readRegister(HardwareRegister.STAT) & 0b11)
+                + " LY: " + hwreg.readRegisterInt(HardwareRegister.LY));
         System.out.println("Cycles: " + gb.timing.getCycles());
         cpu.printNextInstruction();
     }

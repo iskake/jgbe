@@ -9,7 +9,7 @@ public class Registers {
     /**
      * CPU Registers.
      */
-    public enum RegisterIndex {
+    public enum Register {
         // 8-bit registers. Made up of a half of each 16-bit register.
 
         /** Accumulator, used as a general register and for arithmetic operations. */
@@ -34,7 +34,7 @@ public class Registers {
 
         private final int val;
 
-        RegisterIndex(int val) {
+        Register(int val) {
             this.val = val;
         }
 
@@ -45,7 +45,7 @@ public class Registers {
          * {@code RegisterIndex.H}, such as $44 ({@code ld b, h}) and $ac
          * ({@code xor h})
          */
-        public static final RegisterIndex[] tableIndex = { B, C, D, E, H, L, HL, A };
+        public static final Register[] tableIndex = { B, C, D, E, H, L, HL, A };
     };
 
     /**
@@ -54,7 +54,7 @@ public class Registers {
      * <p>
      * Flags are stored as the 4 most significant bits of the F register.
      * 
-     * @see RegisterIndex
+     * @see Register
      */
     public enum Flags {
         /** Carry flag, bit 4 of the F register. */
@@ -92,10 +92,10 @@ public class Registers {
      * @param bitNum The bit to check.
      * @return {@code true} if the bit is set, {@code false} otherwise.
      */
-    public boolean isBitSet(RegisterIndex reg, int bitNum) {
+    public boolean isBitSet(Register reg, int bitNum) {
         // Check for [hl] bitwise instructions (HL is the only short register to be
         // used in pointer bitwise opcodes.)
-        if (!reg.equals(RegisterIndex.HL)) {
+        if (!reg.equals(Register.HL)) {
             checkRegisterByte(reg);
         }
         return Bitwise.isBitSet(readRegisterByte(reg), bitNum);
@@ -106,10 +106,10 @@ public class Registers {
      * 
      * @param bitNum The bit to set.
      */
-    public void setBit(RegisterIndex reg, int bitNum) {
+    public void setBit(Register reg, int bitNum) {
         // Check for [hl] bitwise instructions (HL is the only short register to be
         // used in pointer bitwise opcodes.)
-        if (!reg.equals(RegisterIndex.HL)) {
+        if (!reg.equals(Register.HL)) {
             checkRegisterByte(reg);
         }
         writeRegisterByte(reg, Bitwise.setBit(readRegisterByte(reg), bitNum));
@@ -120,11 +120,11 @@ public class Registers {
      * 
      * @param bitNum The bit to reset.
      */
-    public void resetBit(RegisterIndex reg, int bitNum) {
+    public void resetBit(Register reg, int bitNum) {
 
         // Check for [hl] bitwise instructions (HL is the only short register to be
         // used in pointer bitwise opcodes.)
-        if (!reg.equals(RegisterIndex.HL)) {
+        if (!reg.equals(Register.HL)) {
             checkRegisterByte(reg);
         }
         writeRegisterByte(reg, Bitwise.clearBit(readRegisterByte(reg), bitNum));
@@ -137,7 +137,7 @@ public class Registers {
      * @return {@code true} if the flag is set, {@code false} otherwise.
      */
     public boolean isFlagSet(Flags flag) {
-        return isBitSet(RegisterIndex.F, flag.val);
+        return isBitSet(Register.F, flag.val);
     }
 
     /**
@@ -146,7 +146,7 @@ public class Registers {
      * @param flag The flag to set.
      */
     public void setFlag(Flags flag) {
-        setBit(RegisterIndex.F, flag.val);
+        setBit(Register.F, flag.val);
     }
 
     /**
@@ -155,7 +155,7 @@ public class Registers {
      * @param flag The flag to reset.
      */
     public void resetFlag(Flags flag) {
-        resetBit(RegisterIndex.F, flag.val);
+        resetBit(Register.F, flag.val);
     }
 
     /**
@@ -179,7 +179,7 @@ public class Registers {
      * @param flag The flag to complement.
      */
     public void complementFlag(Flags flag) {
-        int i = RegisterIndex.F.val;
+        int i = Register.F.val;
         registerValues[i] = Bitwise.flipBit(registerValues[i], flag.val);
     }
 
@@ -191,10 +191,10 @@ public class Registers {
      * @param carry If the bit shifting should use carry.
      * @return The overflow bit for carry.
      */
-    private int bitShiftLeft(RegisterIndex reg, boolean shift, boolean carry) {
+    private int bitShiftLeft(Register reg, boolean shift, boolean carry) {
         // Check for [hl] shift/rotate instructions (HL is the only short register to be
         // used in pointer shift/rotate opcodes.)
-        if (!reg.equals(RegisterIndex.HL)) {
+        if (!reg.equals(Register.HL)) {
             checkRegisterByte(reg);
         }
         int oldValue = Byte.toUnsignedInt(readRegisterByte(reg));
@@ -220,10 +220,10 @@ public class Registers {
      * @param carry   If the bit shifting should use carry.
      * @return The overflow bit for carry.
      */
-    private int bitShiftRight(RegisterIndex reg, boolean shift, boolean logical, boolean carry) {
+    private int bitShiftRight(Register reg, boolean shift, boolean logical, boolean carry) {
         // Check for [hl] shift/rotate instructions (HL is the only short register to be
         // used in pointer shift/rotate opcodes.)
-        if (!reg.equals(RegisterIndex.HL)) {
+        if (!reg.equals(Register.HL)) {
             checkRegisterByte(reg);
         }
         int oldValue = Byte.toUnsignedInt(readRegisterByte(reg));
@@ -248,7 +248,7 @@ public class Registers {
      * @param carry Wether to rotate thought carry or not.
      * @return The overflow bit for carry.
      */
-    public int rotateLeft(RegisterIndex reg, boolean carry) {
+    public int rotateLeft(Register reg, boolean carry) {
         return bitShiftLeft(reg, false, carry);
     }
 
@@ -260,7 +260,7 @@ public class Registers {
      * @param carry Wether to rotate thought carry or not.
      * @return The overflow bit for carry.
      */
-    public int rotateRight(RegisterIndex reg, boolean carry) {
+    public int rotateRight(Register reg, boolean carry) {
         return bitShiftRight(reg, false, false, carry);
     }
 
@@ -271,7 +271,7 @@ public class Registers {
      * @param reg The register to shift left.
      * @return The overflow bit for carry.
      */
-    public int shiftLeft(RegisterIndex reg) {
+    public int shiftLeft(Register reg) {
         return bitShiftLeft(reg, true, false);
     }
 
@@ -283,7 +283,7 @@ public class Registers {
      * @param logical Wether to use logical shifting or not.
      * @return The overflow bit for carry.
      */
-    public int shiftRight(RegisterIndex reg, boolean logical) {
+    public int shiftRight(Register reg, boolean logical) {
         return bitShiftRight(reg, true, logical, false);
     }
 
@@ -295,7 +295,7 @@ public class Registers {
      * @return 0 (Note: this is used for consistency with the other bitwise
      *         shift/rotate instructions)
      */
-    public int swap(RegisterIndex reg) {
+    public int swap(Register reg) {
         writeRegisterByte(reg, Bitwise.swapBits(readRegisterByte(reg)));
         return 0;
     }
@@ -306,7 +306,7 @@ public class Registers {
      * @param reg Register to be read from
      * @return Value pointed to by {@code reg}.
      */
-    private byte readRegisterPtr(RegisterIndex reg) {
+    private byte readRegisterPtr(Register reg) {
         checkRegisterShort(reg);
         return gb.readMemoryAddress(readRegisterShort(reg));
     }
@@ -317,7 +317,7 @@ public class Registers {
      * @param reg   Register to be read from
      * @param value Value to write at address pointed to by {@code reg}.
      */
-    private void writeRegisterPtr(RegisterIndex reg, byte value) {
+    private void writeRegisterPtr(Register reg, byte value) {
         checkRegisterShort(reg);
         gb.writeMemoryAddress(readRegisterShort(reg), value);
     }
@@ -330,7 +330,7 @@ public class Registers {
      * @param reg Register to be read from
      * @return The byte value of the given register
      */
-    public byte readRegisterByte(RegisterIndex reg) {
+    public byte readRegisterByte(Register reg) {
         if (isRegisterShort(reg)) {
             return readRegisterPtr(reg);
         }
@@ -346,7 +346,7 @@ public class Registers {
      * @param value Value to be written to the given register
      * @param reg   Register to be written to.
      */
-    public void writeRegisterByte(RegisterIndex reg, byte value) {
+    public void writeRegisterByte(Register reg, byte value) {
         if (isRegisterShort(reg)) {
             writeRegisterPtr(reg, value);
             return;
@@ -362,7 +362,7 @@ public class Registers {
      * @param value Value to be written to the given register
      * @param reg   Register to be written to.
      */
-    public void writeRegisterByte(RegisterIndex reg, int value) {
+    public void writeRegisterByte(Register reg, int value) {
         writeRegisterByte(reg, Bitwise.toByte(value));
     }
 
@@ -372,10 +372,10 @@ public class Registers {
      * @param reg Register to be read from
      * @return The short value of the given register
      */
-    public short readRegisterShort(RegisterIndex reg) {
+    public short readRegisterShort(Register reg) {
         checkRegisterShort(reg);
 
-        if (reg.equals(RegisterIndex.SP)) {
+        if (reg.equals(Register.SP)) {
             return gb.sp().get();
         }
 
@@ -393,10 +393,10 @@ public class Registers {
      * @param value Value to be written to the given register
      * @param reg   Register to be written to.
      */
-    public void writeRegisterShort(RegisterIndex reg, short value) {
+    public void writeRegisterShort(Register reg, short value) {
         checkRegisterShort(reg);
 
-        if (reg.equals(RegisterIndex.SP)) {
+        if (reg.equals(Register.SP)) {
             gb.sp().set(value);
             return;
         }
@@ -421,7 +421,7 @@ public class Registers {
      * @param value Value to be written to the given register
      * @param reg   Register to be written to.
      */
-    public void writeRegisterShort(RegisterIndex reg, int value) {
+    public void writeRegisterShort(Register reg, int value) {
         writeRegisterShort(reg, Bitwise.toShort(value));
     }
 
@@ -430,10 +430,10 @@ public class Registers {
      * register) to {@code $00}.
      */
     public void clearAll() {
-        writeRegisterShort(RegisterIndex.AF, 0x0000);
-        writeRegisterShort(RegisterIndex.BC, 0x0000);
-        writeRegisterShort(RegisterIndex.DE, 0x0000);
-        writeRegisterShort(RegisterIndex.HL, 0x0000);
+        writeRegisterShort(Register.AF, 0x0000);
+        writeRegisterShort(Register.BC, 0x0000);
+        writeRegisterShort(Register.DE, 0x0000);
+        writeRegisterShort(Register.HL, 0x0000);
     }
 
     /**
@@ -441,10 +441,10 @@ public class Registers {
      * 
      * @param reg The register to increment the value of.
      */
-    public void incRegisterByte(RegisterIndex reg) {
+    public void incRegisterByte(Register reg) {
         if (isRegisterShort(reg)) {
-            if (reg.equals(RegisterIndex.HL)) {
-                byte val = readRegisterByte(RegisterIndex.HL);
+            if (reg.equals(Register.HL)) {
+                byte val = readRegisterByte(Register.HL);
                 writeRegisterByte(reg, ++val);
                 return;
             } else {
@@ -461,10 +461,10 @@ public class Registers {
      * 
      * @param reg The register to decrement the value of.
      */
-    public void decRegisterByte(RegisterIndex reg) {
+    public void decRegisterByte(Register reg) {
         if (isRegisterShort(reg)) {
-            if (reg.equals(RegisterIndex.HL)) {
-                byte val = readRegisterByte(RegisterIndex.HL);
+            if (reg.equals(Register.HL)) {
+                byte val = readRegisterByte(Register.HL);
                 writeRegisterByte(reg, --val);
                 return;
             } else {
@@ -481,10 +481,10 @@ public class Registers {
      * 
      * @param reg The register to increment the value of.
      */
-    public void incRegisterShort(RegisterIndex reg) {
+    public void incRegisterShort(Register reg) {
         checkRegisterShort(reg);
 
-        if (reg.equals(RegisterIndex.SP)) {
+        if (reg.equals(Register.SP)) {
             gb.sp().inc();
             return;
         }
@@ -503,10 +503,10 @@ public class Registers {
      * 
      * @param reg The register to decrement the value of.
      */
-    public void decRegisterShort(RegisterIndex reg) {
+    public void decRegisterShort(Register reg) {
         checkRegisterShort(reg);
 
-        if (reg.equals(RegisterIndex.SP)) {
+        if (reg.equals(Register.SP)) {
             gb.sp().dec();
             return;
         }
@@ -531,7 +531,7 @@ public class Registers {
      * @return The index of the most significant byte of {@code reg} in
      *         {@code registerValues}
      */
-    private int getShortRegisterIndex(RegisterIndex reg) {
+    private int getShortRegisterIndex(Register reg) {
         // Get 3 least significant bits of value of RegisterIndex
         // (e.g. BC = 0b1001 -> 0b001) and store as index.
         // Shift index left by 1 (equivalent to (index * 2)) to get byte
@@ -549,14 +549,14 @@ public class Registers {
      * @throws IndexOutOfBoundsException if the register is not the correct format
      *                                   (8/16-bit).
      */
-    private void checkRegister(RegisterIndex reg, boolean shortReg) {
+    private void checkRegister(Register reg, boolean shortReg) {
         if (shortReg) {
-            if (reg.val < RegisterIndex.AF.val || reg.val > RegisterIndex.SP.val) {
+            if (reg.val < Register.AF.val || reg.val > Register.SP.val) {
                 throw new IndexOutOfBoundsException(
                         String.format("Register %s is not a valid short register.", reg.name()));
             }
         } else {
-            if (reg.val < RegisterIndex.A.val || reg.val > RegisterIndex.L.val) {
+            if (reg.val < Register.A.val || reg.val > Register.L.val) {
                 throw new IndexOutOfBoundsException(
                         String.format("Register %s is not a valid byte register.", reg.name()));
             }
@@ -570,7 +570,7 @@ public class Registers {
      * @param reg Register to check.
      * @throws IndexOutOfBoundsException if the register is not an 8-bit register.
      */
-    private int checkRegisterByte(RegisterIndex reg) {
+    private int checkRegisterByte(Register reg) {
         checkRegister(reg, false);
         return 0;
     }
@@ -582,7 +582,7 @@ public class Registers {
      * @param reg Register to check.
      * @throws IndexOutOfBoundsException if the register is not an 16-bit register.
      */
-    private void checkRegisterShort(RegisterIndex reg) {
+    private void checkRegisterShort(Register reg) {
         checkRegister(reg, true);
     }
 
@@ -594,8 +594,8 @@ public class Registers {
      *         {@code A},{@code F},{@code B},{@code C},
      *         {@code D},{@code E},{@code H} or {@code L}. {@code false} otherwise.
      */
-    public static boolean isRegisterByte(RegisterIndex reg) {
-        return reg.val >= RegisterIndex.A.val && reg.val <= RegisterIndex.L.val;
+    public static boolean isRegisterByte(Register reg) {
+        return reg.val >= Register.A.val && reg.val <= Register.L.val;
     }
 
     /**
@@ -607,20 +607,20 @@ public class Registers {
      *         {@code AF},{@code BC},{@code DE} or {@code HL}.
      *         {@code false} otherwise.
      */
-    public static boolean isRegisterShort(RegisterIndex reg) {
-        return reg.val >= RegisterIndex.AF.val && reg.val <= RegisterIndex.SP.val;
+    public static boolean isRegisterShort(Register reg) {
+        return reg.val >= Register.AF.val && reg.val <= Register.SP.val;
     }
 
     public void printRegisters() {
-        System.out.printf("AF: %04x  ", readRegisterShort(RegisterIndex.AF));
+        System.out.printf("AF: %04x  ", readRegisterShort(Register.AF));
         char Z = isFlagSet(Flags.Z) ? 'Z' : '-';
         char N = isFlagSet(Flags.N) ? 'N' : '-';
         char H = isFlagSet(Flags.H) ? 'H' : '-';
         char C = isFlagSet(Flags.C) ? 'C' : '-';
         System.out.printf("Flags: %c%c%c%c\n", Z, N, H, C);
-        System.out.printf("BC: %04x\n", readRegisterShort(RegisterIndex.BC));
-        System.out.printf("DE: %04x\n", readRegisterShort(RegisterIndex.DE));
-        System.out.printf("HL: %04x\n", readRegisterShort(RegisterIndex.HL));
+        System.out.printf("BC: %04x\n", readRegisterShort(Register.BC));
+        System.out.printf("DE: %04x\n", readRegisterShort(Register.DE));
+        System.out.printf("HL: %04x\n", readRegisterShort(Register.HL));
         System.out.printf("SP: %04x\n", gb.sp().get());
         System.out.printf("PC: %04x\n", gb.pc().get());
     }

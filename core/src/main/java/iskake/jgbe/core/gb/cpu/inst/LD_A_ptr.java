@@ -1,7 +1,7 @@
 package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 import iskake.jgbe.core.Bitwise;
 
 /**
@@ -12,12 +12,12 @@ import iskake.jgbe.core.Bitwise;
  * {@code ldh a, [c]}
  */
 public class LD_A_ptr extends Instruction {
-    private final RegisterIndex reg;
+    private final Register reg;
 
     public LD_A_ptr(String name) {
         super(name);
 
-        this.reg = RegisterIndex.A;
+        this.reg = Register.A;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class LD_A_ptr extends Instruction {
             // ldh a, [$n16] (a.k.a. `ld a, [$ff00+n8]`)
             case 0xF0 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh a, [c] (a.k.a. `ld a, [$ff00+c]`)
-            case 0xF2 -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(RegisterIndex.C));
+            case 0xF2 -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(Register.C));
             // ld a, [$n16]
             default -> gb.readNextShort();
         };

@@ -2,7 +2,7 @@ package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 import iskake.jgbe.core.Bitwise;
 
 /**
@@ -20,7 +20,7 @@ public class DAA extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        int value = Byte.toUnsignedInt(gb.reg().readRegisterByte(RegisterIndex.A));
+        int value = Byte.toUnsignedInt(gb.reg().readRegisterByte(Register.A));
         if (!gb.reg().isFlagSet(Flags.N)) {
             // Adjust value for additions
             if (gb.reg().isFlagSet(Flags.H) || (value & 0b1111) > 0x09) {
@@ -43,7 +43,7 @@ public class DAA extends Instruction {
             }
         }
 
-        gb.reg().writeRegisterByte(RegisterIndex.A, value);
+        gb.reg().writeRegisterByte(Register.A, value);
         gb.reg().setFlagConditional(Flags.Z, Bitwise.intAsByte(value) == 0);
         gb.reg().resetFlag(Flags.H);
         gb.reg().setFlagConditional(Flags.C, value > 0x99);

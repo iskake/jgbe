@@ -2,7 +2,7 @@ package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 
 /**
  * Logical AND instruction. Takes A AND the register/value nn ({@code a & nn})
@@ -11,9 +11,9 @@ import iskake.jgbe.core.gb.Registers.RegisterIndex;
  * Implements opcodes: {@code and r8} and {@code and $n8}
  */
 public class AND_nn extends Instruction {
-    private final RegisterIndex reg;
+    private final Register reg;
 
-    public AND_nn(String name, RegisterIndex reg) {
+    public AND_nn(String name, Register reg) {
         super(name);
         this.reg = reg;
     }
@@ -28,9 +28,9 @@ public class AND_nn extends Instruction {
             value = gb.reg().readRegisterByte(reg);
         }
 
-        byte a = gb.reg().readRegisterByte(RegisterIndex.A);
+        byte a = gb.reg().readRegisterByte(Register.A);
 
-        gb.reg().writeRegisterByte(RegisterIndex.A, a & value);
+        gb.reg().writeRegisterByte(Register.A, a & value);
 
         gb.reg().setFlagConditional(Flags.Z, (a & value) == 0);
         gb.reg().resetFlag(Flags.N);

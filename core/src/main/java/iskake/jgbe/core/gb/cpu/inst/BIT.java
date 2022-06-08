@@ -2,7 +2,7 @@ package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 import iskake.jgbe.core.Bitwise;
 
 /**
@@ -39,7 +39,7 @@ public class BIT extends Instruction {
         int opcodeType = (opcode >> 6);
         int bitNum = (opcode >> 3) & 0b111;
         int regNum = opcode & 0b111;
-        RegisterIndex reg = RegisterIndex.tableIndex[regNum];
+        Register reg = Register.tableIndex[regNum];
 
         switch (opcodeType) {
             case BIT_VAL -> {
@@ -87,7 +87,7 @@ public class BIT extends Instruction {
             default -> "invalid";
         };
 
-        RegisterIndex r = RegisterIndex.tableIndex[regNum];
+        Register r = Register.tableIndex[regNum];
         String regName = switch (r) {
             case HL -> "[hl]";
             default -> r.name().toLowerCase();

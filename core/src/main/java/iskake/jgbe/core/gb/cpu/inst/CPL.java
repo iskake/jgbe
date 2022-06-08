@@ -2,7 +2,7 @@ package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 
 /**
  * ComPLement the accumulator ({@code a = ~a})
@@ -18,7 +18,7 @@ public class CPL extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        gb.reg().writeRegisterByte(RegisterIndex.A, ~gb.reg().readRegisterByte(RegisterIndex.A));
+        gb.reg().writeRegisterByte(Register.A, ~gb.reg().readRegisterByte(Register.A));
         gb.reg().setFlag(Flags.N);
         gb.reg().setFlag(Flags.H);
     }

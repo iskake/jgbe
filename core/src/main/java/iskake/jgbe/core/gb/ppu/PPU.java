@@ -1,7 +1,7 @@
 package iskake.jgbe.core.gb.ppu;
 
 import iskake.jgbe.core.gb.HardwareRegisters;
-import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex;
+import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 import iskake.jgbe.core.gb.mem.OAM;
 import iskake.jgbe.core.gb.mem.VRAM;
 import iskake.jgbe.core.Bitwise;
@@ -78,7 +78,7 @@ public class PPU {
      * Adds the scanline specified in the LY register, unless the value is >= 144.
      */
     public void addScanline() {
-        int line = hwreg.readRegisterInt(HardwareRegisterIndex.LY);
+        int line = hwreg.readRegisterInt(HardwareRegister.LY);
 
         if (line < 144) {
             Sprite[] sprites = getSprites();
@@ -86,8 +86,8 @@ public class PPU {
             TileMap BG = getBGTileMap();
             TileMap window = getWindowTileMap();
 
-            int scrollY = hwreg.readRegisterInt(HardwareRegisterIndex.SCY);
-            int scrollX = hwreg.readRegisterInt(HardwareRegisterIndex.SCX);
+            int scrollY = hwreg.readRegisterInt(HardwareRegister.SCY);
+            int scrollX = hwreg.readRegisterInt(HardwareRegister.SCX);
 
             scanlines[line] = createScanline(scrollX, scrollY + line, sprites, tiles, BG, window);
         }
@@ -161,7 +161,7 @@ public class PPU {
      * @return The current background tilemap.
      */
     public TileMap getBGTileMap() {
-        int index = Bitwise.isBitSet(hwreg.readRegisterInt(HardwareRegisterIndex.LCDC), 6) ? 0 : 1;
+        int index = Bitwise.isBitSet(hwreg.readRegisterInt(HardwareRegister.LCDC), 6) ? 0 : 1;
         return vram.getTileMap(index);
     }
 
@@ -171,7 +171,7 @@ public class PPU {
      * @return The current window tilemap.
      */
     public TileMap getWindowTileMap() {
-        int index = Bitwise.isBitSet(hwreg.readRegisterInt(HardwareRegisterIndex.LCDC), 6) ? 1 : 0;
+        int index = Bitwise.isBitSet(hwreg.readRegisterInt(HardwareRegister.LCDC), 6) ? 1 : 0;
         return vram.getTileMap(index);
     }
 }

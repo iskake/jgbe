@@ -3,7 +3,7 @@ package iskake.jgbe.core.gb.cpu.inst;
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 
 /**
  * Increment value in register / address pointed to by register (with [HL]).
@@ -12,9 +12,9 @@ import iskake.jgbe.core.gb.Registers.RegisterIndex;
  * Implements opcodes: {@code inc r8}, {@code inc [hl]} and {@code inc r16}
  */
 public class INC_rr extends Instruction {
-    private final RegisterIndex reg;
+    private final Register reg;
 
-    public INC_rr(String name, RegisterIndex reg) {
+    public INC_rr(String name, Register reg) {
         super(name);
         this.reg = reg;
     }

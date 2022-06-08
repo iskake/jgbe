@@ -3,7 +3,7 @@ package iskake.jgbe.core.gb.cpu.inst;
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 
 /**
  * Addition instruction.
@@ -14,16 +14,16 @@ import iskake.jgbe.core.gb.Registers.RegisterIndex;
  * {@code adc $n8}
  */
 public class ADD_rr_nn extends Instruction {
-    private final RegisterIndex r1;
-    private final RegisterIndex r2;
+    private final Register r1;
+    private final Register r2;
     public final boolean carry;
 
-    public ADD_rr_nn(String name, RegisterIndex r1, RegisterIndex r2) {
+    public ADD_rr_nn(String name, Register r1, Register r2) {
         // ld hl, r16 cannot use carry, so we can set `carry` to false.
         this(name, r1, r2, false);
     }
 
-    public ADD_rr_nn(String name, RegisterIndex r1, RegisterIndex r2, boolean carry) {
+    public ADD_rr_nn(String name, Register r1, Register r2, boolean carry) {
         super(name);
         this.r1 = r1;
         this.r2 = r2;

@@ -8,7 +8,7 @@ import iskake.jgbe.core.gb.InterruptHandler.InterruptType;
 import iskake.jgbe.core.gb.ppu.PPU;
 import iskake.jgbe.core.Bitwise;
 
-import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex.*;
+import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.*;
 
 /**
  * Timing, incrementing and handling of clock cycles.

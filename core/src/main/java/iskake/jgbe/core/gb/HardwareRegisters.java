@@ -3,7 +3,7 @@ package iskake.jgbe.core.gb;
 import iskake.jgbe.core.gb.joypad.IJoypad;
 import iskake.jgbe.core.Bitwise;
 
-import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex.*;
+import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.*;
 
 /**
  * Hardware registers, controls several different parts of the Game Boy
@@ -11,7 +11,7 @@ import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex.*;
  */
 public class HardwareRegisters {
     // TODO: not all hwregisters are implemented
-    public enum HardwareRegisterIndex {
+    public enum HardwareRegister {
         /** Joypad */
         P1   (0xff00, 0b0011_0000),
 
@@ -106,13 +106,13 @@ public class HardwareRegisters {
         public final int val;
         public final int writableBits;
 
-        private HardwareRegisterIndex(int val, int writableBits) {
+        private HardwareRegister(int val, int writableBits) {
             this.val = val;
             this. writableBits = writableBits;
         }
 
-        public static HardwareRegisterIndex getRegisterFromAddress(int address) {
-            for (HardwareRegisterIndex hwr : HardwareRegisterIndex.values()) {
+        public static HardwareRegister getRegisterFromAddress(int address) {
+            for (HardwareRegister hwr : HardwareRegister.values()) {
                 if (hwr.val == address) {
                     return hwr;
                 }
@@ -122,7 +122,7 @@ public class HardwareRegisters {
         }
     }
 
-    private byte[] registerValues = new byte[HardwareRegisterIndex.values().length];
+    private byte[] registerValues = new byte[HardwareRegister.values().length];
     private DMAController dmaControl;
     private IJoypad joypad;
 
@@ -199,7 +199,7 @@ public class HardwareRegisters {
      * @return The value stored in the hardware regsiter. If the register is invalid
      *         ({@code hwreg} is {@code null}), then {@code 0xff} is returned instead.
      */
-    public byte readRegister(HardwareRegisterIndex hwreg) {
+    public byte readRegister(HardwareRegister hwreg) {
         if (hwreg == null) {
             return (byte) 0xff;
         }
@@ -214,7 +214,7 @@ public class HardwareRegisters {
      *         register is invalid ({@code hwreg} is {@code null}), then
      *         {@code 0xff} is returned instead.
      */
-    public int readRegisterInt(HardwareRegisterIndex hwreg) {
+    public int readRegisterInt(HardwareRegister hwreg) {
         return Byte.toUnsignedInt(readRegister(hwreg));
     }
 
@@ -225,7 +225,7 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean writeRegister(HardwareRegisterIndex hwreg, byte value) {
+    public boolean writeRegister(HardwareRegister hwreg, byte value) {
         if (hwreg == null) {
             return false;
         }
@@ -243,7 +243,7 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean writeRegister(HardwareRegisterIndex hwreg, int value) {
+    public boolean writeRegister(HardwareRegister hwreg, int value) {
         return writeRegister(hwreg, Bitwise.toByte(value));
     }
 
@@ -254,7 +254,7 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean writeRegisterInternal(HardwareRegisterIndex hwreg, byte value) {
+    public boolean writeRegisterInternal(HardwareRegister hwreg, byte value) {
         registerValues[hwreg.ordinal()] = value;
         return true;
     }
@@ -266,7 +266,7 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    private boolean writeRegisterInternal(HardwareRegisterIndex hwreg, int value) {
+    private boolean writeRegisterInternal(HardwareRegister hwreg, int value) {
         return writeRegisterInternal(hwreg, Bitwise.toByte(value));
     }
 
@@ -277,7 +277,7 @@ public class HardwareRegisters {
      * @return {@code true} if the specified register needed special writes,
      *         {@code false} otherwise.
      */
-    private boolean handleSpecialWrites(HardwareRegisterIndex hwreg, byte value) {
+    private boolean handleSpecialWrites(HardwareRegister hwreg, byte value) {
         switch (hwreg) {
             case DIV -> writeRegisterInternal(hwreg, (byte)0x00);
             case DMA -> {
@@ -307,7 +307,7 @@ public class HardwareRegisters {
      * @param hwreg The register to increment.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean incRegister(HardwareRegisterIndex hwreg) {
+    public boolean incRegister(HardwareRegister hwreg) {
         if (hwreg == null) {
             return false;
         }
@@ -321,7 +321,7 @@ public class HardwareRegisters {
      * @param bit   The bit to set.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean setBit(HardwareRegisterIndex hwreg, int bit) {
+    public boolean setBit(HardwareRegister hwreg, int bit) {
         if (hwreg == null) {
             return false;
         }
@@ -335,7 +335,7 @@ public class HardwareRegisters {
      * @param bit   The bit to reset.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean resetBit(HardwareRegisterIndex hwreg, int bit) {
+    public boolean resetBit(HardwareRegister hwreg, int bit) {
         if (hwreg == null) {
             return false;
         }
@@ -351,7 +351,7 @@ public class HardwareRegisters {
      * @param boolean Condition to set bit to.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean setBitConditional(HardwareRegisterIndex hwreg, int bit, boolean condition) {
+    public boolean setBitConditional(HardwareRegister hwreg, int bit, boolean condition) {
         if (condition) {
             return setBit(hwreg, bit);
         } else {

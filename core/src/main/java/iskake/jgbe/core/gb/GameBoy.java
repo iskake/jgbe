@@ -1,8 +1,8 @@
 package iskake.jgbe.core.gb;
 
-import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex;
+import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 import iskake.jgbe.core.gb.cpu.CPU;
 import iskake.jgbe.core.gb.joypad.IJoypad;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
@@ -72,14 +72,14 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
         // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
-        reg.writeRegisterByte(RegisterIndex.A, 0x01);
+        reg.writeRegisterByte(Register.A, 0x01);
         reg.setFlag(Flags.Z);
         reg.resetFlag(Flags.N);
         reg.setFlag(Flags.H);
         reg.setFlag(Flags.C);
-        reg.writeRegisterShort(RegisterIndex.BC, (short) 0x0013);
-        reg.writeRegisterShort(RegisterIndex.DE, (short) 0x00d8);
-        reg.writeRegisterShort(RegisterIndex.HL, (short) 0x014d);
+        reg.writeRegisterShort(Register.BC, (short) 0x0013);
+        reg.writeRegisterShort(Register.DE, (short) 0x00d8);
+        reg.writeRegisterShort(Register.HL, (short) 0x014d);
 
         pc.setNoCycle((short) 0x100);
         sp.set((short) 0xfffe);
@@ -296,7 +296,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     @Override
 	public boolean canGetFrame() {
-		return hwreg.readRegisterInt(HardwareRegisterIndex.LY) >= 144;
+		return hwreg.readRegisterInt(HardwareRegister.LY) >= 144;
 	}
 
     @Override

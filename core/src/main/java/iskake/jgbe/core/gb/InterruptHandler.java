@@ -4,8 +4,8 @@ import iskake.jgbe.core.gb.pointer.ProgramCounter;
 import iskake.jgbe.core.gb.pointer.StackPointer;
 import iskake.jgbe.core.Bitwise;
 
-import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex.IE;
-import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex.IF;
+import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IE;
+import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IF;
 
 public class InterruptHandler {
 

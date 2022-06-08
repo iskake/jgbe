@@ -2,7 +2,7 @@ package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 
 /**
  * Comparison instruction. Compares the A register with the register/value
@@ -12,9 +12,9 @@ import iskake.jgbe.core.gb.Registers.RegisterIndex;
  * Implements opcodes: {@code cp r8} and {@code cp $n8}
  */
 public class CP_nn extends Instruction {
-    public final RegisterIndex reg;
+    public final Register reg;
 
-    public CP_nn(String name, RegisterIndex reg) {
+    public CP_nn(String name, Register reg) {
         super(name);
         this.reg = reg;
     }
@@ -29,7 +29,7 @@ public class CP_nn extends Instruction {
             value = gb.reg().readRegisterByte(reg);
         }
 
-        byte a = gb.reg().readRegisterByte(RegisterIndex.A);
+        byte a = gb.reg().readRegisterByte(Register.A);
 
         gb.reg().setFlagConditional(Flags.Z, a - value == 0);
         gb.reg().setFlag(Flags.N);

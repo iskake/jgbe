@@ -1,7 +1,7 @@
 package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 
 /**
  * Jump to address (set PC), with optional condition.
@@ -24,7 +24,7 @@ public class JP_cc_nn extends Instruction {
         short address;
 
         if (opcode == 0xe9) {
-            address = gb.reg().readRegisterShort(RegisterIndex.HL);
+            address = gb.reg().readRegisterShort(Register.HL);
         } else {
             address = gb.readNextShort();
         }

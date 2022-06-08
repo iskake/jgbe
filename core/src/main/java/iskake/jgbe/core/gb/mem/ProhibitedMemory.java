@@ -1,7 +1,7 @@
 package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.gb.HardwareRegisters;
-import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegisterIndex;
+import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 
 /**
  * 'Not usable' memory region. Writing does nothing, and reads have weird
@@ -20,7 +20,7 @@ public class ProhibitedMemory implements WritableMemory, ReadableMemory {
     @Override
     public byte readByte(int address) {
         System.out.printf("Reading from unusable memory address: $%04x\n");
-        return switch (hwreg.readRegister(HardwareRegisterIndex.STAT) & 0b11) {
+        return switch (hwreg.readRegister(HardwareRegister.STAT) & 0b11) {
             case 0, 1 -> (byte) 0;
             default -> (byte) 0xff;
         };

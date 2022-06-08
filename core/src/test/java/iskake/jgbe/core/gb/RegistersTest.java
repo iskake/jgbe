@@ -4,34 +4,34 @@ import iskake.jgbe.core.gb.GameBoy;
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers;
 import iskake.jgbe.core.gb.Registers.Flags;
-import iskake.jgbe.core.gb.Registers.RegisterIndex;
+import iskake.jgbe.core.gb.Registers.Register;
 import org.junit.jupiter.api.Test;
 
-import static iskake.jgbe.core.gb.Registers.RegisterIndex.*;
+import static iskake.jgbe.core.gb.Registers.Register.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Testing of registers
  */
 public class RegistersTest {
-    final RegisterIndex[] byteRegisters = { A, F, B, C, D, E, H, L };
-    final RegisterIndex[] shortRegisters = { AF, BC, DE, HL, SP };
+    final Register[] byteRegisters = { A, F, B, C, D, E, H, L };
+    final Register[] shortRegisters = { AF, BC, DE, HL, SP };
     IGameBoy gb = new GameBoy(null);
     Registers reg = new Registers(gb);
 
     @Test
     void byteRegisterTest() {
         reg.clearAll();
-        for (RegisterIndex register : byteRegisters) {
+        for (Register register : byteRegisters) {
             // Check clearAll
             assertEquals(0, reg.readRegisterByte(register));
         }
 
-        for (RegisterIndex register : byteRegisters) {
+        for (Register register : byteRegisters) {
             assertTrue(Registers.isRegisterByte(register));
         }
 
-        for (RegisterIndex register : shortRegisters) {
+        for (Register register : shortRegisters) {
             assertFalse(Registers.isRegisterByte(register));
         }
 
@@ -95,16 +95,16 @@ public class RegistersTest {
     @Test
     void shortRegisterTest() {
         reg.clearAll();
-        for (RegisterIndex register : shortRegisters) {
+        for (Register register : shortRegisters) {
             // Check clearAll
             assertEquals(0, reg.readRegisterByte(register));
         }
 
-        for (RegisterIndex register : byteRegisters) {
+        for (Register register : byteRegisters) {
             assertFalse(Registers.isRegisterShort(register));
         }
 
-        for (RegisterIndex register : shortRegisters) {
+        for (Register register : shortRegisters) {
             assertTrue(Registers.isRegisterShort(register));
         }
 
