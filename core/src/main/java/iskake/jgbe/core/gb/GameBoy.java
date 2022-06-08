@@ -112,40 +112,56 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         running = true;
     }
 
+    /**
+     * Hard reset the Game Boy, starts initialization over again.
+     * 
+     * @param rom
+     */
     public void restart(CartridgeROM rom) {
         init(rom);
     }
 
+    /**
+     * Get the currently loaded ROM file, unless one is loaded.
+     * 
+     * @return The currently loaded ROM (or {@code null}, if none is loaded)
+     */
     public CartridgeROM getROM() {
         return rom;
     }
 
+    @Override
     public byte readNextByte() {
         timing.incCycles();
         return memoryMap.readByte(pc().inc());
     }
 
+    @Override
     public short readNextShort() {
         byte lo = readNextByte();
         byte hi = readNextByte();
         return Bitwise.toShort(hi, lo);
     }
 
+    @Override
     public void writeMemoryAddress(short address, byte value) {
         timing.incCycles();
         memoryMap.writeByte(address, value);
     }
 
+    @Override
     public void writeMemoryNoCycle(short address, byte value) {
         memoryMap.writeByte(address, value);
     }
 
-    public byte readMemoryNoCycle(short address) {
+    @Override
+    public byte readMemoryAddress(short address) {
+        timing.incCycles();
         return memoryMap.readByte(address);
     }
 
-    public byte readMemoryAddress(short address) {
-        timing.incCycles();
+    @Override
+    public byte readMemoryNoCycle(short address) {
         return memoryMap.readByte(address);
     }
 
@@ -215,13 +231,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
                 dbg.step();
         }
     }
-    /**
-     * Halt ('stop') all operations of the Game Boy until the system is reset or any
-     * input is pressed.
-     * <p>
-     * Note that the stop instruction is actually 2 bytes long, with the second byte
-     * being ignored.
-     */
+
     @Override
     public void stop() {
         // TODO
@@ -229,9 +239,6 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     }
 
-    /**
-     * Halt CPU instruction execution
-     */
     @Override
     public void halt() {
         // TODO
@@ -247,7 +254,8 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         interrupts.enable(wait);
     }
 
-    // Temporary: print the current frame (each dot as a byte).
+    // Temporary: save the current frame as a file
+    // (each dot as a number: {00,01,02,03})
     public void printFrame() {
         byte[][] scanlines = ppu.getFrame();
         try (FileWriter writer = new FileWriter("image")) {
@@ -258,7 +266,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
             }
             System.out.println("Saved screenshot to file.");
         } catch (IOException e) {
-            System.err.println("Could not save screenshot to file.");;
+            System.err.println("Could not save screenshot to file.");
         }
     }
 
@@ -266,27 +274,28 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     public byte[] getFrame() {
         byte[][] in = ppu.getFrame();
         byte[] out = new byte[in.length * in[0].length];
-        for(int i = 0; i < in.length; i ++) {
-            for(int j = 0; j < in[0].length; j ++) {
+        for (int i = 0; i < in.length; i++) {
+            for (int j = 0; j < in[0].length; j++) {
                 out[(i * in.length) + j] = in[i][j];
             }
         }
         return out;
     }
 
+    // ? TODO: This should probably be handled by the gui instead...
     private final int[] COLORS_MAP = {
-        0xffffff,
-        0xaaaaaa,
-        0x555555,
-        0x000000,
+            0xffffff,
+            0xaaaaaa,
+            0x555555,
+            0x000000,
     };
 
     @Override
     public int[] getFrameMapped() {
         byte[][] in = ppu.getFrame();
         int[] out = new int[in.length * in[0].length];
-        for(int i = 0; i < in.length; i ++) {
-            for(int j = 0; j < in[0].length; j ++) {
+        for (int i = 0; i < in.length; i++) {
+            for (int j = 0; j < in[0].length; j++) {
                 // TODO: needs to change based on values in rBGP, rOBP0 and rOBP1
                 out[(i * in.length) + j] = COLORS_MAP[in[i][j]];
             }
@@ -295,9 +304,9 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     }
 
     @Override
-	public boolean canGetFrame() {
-		return hwreg.readRegisterInt(HardwareRegister.LY) >= 144;
-	}
+    public boolean canGetFrame() {
+        return hwreg.readRegisterInt(HardwareRegister.LY) >= 144;
+    }
 
     @Override
     public ProgramCounter pc() {
