@@ -20,11 +20,11 @@ all: $(GB)
 %.gb: %.o
 	$(LD) $< -o $@
 	$(FIX) $(FIXFLAGS) $@
-	mkdir -p bin/
-	mv $@ bin/
+	mkdir -p ../bin/
+	mv $@ ../bin/
 
 %.o: %.asm
 	$(AS) $< $(ASFLAGS) -o $@
 
 clean:
-	rm -rf *.gb *.o bin/
+	rm -rf *.gb *.o ../bin/
