@@ -1,6 +1,5 @@
 package iskake.jgbe.core.gb.cpu.inst;
 
-import iskake.jgbe.core.gb.GameBoy;
 import iskake.jgbe.core.gb.IGameBoy;
 
 /**
@@ -18,12 +17,10 @@ public class Interrupt extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        if (gb instanceof GameBoy gameboy) { // TODO!!!
-            switch (opcode) {
-                case 0xf3 -> gameboy.disableInterrupts();
-                case 0xfb -> gameboy.enableInterrupts(true);
-                default -> throw new IllegalInstructionException();
-            }
+        switch (opcode) {
+            case 0xf3 -> gb.disableInterrupts();
+            case 0xfb -> gb.enableInterrupts(true);
+            default -> throw new IllegalInstructionException();
         }
     }
 

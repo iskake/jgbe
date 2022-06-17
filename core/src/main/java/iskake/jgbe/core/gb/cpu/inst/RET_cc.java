@@ -1,6 +1,5 @@
 package iskake.jgbe.core.gb.cpu.inst;
 
-import iskake.jgbe.core.gb.GameBoy;
 import iskake.jgbe.core.gb.IGameBoy;
 
 /**
@@ -20,13 +19,11 @@ public class RET_cc extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         if (Conditions.conditionSatisfied(gb.reg(), condition)) {
-            if (gb instanceof GameBoy gameboy) { // TODO!!!!
-                if (opcode == 0xd9) {
-                    // reti
-                    gameboy.enableInterrupts(false);
-                }
+            if (opcode == 0xd9) {
+                // reti
+                gb.enableInterrupts(false);
             }
-            // Note: reti does not do anything different in JGBE.
+
             gb.pc().set(gb.sp().pop());
         }
     }
