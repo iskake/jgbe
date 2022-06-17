@@ -1,7 +1,7 @@
 package iskake.jgbe.core.gb.cpu;
 
 import iskake.jgbe.core.gb.IGameBoy;
-import iskake.jgbe.core.gb.InterruptHandler;
+import iskake.jgbe.core.gb.interrupt.InterruptHandler;
 
 public class CPU {
     private final IGameBoy gb;

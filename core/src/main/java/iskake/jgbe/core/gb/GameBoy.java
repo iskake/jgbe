@@ -4,6 +4,7 @@ import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 import iskake.jgbe.core.gb.Registers.Flags;
 import iskake.jgbe.core.gb.Registers.Register;
 import iskake.jgbe.core.gb.cpu.CPU;
+import iskake.jgbe.core.gb.interrupt.InterruptHandler;
 import iskake.jgbe.core.gb.joypad.IJoypad;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
 import iskake.jgbe.core.gb.mem.MemoryMap;

@@ -1,5 +1,7 @@
-package iskake.jgbe.core.gb;
+package iskake.jgbe.core.gb.interrupt;
 
+import iskake.jgbe.core.gb.GameBoy;
+import iskake.jgbe.core.gb.HardwareRegisters;
 import iskake.jgbe.core.gb.pointer.ProgramCounter;
 import iskake.jgbe.core.gb.pointer.StackPointer;
 import iskake.jgbe.core.Bitwise;
@@ -10,11 +12,17 @@ import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IF;
 public class InterruptHandler {
 
     public enum InterruptType {
-        VBLANK,
-        STAT,
-        TIMER,
-        SERIAL,
-        JOYPAD,
+        VBLANK(0x40),
+        STAT(0x48),
+        TIMER(0x50),
+        SERIAL(0x58),
+        JOYPAD(0x60);
+
+        int address;
+
+        private InterruptType(int address) {
+            this.address = address;
+        }
     }
 
     private boolean ime;
@@ -25,7 +33,7 @@ public class InterruptHandler {
     private final GameBoy gb;
 
     /** Currently waiting interrupts */
-    private boolean[] waiting = { false, false, false, false, false };
+    private final boolean[] waiting = { false, false, false, false, false };
 
     public InterruptHandler(GameBoy gb, HardwareRegisters hwreg) {
         this.gb = gb;
@@ -94,30 +102,23 @@ public class InterruptHandler {
      * @return {@code true} if the call was successful, {@code false} otherwise.
      */
     public boolean callWaiting() {
-        if (waiting[0])
-            if (VBlankInterrupt())
-                return true;
-        if (waiting[1])
-            if (STATInterrupt())
-                return true;
-        if (waiting[2])
-            if (timerInterrupt())
-                return true;
-        if (waiting[3])
-            if (serialInterrupt())
-                return true;
-        if (waiting[4])
-            if (joypadInterrupt())
-                return true;
+        for (int i = 0; i < waiting.length; i++) {
+            if (waiting[i]) {
+                InterruptType interruptToCall = InterruptType.values()[i];
+                if (callInterrupt(interruptToCall)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
     /**
      * Call the interrupt at the address.
      * 
-     * @param address The address to call.
+     * @param it The interrupt to call.
      */
-    private boolean callInterrupt(int address, InterruptType it) {
+    private boolean callInterrupt(InterruptType it) {
         int bit = it.ordinal();
 
         if (!enabled()) {
@@ -131,57 +132,13 @@ public class InterruptHandler {
         gb.timing.incCycles();
         gb.timing.incCycles();
         sp.push(pc.get());
-        pc.set(Bitwise.toShort(address));
+
+        pc.set(Bitwise.toShort(it.address));
 
         waiting[bit] = false;
         hwreg.resetBit(IF, bit);
 
         return true;
-    }
-
-    /**
-     * Handle the VBlank interrupt.
-     * <p>
-     * Disables interrupts and calls the address $40.
-     */
-    public boolean VBlankInterrupt() {
-        return callInterrupt(0x40, InterruptType.VBLANK);
-    }
-
-    /**
-     * Handle the STAT interrupt.
-     * <p>
-     * Disables interrupts and calls the address $48.
-     */
-    public boolean STATInterrupt() {
-        return callInterrupt(0x48, InterruptType.STAT);
-    }
-
-    /**
-     * Handle the Timer interrupt.
-     * <p>
-     * Disables interrupts and calls the address $50.
-     */
-    public boolean timerInterrupt() {
-        return callInterrupt(0x50, InterruptType.TIMER);
-    }
-
-    /**
-     * Handle the Serial interrupt.
-     * <p>
-     * Disables interrupts and calls the address $58.
-     */
-    public boolean serialInterrupt() {
-        return callInterrupt(0x58, InterruptType.SERIAL);
-    }
-
-    /**
-     * Handle the Joypad interrupt.
-     * <p>
-     * Disables interrupts and calls the address $60.
-     */
-    public boolean joypadInterrupt() {
-        return callInterrupt(0x60, InterruptType.JOYPAD);
     }
 
 }
