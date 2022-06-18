@@ -3,7 +3,9 @@ package iskake.jgbe.core;
 /**
  * Class containing methods for bitwise/number operations.
  */
-public class Bitwise {
+public final class Bitwise {
+    private Bitwise() {}
+
     /**
      * Get the High byte from a short.
      * 

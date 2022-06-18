@@ -6,7 +6,9 @@ import iskake.jgbe.core.gb.cpu.CPU;
 import iskake.jgbe.core.Bitwise;
 
 //? TODO: make class non-static and map these values to hardware registers?
-public class Timers {
+public final class Timers {
+    private Timers() {}
+
     /** The DIV register increment rate. */
     public static final int DIV_CLOCK = 0x4000;
 
