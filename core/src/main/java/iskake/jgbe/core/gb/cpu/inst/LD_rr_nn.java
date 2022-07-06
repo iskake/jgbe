@@ -11,6 +11,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * Implements opcodes: {@code ld r8, $n8}, {@code ld r16, $n16} and {@code ld [hl], $n8}
  */
 public class LD_rr_nn extends Instruction {
+    private static final int OP_LD_$HL_N8 = 0x36;
+
     private final Register reg;
 
     public LD_rr_nn(String name, Register reg) {
@@ -21,7 +23,7 @@ public class LD_rr_nn extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         // 0x36 -> ld [hl], $n8
-        if (Registers.isRegisterByte(reg) || opcode == 0x36) {
+        if (Registers.isRegisterByte(reg) || opcode == OP_LD_$HL_N8) {
             gb.reg().writeRegisterByte(reg, gb.readNextByte());
         } else if (Registers.isRegisterShort(reg)) {
             gb.reg().writeRegisterShort(reg, gb.readNextShort());

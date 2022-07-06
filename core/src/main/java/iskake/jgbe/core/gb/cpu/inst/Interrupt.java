@@ -11,6 +11,9 @@ import iskake.jgbe.core.gb.IGameBoy;
  */
 public class Interrupt extends Instruction {
 
+    private static final int OP_EI = 0xf3;
+    private static final int OP_DI = 0xfb;
+
     public Interrupt(String name) {
         super(name);
     }
@@ -18,8 +21,8 @@ public class Interrupt extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         switch (opcode) {
-            case 0xf3 -> gb.disableInterrupts();
-            case 0xfb -> gb.enableInterrupts(true);
+            case OP_EI -> gb.disableInterrupts();
+            case OP_DI -> gb.enableInterrupts(true);
             default -> throw new IllegalInstructionException();
         }
     }

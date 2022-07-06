@@ -14,6 +14,9 @@ import iskake.jgbe.core.gb.Registers.Register;
  * {@code adc $n8}
  */
 public class ADD_rr_nn extends Instruction {
+    private static final int OP_ADD_A_$HL = 0x86;
+    private static final int OP_ADD_SP_E8 = 0xe8;
+
     private final Register r1;
     private final Register r2;
     public final boolean carry;
@@ -32,7 +35,7 @@ public class ADD_rr_nn extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        if (Registers.isRegisterByte(r1) || opcode == 0x86) {
+        if (Registers.isRegisterByte(r1) || opcode == OP_ADD_A_$HL) {
             byte value;
 
             if (r2 == null) {
@@ -56,7 +59,7 @@ public class ADD_rr_nn extends Instruction {
                     + (Byte.toUnsignedInt(value) & 0b1111) + c) > 0b1111));
 
             gb.reg().setFlagConditional(Flags.C, (Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) > 0xff));
-        } else if (opcode == 0xe8) {
+        } else if (opcode == OP_ADD_SP_E8) {
             // add sp, $e8
             byte value = gb.readNextByte();
             short regVal = gb.sp().get();

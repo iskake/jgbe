@@ -12,13 +12,15 @@ import iskake.jgbe.core.gb.Registers.Register;
  */
 public class LD_SP extends Instruction {
 
+    private static final int OP_LD_HL_SP_E8 = 0xf8;
+
     public LD_SP(String name) {
         super(name);
     }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        if (opcode == 0xf8) {
+        if (opcode == OP_LD_HL_SP_E8) {
             // ld hl, sp+$e8
             short sp = gb.sp().get();
             byte value = gb.readNextByte();

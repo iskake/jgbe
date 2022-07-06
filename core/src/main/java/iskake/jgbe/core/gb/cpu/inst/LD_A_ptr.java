@@ -12,6 +12,9 @@ import iskake.jgbe.core.Bitwise;
  * {@code ldh a, [c]}
  */
 public class LD_A_ptr extends Instruction {
+    private static final int OP_LDH_A_$N16 = 0xF0;
+    private static final int OP_LDH_A_$C = 0xF2;
+
     private final Register reg;
 
     public LD_A_ptr(String name) {
@@ -29,9 +32,9 @@ public class LD_A_ptr extends Instruction {
         // same class for all three opcodes.
         short address = switch (opcode) {
             // ldh a, [$n16] (a.k.a. `ld a, [$ff00+n8]`)
-            case 0xF0 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
+            case OP_LDH_A_$N16 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh a, [c] (a.k.a. `ld a, [$ff00+c]`)
-            case 0xF2 -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(Register.C));
+            case OP_LDH_A_$C -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(Register.C));
             // ld a, [$n16]
             default -> gb.readNextShort();
         };

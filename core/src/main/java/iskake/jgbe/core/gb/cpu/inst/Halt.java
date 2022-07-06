@@ -10,6 +10,9 @@ import iskake.jgbe.core.gb.IGameBoy;
  */
 public class Halt extends Instruction {
 
+    private static final int OP_STOP = 0x10;
+    private static final int OP_HALT = 0x76;
+
     public Halt(String name) {
         super(name);
     }
@@ -17,8 +20,8 @@ public class Halt extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         switch (opcode) {
-            case 0x10 -> gb.stop();
-            case 0x76 -> gb.halt();
+            case OP_STOP -> gb.stop();
+            case OP_HALT -> gb.halt();
         }
     }
 }

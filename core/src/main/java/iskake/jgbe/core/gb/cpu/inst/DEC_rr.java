@@ -12,6 +12,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * Implements opcodes: {@code dec r8}, {@code dec [hl]} and {@code dec r16}
  */
 public class DEC_rr extends Instruction {
+    private static final int OP_DEC_$HL = 0x35;
+
     private final Register reg;
 
     public DEC_rr(String name, Register reg) {
@@ -22,7 +24,7 @@ public class DEC_rr extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         // 0x35 -> dec [hl]
-        if (Registers.isRegisterByte(reg) || opcode == 0x35) {
+        if (Registers.isRegisterByte(reg) || opcode == OP_DEC_$HL) {
             gb.reg().decRegisterByte(reg);
 
             byte value = gb.reg().readRegisterByte(reg);
