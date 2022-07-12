@@ -285,6 +285,11 @@ public class HardwareRegisters {
                 dmaControl.startDMATransfer(value);
             }
             case P1 -> {
+                // TODO: create a "no joypad" class?
+                if (joypad == null) {
+                    break;
+                }
+
                 // ? If both are 0 ?
                 if (!Bitwise.isBitSet(value, 4)) {
                     int joyVal = joypad.getDirectionsAsInt();
