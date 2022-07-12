@@ -6,7 +6,6 @@ import iskake.jgbe.core.gb.mem.OAM;
 import iskake.jgbe.core.gb.mem.VRAM;
 import iskake.jgbe.core.Bitwise;
 
-import java.awt.*;
 import java.util.Arrays;
 
 /**
@@ -14,14 +13,13 @@ import java.util.Arrays;
  */
 public class PPU {
     /** Color based on index. */
-    public static final Color[] colors = { Color.BLACK, Color.DARK_GRAY, Color.LIGHT_GRAY, Color.WHITE };
     public static final int LCD_SIZE_X = 160;
     public static final int LCD_SIZE_Y = 144;
     private final OAM oam;
     private final VRAM vram;
     private final HardwareRegisters hwreg;
     private final PPUController ppuControl;
-
+    private final byte[] scanlineBuf;
     private final byte[][] scanlines;
 
     public PPU(VRAM vram, OAM oam, HardwareRegisters hwreg, PPUController ppuControl) {
@@ -30,7 +28,8 @@ public class PPU {
         this.hwreg = hwreg;
         this.ppuControl = ppuControl;
 
-        scanlines = new byte[LCD_SIZE_Y][LCD_SIZE_X];
+        scanlineBuf = new byte[LCD_SIZE_X];
+        scanlines = new byte[LCD_SIZE_Y][LCD_SIZE_X]; // TODO: replace with 1d byte array.
     }
 
     /**
@@ -43,7 +42,7 @@ public class PPU {
      * @param tiles   The tiles to use in the tilemap/sprites.
      * @param BG      The BG tilemap to draw.
      * @param window  The window tielmap to draw.
-     * @return The newly created scanline.
+     * @return The newly created scanline (also stored in the {@code scanlineBuf}.)
      */
     private byte[] createScanline(int x, int y, Sprite[] sprites, Tile[] tiles, TileMap BG, TileMap window) {
         boolean drawWindow = false;
@@ -62,15 +61,14 @@ public class PPU {
         if (drawWindow && !ppuControl.isWindowEnabled()) {
             drawWindow = false;
         }
-        byte[] scanline = new byte[LCD_SIZE_X];
 
         // TODO: handle window/sprites/tilemap enable.
         for (int i = 0; i < LCD_SIZE_X; i++) {
             int dx = (x + i) % 256;
             Tile[] tilemapTiles = getTilesForTilemap(tiles);
-            scanline[i] = BG.getTileAtCoordinate(dx, y, tilemapTiles).getDot(dx % 8, y % 8);
+            scanlineBuf[i] = BG.getTileAtCoordinate(dx, y, tilemapTiles).getDot(dx % 8, y % 8);
         }
-        return scanline;
+        return scanlineBuf;
     }
 
     /**
@@ -80,7 +78,7 @@ public class PPU {
     public void addScanline() {
         int line = hwreg.readRegisterInt(HardwareRegister.LY);
 
-        if (line < 144) {
+        if (line < LCD_SIZE_Y) {
             Sprite[] sprites = getSprites();
             Tile[] tiles = getTiles();
             TileMap BG = getBGTileMap();
@@ -89,7 +87,11 @@ public class PPU {
             int scrollY = hwreg.readRegisterInt(HardwareRegister.SCY);
             int scrollX = hwreg.readRegisterInt(HardwareRegister.SCX);
 
-            scanlines[line] = createScanline(scrollX, scrollY + line, sprites, tiles, BG, window);
+            // Update buffer
+            createScanline(scrollX, scrollY + line, sprites, tiles, BG, window);
+            for (int i = 0; i < LCD_SIZE_X; i++) {
+                scanlines[line][i] = scanlineBuf[i];
+            }
         }
     }
 

@@ -12,6 +12,10 @@ import iskake.jgbe.core.Bitwise;
  * {@code ldh [c], a} and {@code ld [$n16], sp})
  */
 public class LD_ptr_rr extends Instruction {
+    private static final int OP_LDH_$N16_A = 0xE0;
+    private static final int OP_LDH_$C_SP = 0xE2;
+    private static final int OP_LD_$N16_SP = 0x08;
+
     private final Register reg;
 
     public LD_ptr_rr(String name) {
@@ -27,14 +31,14 @@ public class LD_ptr_rr extends Instruction {
         // same class for all three opcodes.
         short address = switch (opcode) {
             // ldh [$n16], a (a.k.a. `ld [$ff00+n8], a`)
-            case 0xE0 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
+            case OP_LDH_$N16_A -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh [c], a (a.k.a. `ld [$ff00+c], a`)
-            case 0xE2 -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(Register.C));
+            case OP_LDH_$C_SP -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(Register.C));
             // ld [$n16], a and ld [$n16], sp
             default -> gb.readNextShort();
         };
 
-        if (opcode == 0x08) {
+        if (opcode == OP_LD_$N16_SP) {
             // ld [$n16], sp
             short sp = gb.sp().get();
             gb.writeMemoryAddress(address, Bitwise.getLowByte(sp));

@@ -12,6 +12,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * Implements opcodes: {@code inc r8}, {@code inc [hl]} and {@code inc r16}
  */
 public class INC_rr extends Instruction {
+    private static final int OP_INC_$HL = 0x34;
+
     private final Register reg;
 
     public INC_rr(String name, Register reg) {
@@ -22,7 +24,7 @@ public class INC_rr extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         // 0x34 -> inc [hl]
-        if (Registers.isRegisterByte(reg) || opcode == 0x34) {
+        if (Registers.isRegisterByte(reg) || opcode == OP_INC_$HL) {
             gb.reg().incRegisterByte(reg);
 
             byte value = gb.reg().readRegisterByte(reg);

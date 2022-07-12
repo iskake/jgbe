@@ -19,6 +19,7 @@ import iskake.jgbe.core.Bitwise;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Represents a Game Boy (model 'DMG')
@@ -40,9 +41,11 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
+    private boolean vblankJustCalled;
 
     public GameBoy(IJoypad joypad) {
-        debuggerEnabled = true;
+        debuggerEnabled = false;
+        vblankJustCalled = false;
 
         DMAController dmaControl = new DMAController(this);
         reg = new Registers(this);
@@ -233,6 +236,21 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         }
     }
 
+    public void setVBlankJustCalled() {
+        vblankJustCalled = true;
+    }
+
+    public void runUntilVBlank() {
+        while (running && !vblankJustCalled) {
+            if (!debuggerEnabled)
+                cpu.step();
+            else
+                dbg.step();
+        }
+
+        vblankJustCalled = false;
+    }
+
     @Override
     public void stop() {
         // TODO
@@ -271,35 +289,39 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         }
     }
 
+    // TODO: replace arraylist with screen buffer
     @Override
     public byte[] getFrame() {
         byte[][] in = ppu.getFrame();
-        byte[] out = new byte[in.length * in[0].length];
+        ArrayList<Byte> list = new ArrayList<>(in.length * in[0].length);
         for (int i = 0; i < in.length; i++) {
             for (int j = 0; j < in[0].length; j++) {
-                out[(i * in.length) + j] = in[i][j];
+                list.add(/* out[(i * in.length) + j] = */ in[i][j]);
             }
+        }
+
+        byte[] out = new byte[in.length * in[0].length];
+        for (int i = 0; i < list.size(); i++) {
+            out[i] = list.get(i);
         }
         return out;
     }
 
     // ? TODO: This should probably be handled by the gui instead...
-    private final int[] COLORS_MAP = {
-            0xffffff,
-            0xaaaaaa,
-            0x555555,
-            0x000000,
+    private final byte[] COLORS_MAP = {
+            (byte)0xff,
+            (byte)0xaa,
+            (byte)0x55,
+            (byte)0x00,
     };
 
     @Override
-    public int[] getFrameMapped() {
-        byte[][] in = ppu.getFrame();
-        int[] out = new int[in.length * in[0].length];
-        for (int i = 0; i < in.length; i++) {
-            for (int j = 0; j < in[0].length; j++) {
-                // TODO: needs to change based on values in rBGP, rOBP0 and rOBP1
-                out[(i * in.length) + j] = COLORS_MAP[in[i][j]];
-            }
+    public byte[] getFrameMapped() {
+        byte[] in = getFrame();
+        byte[] out = new byte[in.length * 3];
+        for (int i = 0; i < in.length * 3; i++) {
+            // TODO: needs to change based on values in rBGP, rOBP0 and rOBP1
+            out[i] = COLORS_MAP[in[i / 3]];
         }
         return out;
     }

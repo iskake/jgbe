@@ -9,6 +9,8 @@ import iskake.jgbe.core.gb.IGameBoy;
  * Implements opcodes: {@code ret}, {@code ret cc} and {@code reti}
  */
 public class RET_cc extends Instruction {
+    private static final int OP_RETI = 0xd9;
+
     private final Conditions condition;
 
     public RET_cc(String name, Conditions condition) {
@@ -19,7 +21,7 @@ public class RET_cc extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         if (Conditions.conditionSatisfied(gb.reg(), condition)) {
-            if (opcode == 0xd9) {
+            if (opcode == OP_RETI) {
                 // reti
                 gb.enableInterrupts(false);
             }

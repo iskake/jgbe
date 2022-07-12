@@ -11,6 +11,11 @@ import iskake.jgbe.core.gb.Registers.Register;
  * {@code ld [hld], a}, {@code ld a, [hli]}, {@code ld a, [hld]} and {@code ld sp, hl}
  */
 public final class LD_r8_r8 extends Instruction {
+    private static final int OP_LD_$HLI_A = 0x22;
+    private static final int OP_LD_A_$HLI = 0x2a;
+    private static final int OP_LD_$HLD_A = 0x32;
+    private static final int OP_LD_A_$HLD = 0x3a;
+
     private final Register r1;
     private final Register r2;
 
@@ -26,10 +31,10 @@ public final class LD_r8_r8 extends Instruction {
         gb.reg().writeRegisterByte(r1, gb.reg().readRegisterByte(r2));
 
         // Handle HLI and HLD opcodes
-        if (opcode == 0x22 || opcode == 0x2a) {
+        if (opcode == OP_LD_$HLI_A || opcode == OP_LD_A_$HLI) {
             // HLI
             gb.reg().incRegisterShort(Register.HL);
-        } else if (opcode == 0x32 || opcode == 0x3a) {
+        } else if (opcode == OP_LD_$HLD_A || opcode == OP_LD_A_$HLD) {
             // HLD
             gb.reg().decRegisterShort(Register.HL);
         }

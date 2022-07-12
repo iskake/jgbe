@@ -122,6 +122,7 @@ public class Timing {
             int ly_val = hwreg.readRegisterInt(LY);
             if (ly_val == 0x90) {
                 interrupts.setWaitingToCall(InterruptType.VBLANK);
+                gb.setVBlankJustCalled();
             } else if (ly_val > 0x99) {
                 hwreg.writeRegister(LY, 0);
             }
