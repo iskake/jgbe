@@ -40,9 +40,11 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
+    private boolean vblankJustCalled;
 
     public GameBoy(IJoypad joypad) {
-        debuggerEnabled = true;
+        debuggerEnabled = false;
+        vblankJustCalled = false;
 
         DMAController dmaControl = new DMAController(this);
         reg = new Registers(this);
@@ -231,6 +233,21 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
             else
                 dbg.step();
         }
+    }
+
+    public void setVBlankJustCalled() {
+        vblankJustCalled = true;
+    }
+
+    public void runUntilVBlank() {
+        while (running && !vblankJustCalled) {
+            if (!debuggerEnabled)
+                cpu.step();
+            else
+                dbg.step();
+        }
+
+        vblankJustCalled = false;
     }
 
     @Override
