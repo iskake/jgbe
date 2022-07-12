@@ -17,10 +17,10 @@ import org.lwjgl.glfw.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class JGBEWindow {
-    private GameBoy gb;
-    private OpenGLRenderer renderer;
+    private final GameBoy gb;
+    private final OpenGLRenderer renderer;
+    // private final GameBoyJoypad joypad;
     private long window;
-    // private GameBoyJoypad joypad;
 
     public JGBEWindow() {
         // this.joypad = new GameBoyJoypad();
@@ -41,11 +41,11 @@ public class JGBEWindow {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         int width = 160 * 3;
-        int hidth = 144 * 3;
+        int height = 144 * 3;
 
-        window = glfwCreateWindow(width, hidth, "JGBE", 0, 0);
+        window = glfwCreateWindow(width, height, "JGBE", 0, 0);
         if (window == 0) {
-            throw new RuntimeException("Failed to create GLFW window");
+            throw new RuntimeException("Failed to create GLFW window.");
         }
 
         glfwMakeContextCurrent(window);
@@ -74,9 +74,9 @@ public class JGBEWindow {
     }
 
     /**
-     * Load a new ROM file, by creating a new GameBoy thread.
+     * Load a new ROM file.
      * 
-     * @param pathString the path of the ROM file (as a string).
+     * @param pathString the path to the ROM file.
      */
     private CartridgeROM loadROM(String pathString) {
         System.out.println("Loading rom: " + pathString);

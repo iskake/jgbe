@@ -8,8 +8,8 @@ import org.lwjgl.opengl.GL33;
 
 public class ShaderProgram {
     public int ID;
-    private String vertexShaderSource;
-    private String fragmentShaderSource;
+    private final String vertexShaderSource;
+    private final String fragmentShaderSource;
 
     public ShaderProgram(String vertexShaderSource, String fragmentShaderSource) {
         this.vertexShaderSource = vertexShaderSource;
