@@ -5,6 +5,7 @@ package iskake.jgbe.core.gb.mem;
  * 
  * @see WritableMemory
  */
+@FunctionalInterface
 public interface ReadableMemory {
     /**
      * Read the byte at address {@code address} in memory.

@@ -5,6 +5,7 @@ package iskake.jgbe.core.gb.mem;
  * 
  * @see ReadableMemory
  */
+@FunctionalInterface
 public interface WritableMemory {
     /**
      * Write {@code value} to the address {@code address} memory.
