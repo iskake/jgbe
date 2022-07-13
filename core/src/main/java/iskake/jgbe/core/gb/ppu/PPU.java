@@ -163,7 +163,7 @@ public class PPU {
      * @return The current background tilemap.
      */
     public TileMap getBGTileMap() {
-        int index = Bitwise.isBitSet(hwreg.readAsInt(HardwareRegister.LCDC), 6) ? 0 : 1;
+        int index = Bitwise.isBitSet(hwreg.readAsInt(HardwareRegister.LCDC), 3) ? 1 : 0;
         return vram.getTileMap(index);
     }
 
