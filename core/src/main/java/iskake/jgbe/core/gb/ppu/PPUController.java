@@ -71,16 +71,28 @@ public class PPUController {
     }
 
     /**
-     * Get the VRAM start address for BG and Window tilemap (or, just 'tilemap')
-     * indexes.
+     * Get the VRAM start address for the BG and Window tilemaps.
      * <p>
      * (LCDC Bit 4)
      * 
      * @return The index start address specified in LCDC, the address will be
-     *         either {@code $8000} or {$8800}.
+     *         either {@code $8000} or {@code $8800}.
      */
     public int getBGAndWindowTileArea() {
         return Bitwise.isBitSet(getLCDC(), 4) ? 0x8000 : 0x8800;
+    }
+
+    /**
+     * Get the 'tile block' index for tiles 0-127 in VRAM for the BG and Window
+     * tilemaps.
+     * <p>
+     * (LCDC Bit 4)
+     * 
+     * @return The index of the 'tile block' specified in LCDC, the index will be
+     *         either {0} or {@code 2}.
+     */
+    public int getBGAndWindowTileBlock() {
+        return Bitwise.isBitSet(getLCDC(), 4) ? 0 : 2;
     }
 
     /**
