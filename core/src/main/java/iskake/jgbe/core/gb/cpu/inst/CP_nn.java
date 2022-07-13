@@ -26,10 +26,10 @@ public class CP_nn extends Instruction {
         if (reg == null) {
             value = gb.readNextByte();
         } else {
-            value = gb.reg().readRegisterByte(reg);
+            value = gb.reg().readByte(reg);
         }
 
-        byte a = gb.reg().readRegisterByte(Register.A);
+        byte a = gb.reg().readByte(Register.A);
 
         gb.reg().setFlagConditional(Flags.Z, a - value == 0);
         gb.reg().setFlag(Flags.N);

@@ -47,7 +47,7 @@ public class DMAController {
         for (int i = 0; i < 0x100; i++) {
             short RAMaddress = Bitwise.toShort(address, (byte)i);
             short OAMaddress = Bitwise.toShort((byte)0xfe, (byte)i);
-            gb.writeMemoryAddress(OAMaddress, gb.readMemoryNoCycle(RAMaddress));
+            gb.writeAddress(OAMaddress, gb.readAddressNoCycle(RAMaddress));
         }
     }
 

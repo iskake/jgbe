@@ -15,16 +15,16 @@ public class HardwareRegisterMap implements ReadableMemory, WritableMemory {
     }
 
     @Override
-    public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
+    public void write(int address, byte value) throws IndexOutOfBoundsException {
         HardwareRegister hwreg = HardwareRegister.getRegisterFromAddress(address);
-        if (!hwregisters.writeRegister(hwreg, value)) {
+        if (!hwregisters.write(hwreg, value)) {
             System.out.printf("Writing to invalid hw register: %04x\n", address);
         }
     }
 
     @Override
-    public byte readByte(int address) throws IndexOutOfBoundsException {
+    public byte read(int address) throws IndexOutOfBoundsException {
         HardwareRegister hwreg = HardwareRegister.getRegisterFromAddress(address);
-        return hwregisters.readRegister(hwreg);
+        return hwregisters.read(hwreg);
     }
 }

@@ -135,61 +135,61 @@ public class HardwareRegisters {
      * Initialize hardware registers. (Based on DMG reset)
      */
     public void init() {
-        writeRegisterInternal(P1,    0xCF);
-        writeRegisterInternal(SB,    0x00);
-        writeRegisterInternal(SC,    0x7E);
-        writeRegisterInternal(DIV,   0xAB);
-        writeRegisterInternal(TIMA,  0x00);
-        writeRegisterInternal(TMA,   0x00);
-        writeRegisterInternal(TAC,   0xF8);
-        writeRegisterInternal(IF,    0xE1);
-        writeRegisterInternal(NR10,  0x80);
-        writeRegisterInternal(NR11,  0xBF);
-        writeRegisterInternal(NR12,  0xF3);
-        writeRegisterInternal(NR13,  0xFF);
-        writeRegisterInternal(NR14,  0xBF);
-        writeRegisterInternal(NR21,  0x3F);
-        writeRegisterInternal(NR22,  0x00);
-        writeRegisterInternal(NR23,  0xFF);
-        writeRegisterInternal(NR24,  0xBF);
-        writeRegisterInternal(NR30,  0x7F);
-        writeRegisterInternal(NR31,  0xFF);
-        writeRegisterInternal(NR32,  0x9F);
-        writeRegisterInternal(NR33,  0xFF);
-        writeRegisterInternal(NR34,  0xBF);
-        writeRegisterInternal(NR41,  0xFF);
-        writeRegisterInternal(NR42,  0x00);
-        writeRegisterInternal(NR43,  0x00);
-        writeRegisterInternal(NR44,  0xBF);
-        writeRegisterInternal(NR50,  0x77);
-        writeRegisterInternal(NR51,  0xF3);
-        writeRegisterInternal(NR52,  0xF1);
-        writeRegisterInternal(LCDC,  0x91);
-        writeRegisterInternal(STAT,  0x85);
-        writeRegisterInternal(SCY,   0x00);
-        writeRegisterInternal(SCX,   0x00);
-        writeRegisterInternal(LY,    0x00);
-        writeRegisterInternal(LYC,   0x00);
-        writeRegisterInternal(DMA,   0xFF);
-        writeRegisterInternal(BGP,   0xFC);
-        writeRegisterInternal(OBP0,  0xFF); // '??'
-        writeRegisterInternal(OBP1,  0xFF); // '??'
-        writeRegisterInternal(WY,    0x00);
-        writeRegisterInternal(WX,    0x00);
-        writeRegisterInternal(KEY1,  0xFF);
-        writeRegisterInternal(VBK,   0xFF);
-        writeRegisterInternal(HDMA1, 0xFF);
-        writeRegisterInternal(HDMA2, 0xFF);
-        writeRegisterInternal(HDMA3, 0xFF);
-        writeRegisterInternal(HDMA4, 0xFF);
-        writeRegisterInternal(HDMA5, 0xFF);
-        writeRegisterInternal(RP,    0xFF);
-        writeRegisterInternal(BCPS,  0xFF);
-        writeRegisterInternal(BCPD,  0xFF);
-        writeRegisterInternal(OCPS,  0xFF);
-        writeRegisterInternal(OCPD,  0xFF);
-        writeRegisterInternal(SVBK,  0xFF);
-        writeRegisterInternal(IE,    0x00);
+        writeInternal(P1,    0xCF);
+        writeInternal(SB,    0x00);
+        writeInternal(SC,    0x7E);
+        writeInternal(DIV,   0xAB);
+        writeInternal(TIMA,  0x00);
+        writeInternal(TMA,   0x00);
+        writeInternal(TAC,   0xF8);
+        writeInternal(IF,    0xE1);
+        writeInternal(NR10,  0x80);
+        writeInternal(NR11,  0xBF);
+        writeInternal(NR12,  0xF3);
+        writeInternal(NR13,  0xFF);
+        writeInternal(NR14,  0xBF);
+        writeInternal(NR21,  0x3F);
+        writeInternal(NR22,  0x00);
+        writeInternal(NR23,  0xFF);
+        writeInternal(NR24,  0xBF);
+        writeInternal(NR30,  0x7F);
+        writeInternal(NR31,  0xFF);
+        writeInternal(NR32,  0x9F);
+        writeInternal(NR33,  0xFF);
+        writeInternal(NR34,  0xBF);
+        writeInternal(NR41,  0xFF);
+        writeInternal(NR42,  0x00);
+        writeInternal(NR43,  0x00);
+        writeInternal(NR44,  0xBF);
+        writeInternal(NR50,  0x77);
+        writeInternal(NR51,  0xF3);
+        writeInternal(NR52,  0xF1);
+        writeInternal(LCDC,  0x91);
+        writeInternal(STAT,  0x85);
+        writeInternal(SCY,   0x00);
+        writeInternal(SCX,   0x00);
+        writeInternal(LY,    0x00);
+        writeInternal(LYC,   0x00);
+        writeInternal(DMA,   0xFF);
+        writeInternal(BGP,   0xFC);
+        writeInternal(OBP0,  0xFF); // '??'
+        writeInternal(OBP1,  0xFF); // '??'
+        writeInternal(WY,    0x00);
+        writeInternal(WX,    0x00);
+        writeInternal(KEY1,  0xFF);
+        writeInternal(VBK,   0xFF);
+        writeInternal(HDMA1, 0xFF);
+        writeInternal(HDMA2, 0xFF);
+        writeInternal(HDMA3, 0xFF);
+        writeInternal(HDMA4, 0xFF);
+        writeInternal(HDMA5, 0xFF);
+        writeInternal(RP,    0xFF);
+        writeInternal(BCPS,  0xFF);
+        writeInternal(BCPD,  0xFF);
+        writeInternal(OCPS,  0xFF);
+        writeInternal(OCPD,  0xFF);
+        writeInternal(SVBK,  0xFF);
+        writeInternal(IE,    0x00);
     }
 
     /**
@@ -199,7 +199,7 @@ public class HardwareRegisters {
      * @return The value stored in the hardware regsiter. If the register is invalid
      *         ({@code hwreg} is {@code null}), then {@code 0xff} is returned instead.
      */
-    public byte readRegister(HardwareRegister hwreg) {
+    public byte read(HardwareRegister hwreg) {
         if (hwreg == null) {
             return (byte) 0xff;
         }
@@ -214,8 +214,8 @@ public class HardwareRegisters {
      *         register is invalid ({@code hwreg} is {@code null}), then
      *         {@code 0xff} is returned instead.
      */
-    public int readRegisterInt(HardwareRegister hwreg) {
-        return Byte.toUnsignedInt(readRegister(hwreg));
+    public int readAsInt(HardwareRegister hwreg) {
+        return Byte.toUnsignedInt(read(hwreg));
     }
 
     /**
@@ -225,7 +225,7 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean writeRegister(HardwareRegister hwreg, byte value) {
+    public boolean write(HardwareRegister hwreg, byte value) {
         if (hwreg == null) {
             return false;
         }
@@ -243,8 +243,8 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean writeRegister(HardwareRegister hwreg, int value) {
-        return writeRegister(hwreg, Bitwise.toByte(value));
+    public boolean write(HardwareRegister hwreg, int value) {
+        return write(hwreg, Bitwise.toByte(value));
     }
 
     /**
@@ -254,7 +254,7 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean writeRegisterInternal(HardwareRegister hwreg, byte value) {
+    public boolean writeInternal(HardwareRegister hwreg, byte value) {
         registerValues[hwreg.ordinal()] = value;
         return true;
     }
@@ -266,8 +266,8 @@ public class HardwareRegisters {
      * @param value The value to write.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    private boolean writeRegisterInternal(HardwareRegister hwreg, int value) {
-        return writeRegisterInternal(hwreg, Bitwise.toByte(value));
+    private boolean writeInternal(HardwareRegister hwreg, int value) {
+        return writeInternal(hwreg, Bitwise.toByte(value));
     }
 
     /**
@@ -279,9 +279,9 @@ public class HardwareRegisters {
      */
     private boolean handleSpecialWrites(HardwareRegister hwreg, byte value) {
         switch (hwreg) {
-            case DIV -> writeRegisterInternal(hwreg, (byte)0x00);
+            case DIV -> writeInternal(hwreg, (byte)0x00);
             case DMA -> {
-                writeRegisterInternal(hwreg, value);
+                writeInternal(hwreg, value);
                 dmaControl.startDMATransfer(value);
             }
             case P1 -> {
@@ -294,11 +294,11 @@ public class HardwareRegisters {
                 if (!Bitwise.isBitSet(value, 4)) {
                     int joyVal = joypad.getDirectionsAsInt();
                     joyVal = Byte.toUnsignedInt(value) | joyVal;
-                    writeRegisterInternal(P1, joyVal);
+                    writeInternal(P1, joyVal);
                 } else if (!Bitwise.isBitSet(value, 5)) {
                     int joyVal = joypad.getButtonsAsInt();
                     joyVal = Byte.toUnsignedInt(value) | joyVal;
-                    writeRegisterInternal(P1, joyVal);
+                    writeInternal(P1, joyVal);
                 }
             }
             default -> { return false; }
@@ -312,11 +312,11 @@ public class HardwareRegisters {
      * @param hwreg The register to increment.
      * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean incRegister(HardwareRegister hwreg) {
+    public boolean inc(HardwareRegister hwreg) {
         if (hwreg == null) {
             return false;
         }
-        return writeRegisterInternal(hwreg, readRegister(hwreg) + 1);
+        return writeInternal(hwreg, read(hwreg) + 1);
     }
 
     /**
@@ -330,7 +330,7 @@ public class HardwareRegisters {
         if (hwreg == null) {
             return false;
         }
-        return writeRegister(hwreg, Bitwise.setBit(readRegister(hwreg), bit));
+        return write(hwreg, Bitwise.setBit(read(hwreg), bit));
     }
 
     /**
@@ -344,7 +344,7 @@ public class HardwareRegisters {
         if (hwreg == null) {
             return false;
         }
-        return writeRegister(hwreg, Bitwise.clearBit(readRegister(hwreg), bit));
+        return write(hwreg, Bitwise.clearBit(read(hwreg), bit));
     }
 
 

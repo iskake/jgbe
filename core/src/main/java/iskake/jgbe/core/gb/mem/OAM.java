@@ -20,19 +20,19 @@ public class OAM extends RAM {
     }
 
     @Override
-    public byte readByte(int address) throws IndexOutOfBoundsException {
+    public byte read(int address) throws IndexOutOfBoundsException {
         if (!ppuControl.isOAMAccessable()) {
             return (byte) 0xff;
         }
-        return super.readByte(address);
+        return super.read(address);
     }
 
     @Override
-    public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
+    public void write(int address, byte value) throws IndexOutOfBoundsException {
         if (!ppuControl.isOAMAccessable()) {
             return;
         }
-        super.writeByte(address, value);
+        super.write(address, value);
     }
 
     /**
@@ -43,10 +43,10 @@ public class OAM extends RAM {
     public Sprite[] getSprites() {
         for (int i = 0; i < sprites.length; i++) {
             int offset = i*4;
-            byte YPos = readByte(offset);
-            byte XPos = readByte(offset+1);
-            byte TileIndex = readByte(offset+2);
-            byte Attributes = readByte(offset+3);
+            byte YPos = read(offset);
+            byte XPos = read(offset+1);
+            byte TileIndex = read(offset+2);
+            byte Attributes = read(offset+3);
             sprites[i].updateAttributes(YPos, XPos, TileIndex, Attributes);
         }
         return sprites;

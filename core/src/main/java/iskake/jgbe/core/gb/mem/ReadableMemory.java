@@ -13,5 +13,5 @@ public interface ReadableMemory {
      * @return The byte at the address of {@code address}.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    byte readByte(int address) throws IndexOutOfBoundsException;
+    byte read(int address) throws IndexOutOfBoundsException;
 }

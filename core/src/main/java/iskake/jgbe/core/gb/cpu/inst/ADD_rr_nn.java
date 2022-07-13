@@ -35,13 +35,13 @@ public class ADD_rr_nn extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        if (Registers.isRegisterByte(r1) || opcode == OP_ADD_A_$HL) {
+        if (Registers.isByteRegister(r1) || opcode == OP_ADD_A_$HL) {
             byte value;
 
             if (r2 == null) {
                 value = gb.readNextByte();
             } else {
-                value = gb.reg().readRegisterByte(r2);
+                value = gb.reg().readByte(r2);
             }
 
             byte c = 0;
@@ -50,9 +50,9 @@ public class ADD_rr_nn extends Instruction {
                 c += gb.reg().isFlagSet(Flags.C) ? 1 : 0;
             }
 
-            byte regVal = gb.reg().readRegisterByte(r1);
+            byte regVal = gb.reg().readByte(r1);
 
-            gb.reg().writeRegisterByte(r1, regVal + value + c);
+            gb.reg().writeByte(r1, regVal + value + c);
             gb.reg().setFlagConditional(Flags.Z, (regVal + value + c == 0));
             gb.reg().resetFlag(Flags.N);
             gb.reg().setFlagConditional(Flags.H, (((Byte.toUnsignedInt(regVal) & 0b1111)
@@ -71,10 +71,10 @@ public class ADD_rr_nn extends Instruction {
                     ((Short.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111)) > 0b1111);
             gb.reg().setFlagConditional(Flags.C, (Short.toUnsignedInt(regVal) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
-            short r1Val = gb.reg().readRegisterShort(r1);
-            short r2Val = gb.reg().readRegisterShort(r2);
+            short r1Val = gb.reg().readShort(r1);
+            short r2Val = gb.reg().readShort(r2);
 
-            gb.reg().writeRegisterShort(r1, r1Val + r2Val);
+            gb.reg().writeShort(r1, r1Val + r2Val);
             gb.reg().resetFlag(Flags.N);
             gb.reg().setFlagConditional(Flags.H,
                     ((Short.toUnsignedInt(r1Val) & 0xfff) + (Short.toUnsignedInt(r2Val) & 0xfff) > 0xfff));

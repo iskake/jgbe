@@ -20,7 +20,7 @@ public class DAA extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        int value = Byte.toUnsignedInt(gb.reg().readRegisterByte(Register.A));
+        int value = Byte.toUnsignedInt(gb.reg().readByte(Register.A));
         if (!gb.reg().isFlagSet(Flags.N)) {
             // Adjust value for additions
             if (gb.reg().isFlagSet(Flags.H) || (value & 0b1111) > 0x09) {
@@ -43,7 +43,7 @@ public class DAA extends Instruction {
             }
         }
 
-        gb.reg().writeRegisterByte(Register.A, value);
+        gb.reg().writeByte(Register.A, value);
         gb.reg().setFlagConditional(Flags.Z, Bitwise.intAsByte(value) == 0);
         gb.reg().resetFlag(Flags.H);
         gb.reg().setFlagConditional(Flags.C, value > 0x99);

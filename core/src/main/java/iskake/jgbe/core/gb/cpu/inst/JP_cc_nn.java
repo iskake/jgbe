@@ -26,7 +26,7 @@ public class JP_cc_nn extends Instruction {
         short address;
 
         if (opcode == OP_JP_HL) {
-            address = gb.reg().readRegisterShort(Register.HL);
+            address = gb.reg().readShort(Register.HL);
         } else {
             address = gb.readNextShort();
         }

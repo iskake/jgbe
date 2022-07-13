@@ -23,10 +23,10 @@ public class LD_rr_nn extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         // 0x36 -> ld [hl], $n8
-        if (Registers.isRegisterByte(reg) || opcode == OP_LD_$HL_N8) {
-            gb.reg().writeRegisterByte(reg, gb.readNextByte());
-        } else if (Registers.isRegisterShort(reg)) {
-            gb.reg().writeRegisterShort(reg, gb.readNextShort());
+        if (Registers.isByteRegister(reg) || opcode == OP_LD_$HL_N8) {
+            gb.reg().writeByte(reg, gb.readNextByte());
+        } else if (Registers.isShortRegister(reg)) {
+            gb.reg().writeShort(reg, gb.readNextShort());
         }
     }
 

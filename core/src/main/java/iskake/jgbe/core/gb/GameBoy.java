@@ -76,14 +76,14 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
         // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
-        reg.writeRegisterByte(Register.A, 0x01);
+        reg.writeByte(Register.A, 0x01);
         reg.setFlag(Flags.Z);
         reg.resetFlag(Flags.N);
         reg.setFlag(Flags.H);
         reg.setFlag(Flags.C);
-        reg.writeRegisterShort(Register.BC, (short) 0x0013);
-        reg.writeRegisterShort(Register.DE, (short) 0x00d8);
-        reg.writeRegisterShort(Register.HL, (short) 0x014d);
+        reg.writeShort(Register.BC, (short) 0x0013);
+        reg.writeShort(Register.DE, (short) 0x00d8);
+        reg.writeShort(Register.HL, (short) 0x014d);
 
         pc.setNoCycle((short) 0x100);
         sp.set((short) 0xfffe);
@@ -137,7 +137,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     @Override
     public byte readNextByte() {
         timing.incCycles();
-        return memoryMap.readByte(pc().inc());
+        return memoryMap.read(pc().inc());
     }
 
     @Override
@@ -148,25 +148,25 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     }
 
     @Override
-    public void writeMemoryAddress(short address, byte value) {
+    public void writeAddress(short address, byte value) {
         timing.incCycles();
-        memoryMap.writeByte(address, value);
+        memoryMap.write(address, value);
     }
 
     @Override
-    public void writeMemoryNoCycle(short address, byte value) {
-        memoryMap.writeByte(address, value);
+    public void writeAddressNoCycle(short address, byte value) {
+        memoryMap.write(address, value);
     }
 
     @Override
-    public byte readMemoryAddress(short address) {
+    public byte readAddress(short address) {
         timing.incCycles();
-        return memoryMap.readByte(address);
+        return memoryMap.read(address);
     }
 
     @Override
-    public byte readMemoryNoCycle(short address) {
-        return memoryMap.readByte(address);
+    public byte readAddressNoCycle(short address) {
+        return memoryMap.read(address);
     }
 
     /**
@@ -184,7 +184,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
             if (c % 16 == 0) {
                 System.out.printf("\n%04x  ", (short) i);
             }
-            System.out.printf("%02x ", readMemoryNoCycle((short) i));
+            System.out.printf("%02x ", readAddressNoCycle((short) i));
             c++;
         }
         System.out.println("\n");
@@ -328,7 +328,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     @Override
     public boolean canGetFrame() {
-        return hwreg.readRegisterInt(HardwareRegister.LY) >= 144;
+        return hwreg.readAsInt(HardwareRegister.LY) >= 144;
     }
 
     @Override

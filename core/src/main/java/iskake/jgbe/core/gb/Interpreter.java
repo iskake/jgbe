@@ -145,16 +145,16 @@ public class Interpreter {
                     match = true;
                 }
                 if (match) {
-                    gb.writeMemoryAddress(gb.pc().inc(), Bitwise.toByte(i));
+                    gb.writeAddress(gb.pc().inc(), Bitwise.toByte(i));
                     if (value != null) {
                         if (decodedShort) {
                             byte lo = (byte) ((value & 0xff00) >> 8);
                             byte hi = (byte) (value & 0xff);
-                            gb.writeMemoryAddress(gb.pc().inc(), hi);
-                            gb.writeMemoryAddress(gb.pc().inc(), lo);
+                            gb.writeAddress(gb.pc().inc(), hi);
+                            gb.writeAddress(gb.pc().inc(), lo);
                         } else {
                             byte lo = (byte) (value & 0xff);
-                            gb.writeMemoryAddress(gb.pc().inc(), lo);
+                            gb.writeAddress(gb.pc().inc(), lo);
                         }
                     }
                     break;
@@ -188,7 +188,7 @@ public class Interpreter {
                 return true;
             }
             case "run" -> {
-                gb.writeMemoryAddress(gb.pc().get(), (byte) 0x10); // stop
+                gb.writeAddress(gb.pc().get(), (byte) 0x10); // stop
                 finishedInterpreting = true;
                 return true;
             }
@@ -218,8 +218,8 @@ public class Interpreter {
             }
             case "undo" -> {
                 short pc = gb.pc().get();
-                byte value = gb.readMemoryAddress(pc);
-                gb.writeMemoryAddress(gb.pc().dec(), (byte) 0);
+                byte value = gb.readAddress(pc);
+                gb.writeAddress(gb.pc().dec(), (byte) 0);
                 System.out.printf("Undo of value: $%02x at address $%04x\n", value, pc);
                 return true;
             }
@@ -410,8 +410,8 @@ public class Interpreter {
                                 "Invalid " + strParts[0] + " format: '" + strParts[1] + "' is not a valid register.");
                     };
                     int value = opcodeType | regNum;
-                    gb.writeMemoryAddress(gb.pc().inc(), (byte) 0xcb);
-                    gb.writeMemoryAddress(gb.pc().inc(), (byte) value);
+                    gb.writeAddress(gb.pc().inc(), (byte) 0xcb);
+                    gb.writeAddress(gb.pc().inc(), (byte) value);
                 } catch (Exception e) {
                     if (e instanceof IndexOutOfBoundsException ex) {
                         System.err.println("Invalid rotation instruction format!");
@@ -459,8 +459,8 @@ public class Interpreter {
                                 "Invalid " + strParts[0] + " format: '" + strParts[2] + "' is not a valid register.");
                     };
                     int value = opcodeType | bitNum | regNum;
-                    gb.writeMemoryAddress(gb.pc().inc(), (byte) 0xcb);
-                    gb.writeMemoryAddress(gb.pc().inc(), (byte) value);
+                    gb.writeAddress(gb.pc().inc(), (byte) 0xcb);
+                    gb.writeAddress(gb.pc().inc(), (byte) value);
                 } catch (Exception e) {
                     if (e instanceof IndexOutOfBoundsException ex) {
                         System.err.println("Invalid rotation instruction format!");
@@ -523,17 +523,17 @@ public class Interpreter {
                     return true;
                 }
 
-                gb.writeMemoryAddress(gb.pc().inc(), (byte) 0xfc);
-                gb.writeMemoryAddress(gb.pc().inc(), (byte) strLen);
+                gb.writeAddress(gb.pc().inc(), (byte) 0xfc);
+                gb.writeAddress(gb.pc().inc(), (byte) strLen);
                 if (strLen > 0) {
                     for (int i = "prt \"".length(); i < "prt \"".length() + strLen; i++) {
-                        gb.writeMemoryAddress(gb.pc().inc(), (byte) str.charAt(i));
+                        gb.writeAddress(gb.pc().inc(), (byte) str.charAt(i));
                     }
                 }
-                gb.writeMemoryAddress(gb.pc().inc(), (byte) byteArgs.length);
+                gb.writeAddress(gb.pc().inc(), (byte) byteArgs.length);
                 if (byteArgs.length > 0) {
                     for (byte b : byteArgs) {
-                        gb.writeMemoryAddress(gb.pc().inc(), b);
+                        gb.writeAddress(gb.pc().inc(), b);
                     }
                 }
 

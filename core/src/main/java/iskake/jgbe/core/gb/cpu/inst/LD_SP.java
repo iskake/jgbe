@@ -25,7 +25,7 @@ public class LD_SP extends Instruction {
             short sp = gb.sp().get();
             byte value = gb.readNextByte();
 
-            gb.reg().writeRegisterShort(Register.HL, sp + value);
+            gb.reg().writeShort(Register.HL, sp + value);
 
             gb.reg().resetFlag(Flags.Z);
             gb.reg().resetFlag(Flags.N);
@@ -34,7 +34,7 @@ public class LD_SP extends Instruction {
             gb.reg().setFlagConditional(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
             // ld sp, hl
-            gb.sp().set(gb.reg().readRegisterShort(Register.HL));
+            gb.sp().set(gb.reg().readShort(Register.HL));
         }
     }
 

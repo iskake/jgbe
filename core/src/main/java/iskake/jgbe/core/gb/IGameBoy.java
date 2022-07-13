@@ -30,7 +30,7 @@ public interface IGameBoy {
      * 
      * @return The byte stored at the specified memory address.
      */
-    byte readMemoryAddress(short address);
+    byte readAddress(short address);
 
     /**
      * Read the byte at the specified memory address, without increasing the cycle
@@ -38,7 +38,7 @@ public interface IGameBoy {
      * 
      * @return The byte stored at the specified memory address.
      */
-    byte readMemoryNoCycle(short address);
+    byte readAddressNoCycle(short address);
 
     /**
      * Write the specified value to the specified memory address.
@@ -46,7 +46,7 @@ public interface IGameBoy {
      * @param address The address to write to.
      * @param value   The value to write to the memory address.
      */
-    void writeMemoryAddress(short address, byte value);
+    void writeAddress(short address, byte value);
 
     /**
      * Write the specified value to the specified memory address, without increasing
@@ -55,7 +55,7 @@ public interface IGameBoy {
      * @param address The address to write to.
      * @param value   The value to write to the memory address.
      */
-    void writeMemoryNoCycle(short address, byte value);
+    void writeAddressNoCycle(short address, byte value);
 
     /**
      * Stop opcode all operations of the GameBoy.

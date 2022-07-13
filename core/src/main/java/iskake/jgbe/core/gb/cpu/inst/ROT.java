@@ -67,7 +67,7 @@ public class ROT extends Instruction {
         };
 
         if (prefixed) {
-            gb.reg().setFlagConditional(Flags.Z, gb.reg().readRegisterByte(reg) == 0);
+            gb.reg().setFlagConditional(Flags.Z, gb.reg().readByte(reg) == 0);
         } else {
             gb.reg().resetFlag(Flags.Z);
         }

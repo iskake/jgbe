@@ -10,7 +10,7 @@ public record ROMBank(byte[] bytes) implements ReadableMemory {
     public final static int BANK_SIZE = 0x4000;
 
     @Override
-    public byte readByte(int address) {
+    public byte read(int address) {
         address = Bitwise.intAsShort(address);
         return bytes[address];
     }

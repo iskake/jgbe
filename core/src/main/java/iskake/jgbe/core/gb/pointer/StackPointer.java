@@ -30,9 +30,9 @@ public class StackPointer extends Pointer {
      */
     public void push(short value) {
         dec();
-        gb.writeMemoryAddress(ptr, Bitwise.getHighByte(value));
+        gb.writeAddress(ptr, Bitwise.getHighByte(value));
         dec();
-        gb.writeMemoryAddress(ptr, Bitwise.getLowByte(value));
+        gb.writeAddress(ptr, Bitwise.getLowByte(value));
     }
 
     /**
@@ -44,9 +44,9 @@ public class StackPointer extends Pointer {
      * @return The value 'popped' off the stack.
      */
     public short pop() {
-        byte lo = gb.readMemoryAddress(ptr);
+        byte lo = gb.readAddress(ptr);
         inc();
-        byte hi = gb.readMemoryAddress(ptr);
+        byte hi = gb.readAddress(ptr);
         inc();
         return Bitwise.toShort(hi, lo);
     }

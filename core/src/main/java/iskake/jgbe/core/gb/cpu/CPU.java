@@ -21,7 +21,7 @@ public class CPU {
     public void step() {
         short oldPC = gb.pc().get();
         boolean ime_wait = interrupts.waitingIME();
-        
+
         // Call waiting interrupts (if any)
         if (interrupts.callWaiting()) {
             return;
@@ -48,7 +48,7 @@ public class CPU {
      */
     public void printNextInstruction() {
         short address = gb.pc().get();
-        byte opcode = gb.readMemoryAddress(address);
+        byte opcode = gb.readAddress(address);
         System.out.printf("%02x -> %s\n", opcode, Opcodes.getInstructionName(gb, address));
     }
 

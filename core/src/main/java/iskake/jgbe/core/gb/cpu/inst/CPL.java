@@ -18,7 +18,7 @@ public class CPL extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        gb.reg().writeRegisterByte(Register.A, ~gb.reg().readRegisterByte(Register.A));
+        gb.reg().writeByte(Register.A, ~gb.reg().readByte(Register.A));
         gb.reg().setFlag(Flags.N);
         gb.reg().setFlag(Flags.H);
     }

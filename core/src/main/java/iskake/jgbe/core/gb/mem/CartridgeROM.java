@@ -55,20 +55,20 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
     }
 
     @Override
-    public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
+    public void write(int address, byte value) throws IndexOutOfBoundsException {
         if (mbc == null)
             return;
 
-        mbc.writeByte(address, value);
+        mbc.write(address, value);
     }
 
     @Override
-    public byte readByte(int address) throws IndexOutOfBoundsException {
+    public byte read(int address) throws IndexOutOfBoundsException {
         if (address < 0x4000) {
-            return getROMBank0().readByte(address);
+            return getROMBank0().read(address);
         } else {
             address -= 0x4000;
-            return getROMBankX().readByte(address);
+            return getROMBankX().read(address);
         }
     }
 }

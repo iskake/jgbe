@@ -7,7 +7,7 @@ package iskake.jgbe.core.gb.mem;
 public class NoMBC extends MemoryBankController {
 
     @Override
-    public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
+    public void write(int address, byte value) throws IndexOutOfBoundsException {
     }
 
 }

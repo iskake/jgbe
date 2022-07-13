@@ -32,19 +32,19 @@ public class VRAM extends RAM {
     }
 
     @Override
-    public byte readByte(int address) throws IndexOutOfBoundsException {
+    public byte read(int address) throws IndexOutOfBoundsException {
         if (!ppuControl.isVRAMAccessable()) {
             return (byte) 0xff;
         }
-        return super.readByte(address);
+        return super.read(address);
     }
 
     @Override
-    public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
+    public void write(int address, byte value) throws IndexOutOfBoundsException {
         if (!ppuControl.isVRAMAccessable()) {
             return;
         }
-        super.writeByte(address, value);
+        super.write(address, value);
     }
 
     /**

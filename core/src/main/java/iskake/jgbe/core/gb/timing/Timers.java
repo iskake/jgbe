@@ -19,7 +19,7 @@ public final class Timers {
      * @return {@code true} if bit 2 is set, {@code false} otherwise.
      */
     public static boolean isTIMAEnabled(HardwareRegisters hwreg) {
-        int val = hwreg.readRegisterInt(HardwareRegister.TAC);
+        int val = hwreg.readAsInt(HardwareRegister.TAC);
         return Bitwise.isBitSet(val, 2);
     }
 
@@ -31,7 +31,7 @@ public final class Timers {
      * @return The frequency specified in the TAC register.
      */
     public static int getTACFrequency(HardwareRegisters hwreg) {
-        int val = hwreg.readRegisterInt(HardwareRegister.TAC);
+        int val = hwreg.readAsInt(HardwareRegister.TAC);
 
         return switch (val & 0b11) {
             case 0b00 -> CPU.CLOCK_SPEED / 0x400;

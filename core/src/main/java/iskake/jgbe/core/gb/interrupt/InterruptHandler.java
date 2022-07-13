@@ -124,7 +124,7 @@ public class InterruptHandler {
         if (!enabled()) {
             return false;
         } else {
-            if (!(Bitwise.isBitSet(hwreg.readRegister(IE), bit)) || !(Bitwise.isBitSet(hwreg.readRegister(IF), bit))) {
+            if (!(Bitwise.isBitSet(hwreg.read(IE), bit)) || !(Bitwise.isBitSet(hwreg.read(IF), bit))) {
                 return false;
             }
         }

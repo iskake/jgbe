@@ -29,7 +29,7 @@ public class SUB_rr_nn extends Instruction {
         if (r2 == null) {
             value = gb.readNextByte();
         } else {
-            value = gb.reg().readRegisterByte(r2);
+            value = gb.reg().readByte(r2);
         }
 
         byte c = 0;
@@ -38,9 +38,9 @@ public class SUB_rr_nn extends Instruction {
             c += gb.reg().isFlagSet(Flags.C) ? 1 : 0;
         }
 
-        byte a = gb.reg().readRegisterByte(r1);
+        byte a = gb.reg().readByte(r1);
 
-        gb.reg().writeRegisterByte(r1, a - value - c);
+        gb.reg().writeByte(r1, a - value - c);
 
         gb.reg().setFlagConditional(Flags.Z, (byte) (a - value - c) == 0);
         gb.reg().setFlag(Flags.N);

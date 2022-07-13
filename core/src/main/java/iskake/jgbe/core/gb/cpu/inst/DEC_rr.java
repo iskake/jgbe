@@ -24,17 +24,17 @@ public class DEC_rr extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         // 0x35 -> dec [hl]
-        if (Registers.isRegisterByte(reg) || opcode == OP_DEC_$HL) {
-            gb.reg().decRegisterByte(reg);
+        if (Registers.isByteRegister(reg) || opcode == OP_DEC_$HL) {
+            gb.reg().decByte(reg);
 
-            byte value = gb.reg().readRegisterByte(reg);
+            byte value = gb.reg().readByte(reg);
 
             gb.reg().setFlagConditional(Flags.Z, value == 0);
             gb.reg().setFlag(Flags.N);
             gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0b1111);
 
         } else {
-            gb.reg().decRegisterShort(reg);
+            gb.reg().decShort(reg);
         }
     }
 

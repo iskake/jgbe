@@ -34,13 +34,13 @@ public class LD_A_ptr extends Instruction {
             // ldh a, [$n16] (a.k.a. `ld a, [$ff00+n8]`)
             case OP_LDH_A_$N16 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh a, [c] (a.k.a. `ld a, [$ff00+c]`)
-            case OP_LDH_A_$C -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(Register.C));
+            case OP_LDH_A_$C -> Bitwise.toShort((byte) 0xff, gb.reg().readByte(Register.C));
             // ld a, [$n16]
             default -> gb.readNextShort();
         };
 
-        value = gb.readMemoryAddress(address);
-        gb.reg().writeRegisterByte(reg, value);
+        value = gb.readAddress(address);
+        gb.reg().writeByte(reg, value);
     }
 
 }

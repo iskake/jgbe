@@ -95,15 +95,15 @@ public class Timing {
         }
 
         if (cycle % Timers.DIV_CLOCK == 0) {
-            hwreg.incRegister(DIV);
+            hwreg.inc(DIV);
         }
 
         if (Timers.isTIMAEnabled(hwreg)) {
             if (cycle % Timers.getTACFrequency(hwreg) == 0) {
-                hwreg.incRegister(TIMA);
+                hwreg.inc(TIMA);
 
-                if (hwreg.readRegisterInt(TIMA) == 0) {
-                    hwreg.writeRegister(TIMA, hwreg.readRegister(TMA)); // ? check TIM write when TIMA overflow
+                if (hwreg.readAsInt(TIMA) == 0) {
+                    hwreg.write(TIMA, hwreg.read(TMA)); // ? check TIM write when TIMA overflow
                     interrupts.setWaitingToCall(InterruptType.TIMER);
                 }
             }
@@ -111,20 +111,20 @@ public class Timing {
     }
 
     private void handleVideo(long cycle) {
-        if (!Bitwise.isBitSet(hwreg.readRegisterInt(LCDC), 7)) {
-            hwreg.writeRegisterInternal(LY, (byte) 0);
+        if (!Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
+            hwreg.writeInternal(LY, (byte) 0);
             return;
         }
         // VBlank
         if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
             ppu.addScanline();
-            hwreg.incRegister(LY);
-            int ly_val = hwreg.readRegisterInt(LY);
+            hwreg.inc(LY);
+            int ly_val = hwreg.readAsInt(LY);
             if (ly_val == 0x90) {
                 interrupts.setWaitingToCall(InterruptType.VBLANK);
                 gb.setVBlankJustCalled();
             } else if (ly_val > 0x99) {
-                hwreg.writeRegister(LY, 0);
+                hwreg.write(LY, 0);
             }
         }
 
@@ -154,12 +154,12 @@ public class Timing {
             hwreg.resetBit(STAT, 1);
         }
 
-        hwreg.setBitConditional(STAT, 2, (hwreg.readRegister(LY) == hwreg.readRegister(LYC)));
+        hwreg.setBitConditional(STAT, 2, (hwreg.read(LY) == hwreg.read(LYC)));
 
-        boolean STATLY = Bitwise.isBitSet(hwreg.readRegister(STAT), 2) && Bitwise.isBitSet(hwreg.readRegister(STAT), 6);
-        boolean STATHBL = Bitwise.isBitSet(hwreg.readRegister(STAT), 3) && ((hwreg.readRegisterInt(STAT) & 0b11) == 0);
-        boolean STATVBL = Bitwise.isBitSet(hwreg.readRegister(STAT), 4) && ((hwreg.readRegisterInt(STAT) & 0b11) == 1);
-        boolean STATOAM = Bitwise.isBitSet(hwreg.readRegister(STAT), 5) && ((hwreg.readRegisterInt(STAT) & 0b11) == 2);
+        boolean STATLY = Bitwise.isBitSet(hwreg.read(STAT), 2) && Bitwise.isBitSet(hwreg.read(STAT), 6);
+        boolean STATHBL = Bitwise.isBitSet(hwreg.read(STAT), 3) && ((hwreg.readAsInt(STAT) & 0b11) == 0);
+        boolean STATVBL = Bitwise.isBitSet(hwreg.read(STAT), 4) && ((hwreg.readAsInt(STAT) & 0b11) == 1);
+        boolean STATOAM = Bitwise.isBitSet(hwreg.read(STAT), 5) && ((hwreg.readAsInt(STAT) & 0b11) == 2);
         if (STATLY || STATHBL || STATVBL || STATOAM) {
             interrupts.setWaitingToCall(InterruptType.STAT);
         }

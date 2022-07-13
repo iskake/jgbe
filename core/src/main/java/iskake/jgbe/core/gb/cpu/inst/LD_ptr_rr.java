@@ -33,7 +33,7 @@ public class LD_ptr_rr extends Instruction {
             // ldh [$n16], a (a.k.a. `ld [$ff00+n8], a`)
             case OP_LDH_$N16_A -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
             // ldh [c], a (a.k.a. `ld [$ff00+c], a`)
-            case OP_LDH_$C_SP -> Bitwise.toShort((byte) 0xff, gb.reg().readRegisterByte(Register.C));
+            case OP_LDH_$C_SP -> Bitwise.toShort((byte) 0xff, gb.reg().readByte(Register.C));
             // ld [$n16], a and ld [$n16], sp
             default -> gb.readNextShort();
         };
@@ -41,11 +41,11 @@ public class LD_ptr_rr extends Instruction {
         if (opcode == OP_LD_$N16_SP) {
             // ld [$n16], sp
             short sp = gb.sp().get();
-            gb.writeMemoryAddress(address, Bitwise.getLowByte(sp));
-            gb.writeMemoryAddress((short)(address + 1), Bitwise.getHighByte(sp));
+            gb.writeAddress(address, Bitwise.getLowByte(sp));
+            gb.writeAddress((short)(address + 1), Bitwise.getHighByte(sp));
         } else {
-            byte value = gb.reg().readRegisterByte(reg);
-            gb.writeMemoryAddress(address, value);
+            byte value = gb.reg().readByte(reg);
+            gb.writeAddress(address, value);
         }
     }
 

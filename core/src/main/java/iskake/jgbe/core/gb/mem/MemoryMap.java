@@ -47,24 +47,24 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     }
 
     @Override
-    public byte readByte(int address) {
+    public byte read(int address) {
         // TODO: DMA
         if (hwreg.isDMATransfer() && Bitwise.intAsShort(address) < (short)0xff00) {
             System.out.println(address);
             return (byte) 0xff;
         }
         ReadableMemory memory = (ReadableMemory) getMemoryIndex(address);
-        return memory.readByte(fixedAddress);
+        return memory.read(fixedAddress);
     }
 
     @Override
-    public void writeByte(int address, byte value) {
+    public void write(int address, byte value) {
         // TODO: DMA
         if (hwreg.isDMATransfer() && Bitwise.intAsShort(address) < (short)0xff00) {
             throw new RuntimeException("DMA transfer");
         }
         WritableMemory memory = (WritableMemory) getMemoryIndex(address);
-        memory.writeByte(fixedAddress, value);
+        memory.write(fixedAddress, value);
     }
 
     /**

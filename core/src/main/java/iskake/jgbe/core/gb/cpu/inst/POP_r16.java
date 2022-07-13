@@ -21,7 +21,7 @@ public class POP_r16 extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         short value = gb.sp().pop();
-        gb.reg().writeRegisterShort(reg, value);
+        gb.reg().writeShort(reg, value);
     }
 
 }

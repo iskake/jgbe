@@ -13,5 +13,5 @@ public interface WritableMemory {
      * @param value   The value to write.
      * @throws IndexOutOfBoundsException If {@code address} is outside of memory.
      */
-    void writeByte(int address, byte value) throws IndexOutOfBoundsException;
+    void write(int address, byte value) throws IndexOutOfBoundsException;
 }

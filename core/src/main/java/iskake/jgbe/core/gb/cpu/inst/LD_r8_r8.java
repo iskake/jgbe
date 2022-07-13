@@ -28,15 +28,15 @@ public final class LD_r8_r8 extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        gb.reg().writeRegisterByte(r1, gb.reg().readRegisterByte(r2));
+        gb.reg().writeByte(r1, gb.reg().readByte(r2));
 
         // Handle HLI and HLD opcodes
         if (opcode == OP_LD_$HLI_A || opcode == OP_LD_A_$HLI) {
             // HLI
-            gb.reg().incRegisterShort(Register.HL);
+            gb.reg().incShort(Register.HL);
         } else if (opcode == OP_LD_$HLD_A || opcode == OP_LD_A_$HLD) {
             // HLD
-            gb.reg().decRegisterShort(Register.HL);
+            gb.reg().decShort(Register.HL);
         }
     }
 

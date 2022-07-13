@@ -20,12 +20,12 @@ public class RAM implements WritableMemory, ReadableMemory {
     }
 
     @Override
-    public byte readByte(int address) throws IndexOutOfBoundsException {
+    public byte read(int address) throws IndexOutOfBoundsException {
         return bytes[address];
     }
 
     @Override
-    public void writeByte(int address, byte value) throws IndexOutOfBoundsException {
+    public void write(int address, byte value) throws IndexOutOfBoundsException {
         bytes[address] = value;
     }
 

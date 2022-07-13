@@ -24,17 +24,17 @@ public class INC_rr extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         // 0x34 -> inc [hl]
-        if (Registers.isRegisterByte(reg) || opcode == OP_INC_$HL) {
-            gb.reg().incRegisterByte(reg);
+        if (Registers.isByteRegister(reg) || opcode == OP_INC_$HL) {
+            gb.reg().incByte(reg);
 
-            byte value = gb.reg().readRegisterByte(reg);
+            byte value = gb.reg().readByte(reg);
 
             gb.reg().setFlagConditional(Flags.Z, value == 0);
             gb.reg().resetFlag(Flags.N);
             gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0);
 
         } else {
-            gb.reg().incRegisterShort(reg);
+            gb.reg().incShort(reg);
         }
     }
 
