@@ -15,7 +15,7 @@ public class OAM extends RAM {
         super(size);
         this.ppuControl = ppuControl;
         for (int i = 0; i < sprites.length; i++) {
-            sprites[i] = new Sprite(0xffffffff);
+            sprites[i] = new Sprite(this::read, this::write, i*4);
         }
     }
 
@@ -41,14 +41,6 @@ public class OAM extends RAM {
      * @return All sprites in OAM.
      */
     public Sprite[] getSprites() {
-        for (int i = 0; i < sprites.length; i++) {
-            int offset = i*4;
-            byte YPos = read(offset);
-            byte XPos = read(offset+1);
-            byte TileIndex = read(offset+2);
-            byte Attributes = read(offset+3);
-            sprites[i].updateAttributes(YPos, XPos, TileIndex, Attributes);
-        }
         return sprites;
     }
 }

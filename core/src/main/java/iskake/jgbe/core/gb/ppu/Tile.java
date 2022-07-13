@@ -1,28 +1,33 @@
 package iskake.jgbe.core.gb.ppu;
 
-import iskake.jgbe.core.Bitwise;
+import iskake.jgbe.core.gb.mem.MappedByteRange;
+import iskake.jgbe.core.gb.mem.ReadableMemory;
+import iskake.jgbe.core.gb.mem.WritableMemory;
 
 /**
  * Represents a tile as specified in VRAM ({@code $8000-$97ff})
  */
-public record Tile(byte[] data) {
+public class Tile {
     public static final int TILE_SIZE = 8;
 
-    /**
-     * Update the tile data.
-     * 
-     * @param tileData The data of the tile.
-     */
-    public void updateAttributes(byte[] tileData) {
-        System.arraycopy(tileData, 0, data, 0, data.length);
+    public boolean isDecoded = false;
+    public final MappedByteRange data;
+
+    private final short[] decodedLines;
+
+    public Tile(ReadableMemory readFunc, WritableMemory writeFunc, int tileStartAddress) {
+        this.data = new MappedByteRange(tileStartAddress, 16, readFunc, writeFunc);
+        decodedLines = new short[TILE_SIZE];
     }
 
     /**
      * Decode the tile from a 2bpp format to a indexed byte format.
-     * 
-     * @return The decoded image in a byte indexed format.
      */
-    public byte[] decoded() {
+    public void decode() {
+        if (isDecoded) {
+            return;
+        }
+
         /*
          * Decoding process:
          *   $db, $7e = %11011011, %01111110
@@ -44,24 +49,43 @@ public record Tile(byte[] data) {
          * Note that: image colors are based on the value in the OBP and BGP hw registers.)
          * See: https://gbdev.io/pandocs/Tile_Data.html
          */
-
-        byte[] dots = new byte[8 * 8];
-
-        // ? This algorithm can probably be optimized more...
+        // ?Should this loop be unrolled as well?
         for (int i = 0; i < TILE_SIZE; i++) {
             int offset = i * 2;
-            byte b1 = data[offset];
-            byte b2 = data[offset + 1];
+            int b1 = Byte.toUnsignedInt(data.get(offset));
+            int b2 = Byte.toUnsignedInt(data.get(offset + 1));
 
-            // Decode each 'line' of dots
-            for (int j = 7; j >= 0; j--) {
-                int b1_ = Bitwise.isBitSet(b1, j) ? 1 : 0;
-                int b2_ = (Bitwise.isBitSet(b2, j) ? 1 : 0) << 1;
-                int index = (i * 8) + (7 - j);
-                dots[index] = (byte) (b2_ | b1_);
-            }
+            b1 = ((b1 & 0b10000000) << 7
+                    | (b1 & 0b01000000) << 6
+                    | (b1 & 0b00100000) << 5
+                    | (b1 & 0b00010000) << 4
+                    | (b1 & 0b00001000) << 3
+                    | (b1 & 0b00000100) << 2
+                    | (b1 & 0b00000010) << 1
+                    | (b1 & 0b00000001) << 0);
+            b2 = ((b2 & 0b10000000) << 8
+                    | (b2 & 0b01000000) << 7
+                    | (b2 & 0b00100000) << 6
+                    | (b2 & 0b00010000) << 5
+                    | (b2 & 0b00001000) << 4
+                    | (b2 & 0b00000100) << 3
+                    | (b2 & 0b00000010) << 2
+                    | (b2 & 0b00000001) << 1);
+
+            decodedLines[i] = (short) (b1 | b2);
         }
-        return dots;
+
+        isDecoded = true;
+    }
+
+    /**
+     * Get the decoded line of pixels specified.
+     * 
+     * @param y The line to get.
+     * @return
+     */
+    public int getLine(int y) throws IndexOutOfBoundsException {
+        return Short.toUnsignedInt(decodedLines[y]);
     }
 
     /**
@@ -71,15 +95,9 @@ public record Tile(byte[] data) {
      * @param y The y coordinate on the tile.
      * @return The dot on the specified coordinate.
      */
-    public byte getDot(int x, int y) {
-        return decoded()[TILE_SIZE * y + x];
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Tile t) {
-            return Bitwise.byteArrayEquals(data, t.data());
-        }
-        return false;
+    public byte getDot(int x, int y) throws IndexOutOfBoundsException {
+        int line = getLine(y);
+        int pixel = 0xe - (x << 1);
+        return (byte)((line & (0b11 << pixel)) >> pixel);
     }
 }

@@ -3,32 +3,29 @@ package iskake.jgbe.core.gb.mem;
 import iskake.jgbe.core.gb.ppu.PPUController;
 import iskake.jgbe.core.gb.ppu.Tile;
 import iskake.jgbe.core.gb.ppu.TileMap;
-import iskake.jgbe.core.Bitwise;
-
-import java.util.Arrays;
 
 /**
  * Video memory. Only accessable in modes 0-2 (STAT register bits 0-1).
  */
 public class VRAM extends RAM {
     private final PPUController ppuControl;
-    private final Tile[] tiles = new Tile[0x180];
+    private final Tile[] tileBlock0 = new Tile[0x80];
+    private final Tile[] tileBlock1 = new Tile[0x80];
+    private final Tile[] tileBlock2 = new Tile[0x80];
+    private final Tile[][] tileDataBlocks = { tileBlock0, tileBlock1, tileBlock2 };
     private final TileMap[] tileMaps = new TileMap[2];
 
     public VRAM(int size, PPUController ppu) {
         super(size);
         this.ppuControl = ppu;
-        for (int i = 0; i < tiles.length; i++) {
-            tiles[i] = new Tile(getByteArray(16));
+        for (int i = 0; i < 0x80; i++) {
+            int offset = i * 16;
+            tileBlock0[i] = new Tile(this::read, this::write, offset);
+            tileBlock1[i] = new Tile(this::read, this::write, 0x800 + offset);
+            tileBlock2[i] = new Tile(this::read, this::write, 0x1000 + offset);
         }
-        tileMaps[0] = new TileMap(getByteArray(32 * 32));
-        tileMaps[1] = new TileMap(getByteArray(32 * 32));
-    }
-
-    private byte[] getByteArray(int size) {
-        byte[] data = new byte[size];
-        Arrays.fill(data, (byte) 0);
-        return data;
+        tileMaps[0] = new TileMap(this::read, this::write, 0x1800);
+        tileMaps[1] = new TileMap(this::read, this::write, 0x1c00);
     }
 
     @Override
@@ -45,6 +42,30 @@ public class VRAM extends RAM {
             return;
         }
         super.write(address, value);
+
+        // Since the tile has been written to, it is necessary to decode it again.
+        if (address < 0x800) {
+            tileBlock0[address / 16].isDecoded = false;
+        } else if (address < 0x1000) {
+            tileBlock1[(address - 0x800) / 16].isDecoded = false;
+        } else if (address < 0x1800) {
+            tileBlock2[(address - 0x1000) / 16].isDecoded = false;
+        }
+    }
+
+    public Tile[] getTileBlock(int tileDataVal) {
+        return tileDataBlocks[tileDataVal];
+    }
+
+    // TODO: update docs
+    /**
+     * Get the tiles in VRAM.
+     * The tiles are stored in the range {@code $8000-$97ff}.
+     * 
+     * @return The tiles in VRAM.
+     */
+    public Tile[] getTileBlock0() {
+        return tileBlock0;
     }
 
     /**
@@ -53,12 +74,18 @@ public class VRAM extends RAM {
      * 
      * @return The tiles in VRAM.
      */
-    public Tile[] getTiles() {
-        for (int i = 0; i < tiles.length; i++) {
-            int offset = i * 16;
-            tiles[i].updateAttributes(Arrays.copyOfRange(bytes, offset, offset + 16));
-        }
-        return tiles;
+    public Tile[] getTileBlock1() {
+        return tileBlock1;
+    }
+
+    /**
+     * Get the tiles in VRAM.
+     * The tiles are stored in the range {@code $8000-$97ff}.
+     * 
+     * @return The tiles in VRAM.
+     */
+    public Tile[] getTileBlock2() {
+        return tileBlock2;
     }
 
     /**
@@ -70,14 +97,6 @@ public class VRAM extends RAM {
      * @return The specified tilemap in VRAM.
      */
     public TileMap getTileMap(int i) {
-        // update the tilemap if necessary
-        int offset = ppuControl.getBGTilemapArea() - 0x8000;
-        byte[] newData = Arrays.copyOfRange(bytes, offset, offset + 0x400);
-        if (!Bitwise.byteArrayEquals(tileMaps[i].tileIndices(), newData)) {
-            // update tilemap
-            tileMaps[i].updateAttributes(newData);
-        }
-
         return tileMaps[i];
     }
 
@@ -89,10 +108,6 @@ public class VRAM extends RAM {
      * @return Both tilemaps in VRAM.
      */
     public TileMap[] getTileMaps() {
-        // update the tilemaps (if necessary)
-        getTileMap(0);
-        getTileMap(1);
-
         return tileMaps;
     }
 }

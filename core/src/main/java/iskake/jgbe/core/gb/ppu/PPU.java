@@ -62,11 +62,14 @@ public class PPU {
             drawWindow = false;
         }
 
+        Tile[] tilemapTilesBlockN = getTilesBlockN();
+        Tile[] tilemapTilesBlock1 = getTilesBlock1();
         // TODO: handle window/sprites/tilemap enable.
         for (int i = 0; i < LCD_SIZE_X; i++) {
             int dx = (x + i) % 256;
-            Tile[] tilemapTiles = getTilesForTilemap(tiles);
-            scanlineBuf[i] = BG.getTileAtCoordinate(dx, y, tilemapTiles).getDot(dx % 8, y % 8);
+            Tile t = BG.getTileAtCoordinate(dx, y, tilemapTilesBlock1, tilemapTilesBlockN);
+            t.decode();
+            scanlineBuf[i] = t.getDot(dx % 8, y % 8);
         }
         return scanlineBuf;
     }
@@ -80,7 +83,7 @@ public class PPU {
 
         if (line < LCD_SIZE_Y) {
             Sprite[] sprites = getSprites();
-            Tile[] tiles = getTiles();
+            Tile[] tiles = getTilesBlock1();
             TileMap BG = getBGTileMap();
             TileMap window = getWindowTileMap();
 
@@ -114,13 +117,14 @@ public class PPU {
         return oam.getSprites();
     }
 
+    // TODO: update docs
     /**
      * Get the tiles in VRAM.
      * 
      * @return All tiles in VRAM.
      */
-    public Tile[] getTiles() {
-        return vram.getTiles();
+    public Tile[] getTilesBlock1() {
+        return vram.getTileBlock1();
     }
 
     /**
@@ -129,32 +133,9 @@ public class PPU {
      * @param tiles The tiles to get the tile array from.
      * @return The BG and Window tilemap tile data.
      */
-    private Tile[] getTilesForTilemap(Tile[] tiles) {
-        // (See this table if confused: https://gbdev.io/pandocs/Tile_Data.html)
-        int tilesStart;
-        int tilesEnd;
-        int tileDataVal = ppuControl.getBGAndWindowTileArea();
-
-        if (tileDataVal == 0x8000) {
-            tilesStart = 0;
-            tilesEnd = tilesStart + 0x800 / 16;
-            return Arrays.copyOfRange(tiles, tilesStart, tilesEnd);
-        } else /* if (tileDataVal == 0x8800) */ {
-            // ? There is probably a better/easier way to do this.
-            tilesStart = (0x9000 - 0x8000) / 16;
-            tilesEnd = tilesStart + 0x800 / 16;
-            Tile[] tiles9000 = Arrays.copyOfRange(tiles, tilesStart, tilesEnd);
-
-            tilesStart = (0x8800 - 0x8000) / 16;
-            tilesEnd = tilesStart + 0x800 / 16;
-            Tile[] tiles8800 = Arrays.copyOfRange(tiles, tilesStart, tilesEnd);
-
-            Tile[] tmpTiles = new Tile[0x1800 / 16];
-            System.arraycopy(tiles9000, 0, tmpTiles, 0, tiles9000.length);
-            System.arraycopy(tiles8800, 0, tmpTiles, tiles9000.length, tiles8800.length);
-
-            return tmpTiles;
-        }
+    private Tile[] getTilesBlockN() {
+        int tileDataVal = ppuControl.getBGAndWindowTileBlock();
+        return vram.getTileBlock(tileDataVal);
     }
 
     /**

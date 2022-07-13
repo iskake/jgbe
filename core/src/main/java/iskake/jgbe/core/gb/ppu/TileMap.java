@@ -1,19 +1,21 @@
 package iskake.jgbe.core.gb.ppu;
 
+import iskake.jgbe.core.gb.mem.MappedByteRange;
+import iskake.jgbe.core.gb.mem.ReadableMemory;
+import iskake.jgbe.core.gb.mem.WritableMemory;
+
 /**
  * Represents a tilemap as specified in VRAM ({@code $9800-$9bff} and
  * {@code $9c00-$9fff})
  */
-public record TileMap(byte[] tileIndices) {
-    public static final int TILEMAP_SIZE = 256;
+public class TileMap {
+    /** The horizontal and vertical size of a tilemap in tiles. */
+    public static final int TILEMAP_SIZE = 32;
 
-    /**
-     * Update the tiles.
-     * 
-     * @param tilesData The new tiles.
-     */
-    public void updateAttributes(byte[] data) {
-        System.arraycopy(data, 0, tileIndices, 0, tileIndices.length);
+    public final MappedByteRange tileIndices;
+
+    public TileMap(ReadableMemory readFunc, WritableMemory writeFunc, int tileMapDataStartAddress) {
+        this.tileIndices = new MappedByteRange(tileMapDataStartAddress, TILEMAP_SIZE*TILEMAP_SIZE, readFunc, writeFunc);
     }
 
     /**
@@ -26,9 +28,12 @@ public record TileMap(byte[] tileIndices) {
     private byte getTileIndexAtCoordinate(int x, int y) {
         int dx = x / 8;
         int dy = y / 8;
-        int index = (TILEMAP_SIZE / Tile.TILE_SIZE) * dy + dx;
+        int index = TILEMAP_SIZE * dy + dx;
 
-        return tileIndices[index];
+        if (index == 0)
+            System.out.println("index:" + index);
+
+        return tileIndices.get(index);
     }
 
     /**
@@ -36,23 +41,14 @@ public record TileMap(byte[] tileIndices) {
      * 
      * @param x     The x coordinate to get the tile index from.
      * @param y     The y coordinate to get the tile index from.
-     * @param tiles The tiles apply the tile index to.
+     * @param tiles1 The tiles apply the tile index to.
      * @return The tile at the specified coordinate.
      */
-    public Tile getTileAtCoordinate(int x, int y, Tile[] tiles) {
-        return tiles[Byte.toUnsignedInt(getTileIndexAtCoordinate(x, y))];
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof TileMap t) {
-            for (int i = 0; i < tileIndices.length; i++) {
-                if (tileIndices[i] != t.tileIndices[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+    public Tile getTileAtCoordinate(int x, int y, Tile[] tiles1, Tile[] tilesN) {
+        int index = Byte.toUnsignedInt(getTileIndexAtCoordinate(x, y));
+        if (index < 128)
+            return tilesN[index];
+        else
+            return tiles1[index];
     }
 }
