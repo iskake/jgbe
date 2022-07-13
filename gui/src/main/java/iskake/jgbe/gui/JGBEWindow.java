@@ -18,8 +18,10 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class JGBEWindow {
     private final GameBoy gb;
-    private final OpenGLRenderer renderer;
     // private final GameBoyJoypad joypad;
+    private final OpenGLRenderer renderer;
+    // TODO? Should this be moved to renderer? (get the frame with callback, for example)
+    private final ByteBuffer bb = ByteBuffer.allocateDirect(160 * 144 * 3);
     private long window;
 
     public JGBEWindow() {
@@ -58,17 +60,19 @@ public class JGBEWindow {
     public void run() {
         while (!glfwWindowShouldClose(window)) {
             long start = System.nanoTime();
-            gb.runUntilVBlank();
-            long end = System.nanoTime();
-            long deltaTime = (end - start) / 1_000_000;
 
+            gb.runUntilVBlank();
+
+            long end = System.nanoTime();
+            float deltaTime = (end - start) / 1_000_000f;
             // System.out.println("delta: " + deltaTime + "ms");
 
             glfwPollEvents();
-            ByteBuffer bb = ByteBuffer.allocateDirect(160 * 144 * 3);
             bb.put(gb.getFrameMapped()).rewind();
             renderer.updateTexture(bb);
             renderer.renderFrame();
+
+            // glfwSwapInterval(0); // Ignore vsync
             glfwSwapBuffers(window);
         }
     }
