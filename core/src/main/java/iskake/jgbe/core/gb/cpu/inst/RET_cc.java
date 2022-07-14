@@ -23,7 +23,7 @@ public class RET_cc extends Instruction {
         if (Conditions.conditionSatisfied(gb.reg(), condition)) {
             if (opcode == OP_RETI) {
                 // reti
-                gb.enableInterrupts(false);
+                gb.enableInterrupts();
             }
 
             gb.pc().set(gb.sp().pop());

@@ -250,7 +250,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     @Override
     public void stop() {
         // TODO
-        pc.inc(); // stop ignores the next instruction, so
+        pc.inc(); // stop ignores the next byte, so we just increase the pc by one.
 
     }
 
@@ -265,8 +265,13 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     }
 
     @Override
-    public void enableInterrupts(boolean wait) {
-        interrupts.enable(wait);
+    public void waitEnableInterrupts() {
+        interrupts.waitForIME();
+    }
+
+    @Override
+    public void enableInterrupts() {
+        interrupts.enable();
     }
 
     // TODO: move all frame processing to the PPU

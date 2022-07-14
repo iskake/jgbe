@@ -76,12 +76,15 @@ public interface IGameBoy {
     void disableInterrupts();
 
     /**
+     * Set the interrupts to 'wait' for one instruction before interrupts should be enabled.
+     */
+    void waitEnableInterrupts();
+
+    /**
      * Enables all interrupts enabled in the IE hardware register by setting the IME
      * flag to 1.
-     * 
-     * @param wait If interrupts should be enabled after waiting one M-cycle.
      */
-    void enableInterrupts(boolean wait);
+    void enableInterrupts();
 
     /**
      * Get the ProgramCounter stored in the IGameBoy object.

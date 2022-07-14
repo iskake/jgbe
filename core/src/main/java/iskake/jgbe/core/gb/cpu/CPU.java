@@ -20,7 +20,7 @@ public class CPU {
      */
     public void step() {
         short oldPC = gb.pc().get();
-        boolean ime_wait = interrupts.waitingIME();
+        boolean shouldEnableIME = interrupts.waitingIME();
 
         // Call waiting interrupts (if any)
         if (interrupts.callWaiting()) {
@@ -30,8 +30,8 @@ public class CPU {
         byte opcode = gb.readNextByte();
         Opcodes.getOpcode(opcode).doOp(gb, Byte.toUnsignedInt(opcode));
 
-        if (ime_wait) {
-            interrupts.enable(false);
+        if (shouldEnableIME) {
+            interrupts.enable();
         }
 
         short newPC = gb.pc().get();

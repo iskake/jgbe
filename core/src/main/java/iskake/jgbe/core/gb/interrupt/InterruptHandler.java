@@ -50,20 +50,23 @@ public class InterruptHandler {
     }
 
     /**
-     * Enable all interrupts speficied in the {@code ie} hardware register.
-     * 
-     * @param wait If the instruction should 'wait' for the next instruction to
-     *             complete before enabling interrupts ({@code ei} behaviour), or
-     *             not ({@code reti} behaviour).
+     * Set the interrupts waiting to be enabled.
      */
-    public void enable(boolean wait) {
+    public void waitForIME() {
+        waitIME = true;
+        ime = false;
+    }
+
+    /**
+     * Enable all interrupts speficied in the {@code ie} hardware register.
+     * <p>
+     * Should only be called if either {@code waitForIME()} has been called or when
+     * using the {@code reti} instruction.
+     */
+    public void enable() {
         if (!ime) {
-            if (!wait) {
-                waitIME = false;
-                ime = true;
-            } else {
-                waitIME = true;
-            }
+            waitIME = false;
+            ime = true;
         }
     }
 

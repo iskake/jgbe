@@ -22,7 +22,7 @@ public class Interrupt extends Instruction {
     public void doOp(IGameBoy gb, int opcode) {
         switch (opcode) {
             case OP_EI -> gb.disableInterrupts();
-            case OP_DI -> gb.enableInterrupts(true);
+            case OP_DI -> gb.waitEnableInterrupts();
             default -> throw new IllegalInstructionException();
         }
     }
