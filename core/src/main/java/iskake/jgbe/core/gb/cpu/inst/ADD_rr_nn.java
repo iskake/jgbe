@@ -53,12 +53,13 @@ public class ADD_rr_nn extends Instruction {
             byte regVal = gb.reg().readByte(r1);
 
             gb.reg().writeByte(r1, regVal + value + c);
-            gb.reg().setFlagConditional(Flags.Z, (regVal + value + c == 0));
-            gb.reg().resetFlag(Flags.N);
-            gb.reg().setFlagConditional(Flags.H, (((Byte.toUnsignedInt(regVal) & 0b1111)
-                    + (Byte.toUnsignedInt(value) & 0b1111) + c) > 0b1111));
 
-            gb.reg().setFlagConditional(Flags.C, (Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) > 0xff));
+            gb.reg().setFlagConditional(Flags.Z, (byte) (regVal + value + c) == 0);
+            gb.reg().resetFlag(Flags.N);
+            gb.reg().setFlagConditional(Flags.H,
+                    (((Byte.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111) + c) > 0b1111));
+
+            gb.reg().setFlagConditional(Flags.C, ((Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) + c) > 0xff));
         } else if (opcode == OP_ADD_SP_E8) {
             // add sp, $e8
             byte value = gb.readNextByte();
