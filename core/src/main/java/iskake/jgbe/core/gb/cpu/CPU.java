@@ -38,7 +38,9 @@ public class CPU {
 
         // Temp.
         if (oldPC == newPC && !interrupts.enabled()) {
-            System.out.println("\nInfinite loop! Exiting.");
+            gb.reg().printValues();
+            printNextInstruction();
+            System.err.println("JGBE has encountered an infinite loop. Exiting...");
             System.exit(0);
         }
     }
