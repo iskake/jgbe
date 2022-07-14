@@ -99,7 +99,6 @@ public class Debugger {
             case "x" -> examine(input);
             case "p", "print" -> enablePrinting();
             case "reg" -> printCPUInfo();
-            case "_image" -> debugCreateImage(); // Temp!!
             case "_jp" -> debugJump(input); // Temp!!
             case "_ld" -> debugLoad(input); // Temp!!
             default -> System.err.println("Unknown command: " + input[0]);
@@ -148,11 +147,6 @@ public class Debugger {
 
     private void debugJump(String[] in) {
         gb.pc().setNoCycle(Bitwise.toShort(Bitwise.decodeInt(in[1])));
-    }
-
-    // Temp: print frame.
-    private void debugCreateImage() {
-        gb.printFrame();
     }
 
     /**

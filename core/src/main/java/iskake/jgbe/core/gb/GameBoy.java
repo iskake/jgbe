@@ -17,10 +17,6 @@ import iskake.jgbe.core.gb.ppu.PPUController;
 import iskake.jgbe.core.gb.timing.Timing;
 import iskake.jgbe.core.Bitwise;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
 /**
  * Represents a Game Boy (model 'DMG')
  */
@@ -273,57 +269,40 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         interrupts.enable(wait);
     }
 
-    // Temporary: save the current frame as a file
-    // (each dot as a number: {00,01,02,03})
-    public void printFrame() {
-        byte[][] scanlines = ppu.getFrame();
-        try (FileWriter writer = new FileWriter("image")) {
-            for (int i = 0; i < scanlines.length; i++) {
-                for (int j = 0; j < scanlines[i].length; j++) {
-                    writer.write("%02x".formatted(scanlines[i][j]));
-                }
-            }
-            System.out.println("Saved screenshot to file.");
-        } catch (IOException e) {
-            System.err.println("Could not save screenshot to file.");
-        }
-    }
+    // TODO: move all frame processing to the PPU
+    private final byte[] frameBuf = new byte[PPU.LCD_SIZE_X * PPU.LCD_SIZE_Y];
 
-    // TODO: replace arraylist with screen buffer
     @Override
     public byte[] getFrame() {
         byte[][] in = ppu.getFrame();
-        ArrayList<Byte> list = new ArrayList<>(in.length * in[0].length);
+
         for (int i = 0; i < in.length; i++) {
             for (int j = 0; j < in[0].length; j++) {
-                list.add(/* out[(i * in.length) + j] = */ in[i][j]);
+                frameBuf[i * in[0].length + j] = in[i][j];
             }
         }
 
-        byte[] out = new byte[in.length * in[0].length];
-        for (int i = 0; i < list.size(); i++) {
-            out[i] = list.get(i);
-        }
-        return out;
+        return frameBuf;
     }
 
-    // ? TODO: This should probably be handled by the gui instead...
     private final byte[] COLORS_MAP = {
-            (byte)0xff,
-            (byte)0xaa,
-            (byte)0x55,
-            (byte)0x00,
+            (byte) 0xff,
+            (byte) 0xaa,
+            (byte) 0x55,
+            (byte) 0x00,
     };
+
+    private final byte[] mappedFrameBuf = new byte[PPU.LCD_SIZE_X * PPU.LCD_SIZE_Y * 3];
 
     @Override
     public byte[] getFrameMapped() {
         byte[] in = getFrame();
-        byte[] out = new byte[in.length * 3];
+
         for (int i = 0; i < in.length * 3; i++) {
             // TODO: needs to change based on values in rBGP, rOBP0 and rOBP1
-            out[i] = COLORS_MAP[in[i / 3]];
+            mappedFrameBuf[i] = COLORS_MAP[in[i / 3]];
         }
-        return out;
+        return mappedFrameBuf;
     }
 
     @Override
