@@ -30,9 +30,6 @@ public class TileMap {
         int dy = y / 8;
         int index = TILEMAP_SIZE * dy + dx;
 
-        if (index == 0)
-            System.out.println("index:" + index);
-
         return tileIndices.get(index);
     }
 
