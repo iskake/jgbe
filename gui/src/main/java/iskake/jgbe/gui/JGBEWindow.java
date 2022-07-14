@@ -68,7 +68,7 @@ public class JGBEWindow {
             // System.out.println("delta: " + deltaTime + "ms");
 
             glfwPollEvents();
-            bb.put(gb.getFrameMapped()).rewind();
+            bb.put(gb.getFrame()).rewind();
             renderer.updateTexture(bb);
             renderer.renderFrame();
 

@@ -1,6 +1,5 @@
 package iskake.jgbe.core.gb;
 
-import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 import iskake.jgbe.core.gb.Registers.Flags;
 import iskake.jgbe.core.gb.Registers.Register;
 import iskake.jgbe.core.gb.cpu.CPU;
@@ -21,7 +20,7 @@ import iskake.jgbe.core.Bitwise;
  * Represents a Game Boy (model 'DMG')
  */
 public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
-    // TODO: joypad handling+dma+video
+    // TODO: joypad handling+dma
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
@@ -274,45 +273,9 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         interrupts.enable();
     }
 
-    // TODO: move all frame processing to the PPU
-    private final byte[] frameBuf = new byte[PPU.LCD_SIZE_X * PPU.LCD_SIZE_Y];
-
     @Override
     public byte[] getFrame() {
-        byte[][] in = ppu.getFrame();
-
-        for (int i = 0; i < in.length; i++) {
-            for (int j = 0; j < in[0].length; j++) {
-                frameBuf[i * in[0].length + j] = in[i][j];
-            }
-        }
-
-        return frameBuf;
-    }
-
-    private final byte[] COLORS_MAP = {
-            (byte) 0xff,
-            (byte) 0xaa,
-            (byte) 0x55,
-            (byte) 0x00,
-    };
-
-    private final byte[] mappedFrameBuf = new byte[PPU.LCD_SIZE_X * PPU.LCD_SIZE_Y * 3];
-
-    @Override
-    public byte[] getFrameMapped() {
-        byte[] in = getFrame();
-
-        for (int i = 0; i < in.length * 3; i++) {
-            // TODO: needs to change based on values in rBGP, rOBP0 and rOBP1
-            mappedFrameBuf[i] = COLORS_MAP[in[i / 3]];
-        }
-        return mappedFrameBuf;
-    }
-
-    @Override
-    public boolean canGetFrame() {
-        return hwreg.readAsInt(HardwareRegister.LY) >= 144;
+        return ppu.getMappedFrame();
     }
 
     @Override
