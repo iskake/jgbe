@@ -14,8 +14,8 @@ public class TileMap {
 
     public final MappedByteRange tileIndices;
 
-    public TileMap(ReadableMemory readFunc, WritableMemory writeFunc, int tileMapDataStartAddress) {
-        this.tileIndices = new MappedByteRange(tileMapDataStartAddress, TILEMAP_SIZE*TILEMAP_SIZE, readFunc, writeFunc);
+    public TileMap(ReadableMemory readFunc, WritableMemory writeFunc, int tileMapStartAddress) {
+        this.tileIndices = new MappedByteRange(tileMapStartAddress, TILEMAP_SIZE * TILEMAP_SIZE, readFunc, writeFunc);
     }
 
     /**
@@ -36,9 +36,10 @@ public class TileMap {
     /**
      * Get the tile at the specified coordinate.
      * 
-     * @param x     The x coordinate to get the tile index from.
-     * @param y     The y coordinate to get the tile index from.
-     * @param tiles1 The tiles apply the tile index to.
+     * @param x      The x coordinate to get the tile index from.
+     * @param y      The y coordinate to get the tile index from.
+     * @param tiles1 'Tile block 1' of VRAM, used to get the correct tile.
+     * @param tilesN 'Tile block N' of VRAM, used to get the correct tile.
      * @return The tile at the specified coordinate.
      */
     public Tile getTileAtCoordinate(int x, int y, Tile[] tiles1, Tile[] tilesN) {
@@ -46,6 +47,6 @@ public class TileMap {
         if (index < 128)
             return tilesN[index];
         else
-            return tiles1[index];
+            return tiles1[index - 128];
     }
 }
