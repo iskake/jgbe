@@ -1,8 +1,9 @@
 package iskake.jgbe.core.gb.mem;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+
+import iskake.jgbe.core.NotImplementedException;
+import iskake.jgbe.core.gb.ROMHeader;
 
 /**
  * Read Only Memory of 'Game Boy game pak', separated into multiple
@@ -11,18 +12,44 @@ import java.util.List;
 public class CartridgeROM implements ReadableMemory, WritableMemory {
     private final ROMBank[] ROMBanks;
     private final MemoryBankController mbc;
-    // private RAM[] RAMBanks; // TODO add External RAM support
+    private final RAM[] RAMBanks;
 
     public CartridgeROM(byte[] bytes) {
-        List<ROMBank> tempBanks = new ArrayList<>();
+        int numROMBanks = ROMHeader.getROMBanksNum(bytes);
+        if (numROMBanks == -1) {
+            System.err.println("Invalid/unknown ROM bank size, assuming no extra banks...");
+            numROMBanks = 2;
 
-        for (int i = 0; i < (bytes.length / ROMBank.BANK_SIZE); i++) {
-            int offset = i * ROMBank.BANK_SIZE;
-            tempBanks.add(new ROMBank(Arrays.copyOfRange(bytes, offset, offset + ROMBank.BANK_SIZE)));
+            // ?Also possible fallback:
+            // numROMBanks = (bytes.length / ROMBank.BANK_SIZE);
+            // ?If this is used, should we try to assume the MBC type too?
         }
 
-        ROMBanks = tempBanks.toArray(new ROMBank[0]);
-        mbc = new NoMBC(); // Temp.
+        ROMBanks = new ROMBank[numROMBanks];
+        for (int i = 0; i < numROMBanks; i++) {
+            int offset = i * ROMBank.BANK_SIZE;
+            ROMBanks[i] = new ROMBank(Arrays.copyOfRange(bytes, offset, offset + ROMBank.BANK_SIZE));
+        }
+
+        MemoryBankController tmpMBC;
+        try {
+            tmpMBC = ROMHeader.getMBCType(ROMBanks[0]);
+        } catch (NotImplementedException | IllegalArgumentException e) {
+            System.err.println("Unimplemented/unknown MBC type, assuming no MBC...");
+            tmpMBC = new NoMBC();
+        }
+        mbc = tmpMBC;
+
+        int numRAMBanks = ROMHeader.getRAMBanksNum(ROMBanks[0]);
+        if (numRAMBanks == -1) {
+            System.err.println("Invalid/unknown RAM bank size, assuming no external RAM...");
+            numRAMBanks = 0;
+        }
+
+        RAMBanks = new RAM[numRAMBanks];
+        for (RAM bank : RAMBanks) {
+            bank = new RAM(0x2000); // TODO? handle RAM size < 8KiB.
+        }
     }
 
     /**
@@ -51,7 +78,8 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
      *         returned instead.
      */
     public RAM getRAMBank() {
-        return null; // TODO
+        // TODO: Test what reads to EXTRAM with no RAM bank returns.
+        return RAMBanks[0];
     }
 
     @Override
