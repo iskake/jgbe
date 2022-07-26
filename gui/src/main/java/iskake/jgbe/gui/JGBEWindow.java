@@ -13,10 +13,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.lwjgl.glfw.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class JGBEWindow {
+    private final static Logger log = LoggerFactory.getLogger(JGBEWindow.class);
+
     private final GameBoy gb;
     // private final GameBoyJoypad joypad;
     private final OpenGLRenderer renderer;
@@ -37,6 +41,8 @@ public class JGBEWindow {
     }
 
     public void init() {
+        log.info("Initializing JGBE");
+
         GLFWErrorCallback.createPrint(System.err).set();
         glfwInit();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -55,9 +61,13 @@ public class JGBEWindow {
         renderer.init(window);
 
         gb.restart(loadROM("rom/bin/test_tile.gb")); // temp
+
+        log.info("Finished initialization");
     }
 
     public void run() {
+        log.info("Entering the render loop");
+
         while (!glfwWindowShouldClose(window)) {
             long start = System.nanoTime();
 
@@ -65,7 +75,7 @@ public class JGBEWindow {
 
             long end = System.nanoTime();
             float deltaTime = (end - start) / 1_000_000f;
-            // System.out.println("delta: " + deltaTime + "ms");
+            log.debug("delta: " + deltaTime + "ms");
 
             glfwPollEvents();
             bb.put(gb.getFrame()).rewind();
@@ -75,6 +85,7 @@ public class JGBEWindow {
             // glfwSwapInterval(0); // Ignore vsync
             glfwSwapBuffers(window);
         }
+        log.info("Exited the render loop");
     }
 
     /**
@@ -83,7 +94,7 @@ public class JGBEWindow {
      * @param pathString the path to the ROM file.
      */
     private CartridgeROM loadROM(String pathString) {
-        System.out.println("Loading rom: " + pathString);
+        log.info("Loading rom: " + pathString);
         Path path = Paths.get(pathString);
         byte[] romFile;
 
@@ -93,23 +104,27 @@ public class JGBEWindow {
             String reason = e instanceof FileNotFoundException
                     || e instanceof NoSuchFileException
                             ? "file not found."
-                            : "an exception occurred: " + e.toString();
-            System.err.println("Could not read the file " + path.getFileName() + ": " + reason);
+                            : "an exception occurred: " + e;
+            log.error("Could not read the file " + path.getFileName() + ": " + reason);
             return null;
         }
 
         try {
             return new CartridgeROM(romFile);
         } catch (Exception e) {
-            System.err.println("Could not load the file " + path.getFileName() +
-                    ": an exception occurred: " + e.toString());
+            log.error("Could not load the file " + path.getFileName() +
+                    ": an exception occurred: " + e);
             return null;
         }
     }
 
     public void dispose() {
+        log.info("Terminating glfw");
+
         renderer.dispose();
         glfwTerminate();
         glfwSetErrorCallback(null).free();
+
+        log.info("Finished terminating glfw");
     }
 }
