@@ -45,7 +45,7 @@ public class BIT extends Instruction {
             case BIT_VAL -> {
                 boolean bitIsSet = gb.reg().isBitSet(reg, bitNum);
 
-                gb.reg().setFlagConditional(Flags.Z, !bitIsSet);
+                gb.reg().setFlagIf(Flags.Z, !bitIsSet);
                 gb.reg().resetFlag(Flags.N);
                 gb.reg().setFlag(Flags.H);
             }
@@ -59,7 +59,7 @@ public class BIT extends Instruction {
     /**
      * Unsupported, use {@code getFixedName} instead.
      * 
-     * @throws IllegalInstructionException
+     * @throws IllegalInstructionException Always.
      * @return Nothing, will throw an exception instead.
      */
     @Override
@@ -79,6 +79,7 @@ public class BIT extends Instruction {
         int opcodeType = (opcode >> 6);
         int bitNum = (opcode >> 3) & 0b111;
         int regNum = opcode & 0b111;
+        Register r = Register.tableIndex[regNum];
 
         String opcodeName = switch (opcodeType) {
             case BIT_VAL -> "bit";
@@ -87,11 +88,7 @@ public class BIT extends Instruction {
             default -> "invalid";
         };
 
-        Register r = Register.tableIndex[regNum];
-        String regName = switch (r) {
-            case HL -> "[hl]";
-            default -> r.name().toLowerCase();
-        };
+        String regName = r == Register.HL ? "[hl]" : r.name().toLowerCase();
 
         return String.format("%s %d, %s", opcodeName, bitNum, regName);
     }

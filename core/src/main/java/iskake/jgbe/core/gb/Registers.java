@@ -46,7 +46,7 @@ public class Registers {
          * ({@code xor h})
          */
         public static final Register[] tableIndex = { B, C, D, E, H, L, HL, A };
-    };
+    }
 
     /**
      * Flags for the Flags register ({@code Registers.F}).
@@ -165,7 +165,7 @@ public class Registers {
      * @param flag      The flag to set or reset.
      * @param condition The condition to set the flag based on.
      */
-    public void setFlagConditional(Flags flag, boolean condition) {
+    public void setFlagIf(Flags flag, boolean condition) {
         if (condition) {
             setFlag(flag);
         } else {
@@ -367,7 +367,7 @@ public class Registers {
     }
 
     /**
-     * Read the the short at the given 16-bit register {@code reg}
+     * Read the short at the given 16-bit register {@code reg}
      * 
      * @param reg Register to be read from
      * @return The short value of the given register
@@ -566,13 +566,12 @@ public class Registers {
     /**
      * Checks if the given register is valid for byte read/write operations.
      * If it is not, throw exception.
-     * 
+     *
      * @param reg Register to check.
      * @throws IndexOutOfBoundsException if the register is not an 8-bit register.
      */
-    private int checkByteRegister(Register reg) {
+    private void checkByteRegister(Register reg) {
         checkRegister(reg, false);
-        return 0;
     }
 
     /**

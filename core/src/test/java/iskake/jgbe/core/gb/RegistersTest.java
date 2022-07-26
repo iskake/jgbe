@@ -1,8 +1,5 @@
 package iskake.jgbe.core.gb;
 
-import iskake.jgbe.core.gb.GameBoy;
-import iskake.jgbe.core.gb.IGameBoy;
-import iskake.jgbe.core.gb.Registers;
 import iskake.jgbe.core.gb.Registers.Flags;
 import iskake.jgbe.core.gb.Registers.Register;
 import org.junit.jupiter.api.Test;
@@ -169,11 +166,11 @@ public class RegistersTest {
         assertFalse(reg.isFlagSet(Flags.C));
         assertEquals((byte)0b0000_0000, reg.readByte(F));
 
-        reg.setFlagConditional(Flags.N, (1 == 2));
+        reg.setFlagIf(Flags.N, false);
         assertFalse(reg.isFlagSet(Flags.N));
 
         reg.setFlag(Flags.C);
-        reg.setFlagConditional(Flags.N, reg.isFlagSet(Flags.C));
+        reg.setFlagIf(Flags.N, reg.isFlagSet(Flags.C));
         assertTrue(reg.isFlagSet(Flags.N));
     }
 }

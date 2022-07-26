@@ -48,12 +48,12 @@ public class ADD_rr_nn extends Instruction {
 
             gb.reg().writeByte(r1, regVal + value + c);
 
-            gb.reg().setFlagConditional(Flags.Z, (byte) (regVal + value + c) == 0);
+            gb.reg().setFlagIf(Flags.Z, (byte) (regVal + value + c) == 0);
             gb.reg().resetFlag(Flags.N);
-            gb.reg().setFlagConditional(Flags.H,
+            gb.reg().setFlagIf(Flags.H,
                     (((Byte.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111) + c) > 0b1111));
 
-            gb.reg().setFlagConditional(Flags.C, ((Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) + c) > 0xff));
+            gb.reg().setFlagIf(Flags.C, ((Byte.toUnsignedInt(regVal) + Byte.toUnsignedInt(value) + c) > 0xff));
         } else if (opcode == OP_ADD_SP_E8) {
             // add sp, $e8
             byte value = gb.readNextByte();
@@ -62,18 +62,18 @@ public class ADD_rr_nn extends Instruction {
 
             gb.reg().resetFlag(Flags.Z);
             gb.reg().resetFlag(Flags.N);
-            gb.reg().setFlagConditional(Flags.H,
+            gb.reg().setFlagIf(Flags.H,
                     ((Short.toUnsignedInt(regVal) & 0b1111) + (Byte.toUnsignedInt(value) & 0b1111)) > 0b1111);
-            gb.reg().setFlagConditional(Flags.C, (Short.toUnsignedInt(regVal) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
+            gb.reg().setFlagIf(Flags.C, (Short.toUnsignedInt(regVal) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
             short r1Val = gb.reg().readShort(r1);
             short r2Val = gb.reg().readShort(r2);
 
             gb.reg().writeShort(r1, r1Val + r2Val);
             gb.reg().resetFlag(Flags.N);
-            gb.reg().setFlagConditional(Flags.H,
+            gb.reg().setFlagIf(Flags.H,
                     ((Short.toUnsignedInt(r1Val) & 0xfff) + (Short.toUnsignedInt(r2Val) & 0xfff) > 0xfff));
-            gb.reg().setFlagConditional(Flags.C, Short.toUnsignedInt(r1Val) + Short.toUnsignedInt(r2Val) > 0xffff);
+            gb.reg().setFlagIf(Flags.C, Short.toUnsignedInt(r1Val) + Short.toUnsignedInt(r2Val) > 0xffff);
         }
     }
 

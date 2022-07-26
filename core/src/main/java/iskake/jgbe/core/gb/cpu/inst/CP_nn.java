@@ -25,10 +25,10 @@ public class CP_nn extends Instruction {
 
         byte a = gb.reg().readByte(Register.A);
 
-        gb.reg().setFlagConditional(Flags.Z, a - value == 0);
+        gb.reg().setFlagIf(Flags.Z, a - value == 0);
         gb.reg().setFlag(Flags.N);
-        gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < (Byte.toUnsignedInt(value) & 0b1111));
-        gb.reg().setFlagConditional(Flags.C, Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value));
+        gb.reg().setFlagIf(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < (Byte.toUnsignedInt(value) & 0b1111));
+        gb.reg().setFlagIf(Flags.C, Byte.toUnsignedInt(a) < Byte.toUnsignedInt(value));
     }
 
 }

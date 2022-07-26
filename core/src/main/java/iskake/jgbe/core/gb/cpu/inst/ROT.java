@@ -67,19 +67,20 @@ public class ROT extends Instruction {
         };
 
         if (prefixed) {
-            gb.reg().setFlagConditional(Flags.Z, gb.reg().readByte(reg) == 0);
+            gb.reg().setFlagIf(Flags.Z, gb.reg().readByte(reg) == 0);
         } else {
             gb.reg().resetFlag(Flags.Z);
         }
 
         gb.reg().resetFlag(Flags.N);
         gb.reg().resetFlag(Flags.H);
-        gb.reg().setFlagConditional(Flags.C, result == 1);
+        gb.reg().setFlagIf(Flags.C, result == 1);
     }
 
     public static String getFixedName(int opcode) {
         int opcodeType = (opcode >> 3);
         int regNum = opcode & 0b111;
+        Register r = Register.tableIndex[regNum];
 
         String opcodeName = switch (opcodeType) {
             case RLC_VAL -> "rlc";
@@ -93,11 +94,7 @@ public class ROT extends Instruction {
             default -> "invalid";
         };
 
-        Register r = Register.tableIndex[regNum];
-        String regName = switch (r) {
-            case HL -> "[hl]";
-            default -> r.name().toLowerCase();
-        };
+        String regName = r == Register.HL ? "[hl]" : r.name().toLowerCase();
 
         return String.format("%s %s", opcodeName, regName);
     }

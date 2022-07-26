@@ -36,10 +36,10 @@ public class SUB_rr_nn extends Instruction {
 
         gb.reg().writeByte(r1, a - value - c);
 
-        gb.reg().setFlagConditional(Flags.Z, (byte) (a - value - c) == 0);
+        gb.reg().setFlagIf(Flags.Z, (byte) (a - value - c) == 0);
         gb.reg().setFlag(Flags.N);
-        gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < ((Byte.toUnsignedInt(value) & 0b1111) + c));
-        gb.reg().setFlagConditional(Flags.C, ((Byte.toUnsignedInt(a) - Byte.toUnsignedInt(value) - c) & 0xfff) > 0xff);
+        gb.reg().setFlagIf(Flags.H, (Byte.toUnsignedInt(a) & 0b1111) < ((Byte.toUnsignedInt(value) & 0b1111) + c));
+        gb.reg().setFlagIf(Flags.C, ((Byte.toUnsignedInt(a) - Byte.toUnsignedInt(value) - c) & 0xfff) > 0xff);
     }
 
 }

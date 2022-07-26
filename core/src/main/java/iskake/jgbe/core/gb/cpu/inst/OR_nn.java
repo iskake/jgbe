@@ -26,7 +26,7 @@ public class OR_nn extends Instruction {
 
         gb.reg().writeByte(Register.A, a | value);
 
-        gb.reg().setFlagConditional(Flags.Z, (a | value) == 0);
+        gb.reg().setFlagIf(Flags.Z, (a | value) == 0);
         gb.reg().resetFlag(Flags.N);
         gb.reg().resetFlag(Flags.H);
         gb.reg().resetFlag(Flags.C);

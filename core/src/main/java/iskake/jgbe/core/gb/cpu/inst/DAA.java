@@ -46,7 +46,7 @@ public class DAA extends Instruction {
         }
 
         gb.reg().writeByte(Register.A, value);
-        gb.reg().setFlagConditional(Flags.Z, (value & 0xff) == 0);
+        gb.reg().setFlagIf(Flags.Z, (value & 0xff) == 0);
         gb.reg().resetFlag(Flags.H);
     }
 

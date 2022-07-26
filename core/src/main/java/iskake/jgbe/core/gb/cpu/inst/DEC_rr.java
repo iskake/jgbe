@@ -29,9 +29,9 @@ public class DEC_rr extends Instruction {
 
             byte value = gb.reg().readByte(reg);
 
-            gb.reg().setFlagConditional(Flags.Z, value == 0);
+            gb.reg().setFlagIf(Flags.Z, value == 0);
             gb.reg().setFlag(Flags.N);
-            gb.reg().setFlagConditional(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0b1111);
+            gb.reg().setFlagIf(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0b1111);
 
         } else {
             gb.reg().decShort(reg);

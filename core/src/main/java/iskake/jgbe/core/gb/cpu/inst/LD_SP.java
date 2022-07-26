@@ -29,9 +29,9 @@ public class LD_SP extends Instruction {
 
             gb.reg().resetFlag(Flags.Z);
             gb.reg().resetFlag(Flags.N);
-            gb.reg().setFlagConditional(Flags.H,
+            gb.reg().setFlagIf(Flags.H,
                     (Short.toUnsignedInt(sp) & 0b111) + (Byte.toUnsignedInt(value) & 0b111) > 0b111);
-            gb.reg().setFlagConditional(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
+            gb.reg().setFlagIf(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
         } else {
             // ld sp, hl
             gb.sp().set(gb.reg().readShort(Register.HL));
