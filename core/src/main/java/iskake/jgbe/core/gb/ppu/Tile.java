@@ -62,7 +62,7 @@ public class Tile {
                     | (b1 & 0b00001000) << 3
                     | (b1 & 0b00000100) << 2
                     | (b1 & 0b00000010) << 1
-                    | (b1 & 0b00000001) << 0);
+                    | (b1 & 0b00000001));
             b2 = ((b2 & 0b10000000) << 8
                     | (b2 & 0b01000000) << 7
                     | (b2 & 0b00100000) << 6
@@ -79,10 +79,10 @@ public class Tile {
     }
 
     /**
-     * Get the decoded line of pixels specified.
+     * Get the decoded line of dots specified.
      * 
      * @param y The line to get.
-     * @return
+     * @return The line of dots corresponding to the y value.
      */
     public int getLine(int y) throws IndexOutOfBoundsException {
         return Short.toUnsignedInt(decodedLines[y]);
@@ -99,5 +99,12 @@ public class Tile {
         int line = getLine(y);
         int pixel = 0xe - (x << 1);
         return (byte)((line & (0b11 << pixel)) >> pixel);
+    }
+
+    public static Tile getTileAtIndex(int index, Tile[] tiles1, Tile[] tilesN) {
+        if (index < 128)
+            return tilesN[index];
+        else
+            return tiles1[index - 128];
     }
 }

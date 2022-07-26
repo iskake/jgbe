@@ -44,9 +44,6 @@ public class TileMap {
      */
     public Tile getTileAtCoordinate(int x, int y, Tile[] tiles1, Tile[] tilesN) {
         int index = Byte.toUnsignedInt(getTileIndexAtCoordinate(x, y));
-        if (index < 128)
-            return tilesN[index];
-        else
-            return tiles1[index - 128];
+        return Tile.getTileAtIndex(index, tiles1, tilesN);
     }
 }
