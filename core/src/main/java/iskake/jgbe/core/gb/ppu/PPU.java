@@ -51,8 +51,14 @@ public class PPU {
      * @param bg           The background tilemap to draw.
      */
     private void createScanlineBG(int currScanline, Tile[] tilesN, Tile[] tiles1, TileMap bg) {
-        if (!ppuControl.isBGAndWindowEnabled())
+        if (!ppuControl.isBGAndWindowEnabled()) {
+            for (int i = 0; i < LCD_SIZE_X; i++) {
+                // Possible 'solution' to missing tiles: use invalid index (4, -1, etc.) to represent
+                // 'invisible' or no values, for use when bg is not enabled (when the screen is off as well)
+                bgBuffer[currScanline * LCD_SIZE_X + i] = -1;
+            }
             return;
+        }
 
         int SCY = hwreg.readAsInt(HardwareRegister.SCY);
         int SCX = hwreg.readAsInt(HardwareRegister.SCX);
@@ -70,29 +76,40 @@ public class PPU {
     }
 
     private void createScanlineWIN(int currScanline, Tile[] tilesN, Tile[] tiles1, TileMap map) {
-        // Possible 'solution' to missing tiles: use invalid index (4, -1, etc.) to represent
-        // 'invisible' or no values, for use when window is not enabled (/ no tiles?)
-
-        if (!ppuControl.isBGAndWindowEnabled() || !ppuControl.isWindowEnabled())
-            return;
-
         int wx = hwreg.readAsInt(HardwareRegister.WX); // TODO: use this to calculate dots
         int wy = hwreg.readAsInt(HardwareRegister.WY); // TODO: use this to calculate dots
+
+        boolean coordinateInRange = (wx <= 166) && (wy <= 143);
+
+        if (!coordinateInRange || !ppuControl.isBGAndWindowEnabled() || !ppuControl.isWindowEnabled()) {
+            // Possible 'solution' to missing tiles: use invalid index (4, -1, etc.) to represent
+            // 'invisible' or no values, for use when window is not enabled (/ no tiles?)
+            for (int i = 0; i < LCD_SIZE_X; i++) {
+                winBuffer[currScanline * LCD_SIZE_X + i] = -1;
+            }
+            return;
+        }
+
         int bgp = hwreg.readAsInt(HardwareRegister.BGP);
 
         for (int i = 0; i < LCD_SIZE_X; i++) {
-            int dx = i & 255;
-            int dy = currScanline & 255;
-            Tile t = map.getTileAtCoordinate(dx, dy, tiles1, tilesN);
-            t.decode();
-            byte dotCol = t.getDot(dx % 8, dy % 8);
+//            int dx = i & 255;
+//            int dy = currScanline & 255;
+//            Tile t = map.getTileAtCoordinate(dx, dy, tiles1, tilesN);
+//            t.decode();
+//            byte dotCol = t.getDot(dx % 8, dy % 8);
+            byte dotCol = 4; // TEMP
             winBuffer[currScanline * LCD_SIZE_X + i] = dotCol;
         }
     }
 
     private void createScanlineSPR(int currScanline, Tile[] tilesN, Tile[] tiles1, Sprite[] sprites) {
-        if (!ppuControl.areOBJsEnabled())
+        if (!ppuControl.areOBJsEnabled()) {
+            for (int i = 0; i < LCD_SIZE_X; i++) {
+                sprBuffer[currScanline * LCD_SIZE_X + i] = 0;
+            }
             return;
+        }
 
         int SCY = hwreg.readAsInt(HardwareRegister.SCY);
         int SCX = hwreg.readAsInt(HardwareRegister.SCX);
@@ -144,7 +161,7 @@ public class PPU {
             Tile t = Tile.getTileAtIndex(sprites[0].getTileIndex(), tiles1, tilesN);
             t.decode();
             byte dotCol = t.getDot(dx % 8, dy % 8);
-            bgBuffer[currScanline * LCD_SIZE_X + i] = dotCol;
+            sprBuffer[currScanline * LCD_SIZE_X + i] = dotCol;
         }
     }
 
@@ -153,6 +170,7 @@ public class PPU {
      * Adds the scanline specified in the LY register, unless the value is >= 144.
      */
     public void addScanline() {
+        // TODO: https://gbdev.io/pandocs/Scrolling.html#mid-frame-behavior
         int line = hwreg.readAsInt(HardwareRegister.LY);
 
         if (line < LCD_SIZE_Y) {
@@ -165,7 +183,7 @@ public class PPU {
 
             // Update the scanline buffers.
             createScanlineBG(line, tilesN, tiles1, BG);
-//            createScanlineWIN(line, tilesN, tiles1, window); // TODO: Handle window
+            createScanlineWIN(line, tilesN, tiles1, window); // TODO: Handle window
             createScanlineSPR(line, tilesN, tiles1, sprites);
         }
     }
@@ -200,14 +218,19 @@ public class PPU {
                 frameBuffer[i] = COLORS_MAP[sprColor];
                 frameBuffer[i + 1] = COLORS_MAP[sprColor];
                 frameBuffer[i + 2] = COLORS_MAP[sprColor];
-//            } else if (winColor != -1) {
-//                frameBuffer[i] = COLORS_MAP[winColor];
-//                frameBuffer[i + 1] = COLORS_MAP[winColor];
-//                frameBuffer[i + 2] = COLORS_MAP[winColor];
-            } else {
-                frameBuffer[i] =     COLORS_MAP[bgColor];
+            } else if (winColor != -1) {
+                frameBuffer[i] = COLORS_MAP[winColor];
+                frameBuffer[i + 1] = COLORS_MAP[winColor];
+                frameBuffer[i + 2] = COLORS_MAP[winColor];
+            } else if (bgColor != -1) {
+                frameBuffer[i] = COLORS_MAP[bgColor];
                 frameBuffer[i + 1] = COLORS_MAP[bgColor];
                 frameBuffer[i + 2] = COLORS_MAP[bgColor];
+            } else {
+                // Should just be 'white'
+                frameBuffer[i] = COLORS_MAP[0];
+                frameBuffer[i + 1] = COLORS_MAP[0];
+                frameBuffer[i + 2] = COLORS_MAP[0];
             }
         }
         return frameBuffer;
