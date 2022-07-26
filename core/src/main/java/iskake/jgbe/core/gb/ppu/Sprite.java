@@ -8,13 +8,20 @@ import iskake.jgbe.core.gb.mem.WritableMemory;
  * Represents a sprite (or, 'object') as specified in OAM.
  */
 public class Sprite {
+    public static final int MASK_PALETTE_NO_CGB = 0b0000_0111;
+    public static final int MASK_TILE_BANK_CGB  = 0b0000_1000;
+    public static final int MASK_PALETTE_NO     = 0b0001_0000;
+    public static final int MASK_FLIP_X         = 0b0010_0000;
+    public static final int MASK_FLIP_Y         = 0b0100_0000;
+    public static final int MASK_BG_WIN_OVER    = 0b1000_0000;
+
     private final MappedByte yPos, xPos, tileIndex, attributes;
 
-    public Sprite(ReadableMemory readFunc, WritableMemory writeFunc, int oamIndexStartAddress) {
-        this.yPos =       new MappedByte(oamIndexStartAddress + 0, readFunc, writeFunc);
-        this.xPos =       new MappedByte(oamIndexStartAddress + 1, readFunc, writeFunc);
-        this.tileIndex =  new MappedByte(oamIndexStartAddress + 2, readFunc, writeFunc);
-        this.attributes = new MappedByte(oamIndexStartAddress + 3, readFunc, writeFunc);
+    public Sprite(ReadableMemory readFunc, WritableMemory writeFunc, int oamIndex) {
+        this.yPos =       new MappedByte(oamIndex, readFunc, writeFunc);
+        this.xPos =       new MappedByte(oamIndex + 1, readFunc, writeFunc);
+        this.tileIndex =  new MappedByte(oamIndex + 2, readFunc, writeFunc);
+        this.attributes = new MappedByte(oamIndex + 3, readFunc, writeFunc);
     }
 
     /**
