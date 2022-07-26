@@ -8,9 +8,10 @@
         <groupId>iskake</groupId>
         <artifactId>jgbe</artifactId>
         <version>0.1-dev</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath/>
     </parent>
 
+    <groupId>iskake</groupId>
     <artifactId>gui</artifactId>
     <version>0.1-dev</version>
 

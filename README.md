@@ -1,11 +1,13 @@
-# JGBE
+# JGBE Kotlin branch
 
-JGBE is a Game Boy Emualator written in Java.
+Experimental branch for migrating most (if not all) of the codebase
+over to Kotlin from Java.
 
-## References
-
-[Pandocs](https://gbdev.io/pandocs/) general reference.
-
-[RGBDS docs](https://rgbds.gbdev.io/docs/v0.5.2/gbz80.7) for instruction reference.
-
-[GBDocs opcode table](https://gbdev.io/gb-opcodes//optables/) for opcode indices.
+The main reasons for doing this (in order of importance):
+- Unsigned integer types
+  - This would mean not having to cast every byte and short `toUnsignedInt`
+  and back when doing arithmetic or bitwise operations.
+  - (Though, unsigned arrays are currently in beta)
+- Syntactic sugar such as _operator overloading_
+- More modern and functional than Java, less verbose.
+- ?

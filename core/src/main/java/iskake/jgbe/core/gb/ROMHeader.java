@@ -34,7 +34,7 @@ public class ROMHeader {
     /**
      * Get the ROM size in amount of banks, according to the header.
      * 
-     * @param bank The ROM bank to get the data from.
+     * @param data The data of the ROM bank.
      * @return The ROM size in bytes, or -1 if the detected size is invalid.
      */
     public static int getROMBanksNum(byte[] data) {
@@ -62,12 +62,12 @@ public class ROMHeader {
      * @return The ROM title.
      */
     public static String getTitle(ROMBank bank) {
-        return new String(Arrays.copyOfRange(bank.bytes(), 0x134, 0x144));
+        return new String(Arrays.copyOfRange(bank.getBytes(), 0x134, 0x144));
     }
 
     public static MemoryBankController getMBCType(ROMBank romBank)
             throws NotImplementedException, IllegalArgumentException {
-        int MBCType = Byte.toUnsignedInt(romBank.bytes()[0x147]);
+        int MBCType = Byte.toUnsignedInt(romBank.getBytes()[0x147]);
         return switch (MBCType) {
             case 0x00 -> new NoMBC();
             case 0x01 -> throw new NotImplementedException("Unimplemented MBC: 'MBC1'");
@@ -108,7 +108,7 @@ public class ROMHeader {
      * @return The ROM size in bytes, or -1 if the detected size is invalid.
      */
     public static int getROMSize(ROMBank bank) {
-        return switch (bank.bytes()[0x148]) {
+        return switch (bank.getBytes()[0x148]) {
             case 0x00 -> 0x8000;
             case 0x01 -> 0x10000;
             case 0x02 -> 0x20000;
@@ -129,7 +129,7 @@ public class ROMHeader {
      * @return The ROM size as a formatted string.
      */
     public static String getROMSizeString(ROMBank bank) {
-        return switch (bank.bytes()[0x148]) {
+        return switch (bank.getBytes()[0x148]) {
             case 0x00 -> "32 KiB";
             case 0x01 -> "64 KiB";
             case 0x02 -> "128 KiB";
@@ -150,7 +150,7 @@ public class ROMHeader {
      * @return The number or RAM banks, or -1 if the detected size is invalid.
      */
     public static int getRAMBanksNum(ROMBank bank) {
-        return switch (bank.bytes()[0x149]) {
+        return switch (bank.getBytes()[0x149]) {
             case 0x00 -> 0; // TODO: MBC2 lists $00 while in actuality having 512*4bits of RAM
             // case 0x01 -> ???;
             case 0x02 -> 1;
@@ -168,7 +168,7 @@ public class ROMHeader {
      * @return The RAM size in bytes, or -1 if the detected size is invalid.
      */
     public static int getRAMSize(ROMBank bank) {
-        return switch (bank.bytes()[0x149]) {
+        return switch (bank.getBytes()[0x149]) {
             case 0x00 -> 0;
             case 0x02 -> 0x2000;
             case 0x03 -> 0x8000;
@@ -185,7 +185,7 @@ public class ROMHeader {
      * @return The ROM size as a formatted string.
      */
     public static String getRAMSizeString(ROMBank bank) {
-        return switch (bank.bytes()[0x149]) {
+        return switch (bank.getBytes()[0x149]) {
             case 0x00 -> "None";
             case 0x02 -> "8 KiB";
             case 0x03 -> "32 KiB";
@@ -202,7 +202,7 @@ public class ROMHeader {
      * @return The destination code as a formatted string.
      */
     public static String getDestinationCode(ROMBank bank) {
-        return switch (bank.bytes()[0x14a]) {
+        return switch (bank.getBytes()[0x14a]) {
             case 0x00 -> "Japan";
             case 0x01 -> "International";
             default -> "Invalid";
@@ -216,7 +216,7 @@ public class ROMHeader {
      * @return The version number as an int.
      */
     public static byte getVersionNumber(ROMBank bank) {
-        return bank.bytes()[0x14c];
+        return bank.getBytes()[0x14c];
     }
 
     /**
@@ -226,7 +226,7 @@ public class ROMHeader {
      * @return The header checksum as a byte.
      */
     public static byte getHeaderChecksum(ROMBank bank) {
-        return bank.bytes()[0x14d];
+        return bank.getBytes()[0x14d];
     }
 
     /**
@@ -236,7 +236,7 @@ public class ROMHeader {
      * @return The global checksum as a short.
      */
     public static short getGlobalChecksum(ROMBank bank) {
-        return Bitwise.toShort(bank.bytes()[0x4e], bank.bytes()[0x14f]);
+        return Bitwise.toShort(bank.getBytes()[0x4e], bank.getBytes()[0x14f]);
     }
 
     /**
@@ -250,7 +250,7 @@ public class ROMHeader {
             return false;
 
         for (int i = 0; i < logo.length; i++) {
-            if (bank.bytes()[0x104 + i] != logo[i]) {
+            if (bank.getBytes()[0x104 + i] != logo[i]) {
                 return false;
             }
         }
@@ -270,9 +270,9 @@ public class ROMHeader {
         int x = 0;
         int i = 0x134;
         while (i <= 0x14c) {
-            x = x - bank.bytes()[i] - 1;
+            x = x - bank.getBytes()[i] - 1;
             i++;
         }
-        return (byte) x == bank.bytes()[0x14d];
+        return (byte) x == bank.getBytes()[0x14d];
     }
 }
