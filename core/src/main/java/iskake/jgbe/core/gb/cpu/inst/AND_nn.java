@@ -20,13 +20,7 @@ public class AND_nn extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        byte value;
-
-        if (reg == null) {
-            value = gb.readNextByte();
-        } else {
-            value = gb.reg().readByte(reg);
-        }
+        byte value = reg == null ? gb.readNextByte() : gb.reg().readByte(reg);
 
         byte a = gb.reg().readByte(Register.A);
 

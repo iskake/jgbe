@@ -27,14 +27,12 @@ public enum Conditions {
      * @return The result for the given condition.
      */
     public static boolean conditionSatisfied(Registers reg, Conditions condition) {
-        boolean result = switch (condition) {
+        return switch (condition) {
             case NONE -> true;
             case Z -> reg.isFlagSet(Flags.Z);
             case NZ -> !reg.isFlagSet(Flags.Z);
             case C -> reg.isFlagSet(Flags.C);
             case NC -> !reg.isFlagSet(Flags.C);
         };
-
-        return result;
     }
 }

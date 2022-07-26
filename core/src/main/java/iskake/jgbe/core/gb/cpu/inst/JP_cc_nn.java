@@ -23,13 +23,7 @@ public class JP_cc_nn extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        short address;
-
-        if (opcode == OP_JP_HL) {
-            address = gb.reg().readShort(Register.HL);
-        } else {
-            address = gb.readNextShort();
-        }
+        short address = opcode == OP_JP_HL ? gb.reg().readShort(Register.HL) : gb.readNextShort();
 
         if (Conditions.conditionSatisfied(gb.reg(), condition)) {
             if (opcode != 0xe9) {

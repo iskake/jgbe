@@ -36,13 +36,7 @@ public class ADD_rr_nn extends Instruction {
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         if (Registers.isByteRegister(r1) || opcode == OP_ADD_A_$HL) {
-            byte value;
-
-            if (r2 == null) {
-                value = gb.readNextByte();
-            } else {
-                value = gb.reg().readByte(r2);
-            }
+            byte value = r2 == null ? gb.readNextByte() : gb.reg().readByte(r2);
 
             byte c = 0;
             if (carry) {

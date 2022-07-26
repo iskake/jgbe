@@ -24,13 +24,7 @@ public class SUB_rr_nn extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        byte value;
-
-        if (r2 == null) {
-            value = gb.readNextByte();
-        } else {
-            value = gb.reg().readByte(r2);
-        }
+        byte value = r2 == null ? gb.readNextByte() : gb.reg().readByte(r2);
 
         byte c = 0;
         if (carry) {

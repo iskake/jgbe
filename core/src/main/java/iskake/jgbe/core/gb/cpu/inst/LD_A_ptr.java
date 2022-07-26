@@ -25,8 +25,6 @@ public class LD_A_ptr extends Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
-        byte value;
-
         // Because the three implemented opcodes (see javadoc above class) all load a
         // value from an address into the A register (hence, `LD_A_ptr`), we can use the
         // same class for all three opcodes.
@@ -39,7 +37,7 @@ public class LD_A_ptr extends Instruction {
             default -> gb.readNextShort();
         };
 
-        value = gb.readAddress(address);
+        byte value = gb.readAddress(address);
         gb.reg().writeByte(reg, value);
     }
 
