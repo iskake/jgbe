@@ -50,8 +50,8 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
         }
 
         RAMBanks = new RAM[numRAMBanks];
-        for (RAM bank : RAMBanks) {
-            bank = new RAM(0x2000); // TODO? handle RAM size < 8KiB.
+        for (int i = 0; i < RAMBanks.length; i++) {
+            RAMBanks[i] = new RAM(0x2000); // TODO? handle RAM size < 8KiB.
         }
     }
 
