@@ -2,6 +2,8 @@ package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.gb.HardwareRegisters;
 import iskake.jgbe.core.Bitwise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Memory map of the Game boy.
@@ -10,6 +12,7 @@ import iskake.jgbe.core.Bitwise;
  * $0000-$ffff ($10000 bytes)
  */
 public class MemoryMap implements WritableMemory, ReadableMemory {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private CartridgeROM rom;
     private final HardwareRegisters hwreg;
     private final VRAM VRAM;
@@ -50,7 +53,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     public byte read(int address) {
         // TODO: DMA
         if (hwreg.isDMATransfer() && Bitwise.intAsShort(address) < (short)0xff00) {
-            System.out.println(address);
+            log.warn("Attempting to read memory address during DMA: $%04x".formatted(address));
             return (byte) 0xff;
         }
         ReadableMemory memory = (ReadableMemory) getMemoryIndex(address);
@@ -104,13 +107,13 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         } else if (address < 0xF000) {
             // e000-f000 = 1000
             // (Mirror of c000-ddff)
-            // System.out.println("Accessing ECHO RAM.");
+             log.warn("Accessing ECHO RAM.");
             fixedAddress -= 0xe000;
             return WRAM1;
         } else if (address < 0xFE00) {
             // e000-fdff = e00
             // (Mirror of c000-ddff)
-            // System.out.println("Accessing ECHO RAM.");
+             log.warn("Accessing ECHO RAM.");
             fixedAddress -= 0xf000;
             return WRAM2;
         } else if (address < 0xFEA0) {

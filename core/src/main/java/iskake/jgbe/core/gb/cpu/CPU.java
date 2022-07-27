@@ -2,8 +2,11 @@ package iskake.jgbe.core.gb.cpu;
 
 import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.interrupt.InterruptHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CPU {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final IGameBoy gb;
     private final InterruptHandler interrupts;
 
@@ -36,11 +39,11 @@ public class CPU {
 
         short newPC = gb.pc().get();
 
-        // Temp.
+        // TODO: Do something about this, for example: show an alert, don't just exit.
         if (oldPC == newPC && !interrupts.enabled()) {
             gb.reg().printValues();
             printNextInstruction();
-            System.err.println("JGBE has encountered an infinite loop. Exiting...");
+            log.error("JGBE has encountered an infinite loop. Exiting...");
             System.exit(0);
         }
     }

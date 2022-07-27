@@ -4,12 +4,15 @@ import java.util.Arrays;
 
 import iskake.jgbe.core.NotImplementedException;
 import iskake.jgbe.core.gb.ROMHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Read Only Memory of 'Game Boy game pak', separated into multiple
  * {@code ROMBank}s.
  */
 public class CartridgeROM implements ReadableMemory, WritableMemory {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final ROMBank[] ROMBanks;
     private final MemoryBankController mbc;
     private final RAM[] RAMBanks;
@@ -17,7 +20,7 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
     public CartridgeROM(byte[] bytes) {
         int numROMBanks = ROMHeader.getROMBanksNum(bytes);
         if (numROMBanks == -1) {
-            System.err.println("Invalid/unknown ROM bank size, assuming no extra banks...");
+            log.warn("Invalid/unknown ROM bank size, assuming no extra banks...");
             numROMBanks = 2;
 
             // ?Also possible fallback:
@@ -35,14 +38,14 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
         try {
             tmpMBC = ROMHeader.getMBCType(ROMBanks[0]);
         } catch (NotImplementedException | IllegalArgumentException e) {
-            System.err.println("Unimplemented/unknown MBC type, assuming no MBC...");
+            log.warn("Unimplemented/unknown MBC type, assuming no MBC...");
             tmpMBC = new NoMBC();
         }
         mbc = tmpMBC;
 
         int numRAMBanks = ROMHeader.getRAMBanksNum(ROMBanks[0]);
         if (numRAMBanks == -1) {
-            System.err.println("Invalid/unknown RAM bank size, assuming no external RAM...");
+            log.warn("Invalid/unknown RAM bank size, assuming no external RAM...");
             numRAMBanks = 0;
         }
 

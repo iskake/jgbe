@@ -15,11 +15,14 @@ import iskake.jgbe.core.gb.ppu.PPU;
 import iskake.jgbe.core.gb.ppu.PPUController;
 import iskake.jgbe.core.gb.timing.Timing;
 import iskake.jgbe.core.Bitwise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a Game Boy (model 'DMG')
  */
 public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     // TODO: joypad handling+dma
     public final ProgramCounter pc;
     public final StackPointer sp;
@@ -89,20 +92,20 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         boolean willStop = false;
         try {
             if (!ROMHeader.validLogo(rom.getROMBank0())) {
-                System.out.println("Invalid logo!");
+                log.warn("Invalid logo!");
                 willStop = true;
             }
             if (!ROMHeader.validHeaderChecksum(rom.getROMBank0())) {
-                System.out.println("Invalid checksum!");
+                log.warn("Invalid checksum!");
                 willStop = true;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.err.println(e);
+            log.error(e.toString());
             willStop = true;
         }
 
         if (willStop) {
-            System.out.println("The provided ROM file is invalid or corrupted.");
+            log.warn("The provided ROM file is invalid or corrupted.");
             stopRunning();
             return;
         }
@@ -113,8 +116,8 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     /**
      * Hard reset the Game Boy, starts initialization over again.
-     * 
-     * @param rom
+     *
+     * @param rom The ROM file to load after initializing.
      */
     public void restart(CartridgeROM rom) {
         init(rom);
@@ -122,7 +125,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     /**
      * Get the currently loaded ROM file, unless one is loaded.
-     * 
+     *
      * @return The currently loaded ROM (or {@code null}, if none is loaded)
      */
     public CartridgeROM getROM() {
@@ -169,7 +172,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
      * {@code end}.
      * <p>
      * Each line is formatted into 16 bytes (if applicable).
-     * 
+     *
      * @param start The starting memory address to read from.
      * @param end   The memory address to read to and from.
      */
@@ -194,7 +197,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     /**
      * Check if the GameBoy is running.
-     * 
+     *
      * @return {@code true} if the GameBoy is running, {@code false} otherwise.
      */
     public boolean isRunning() {
