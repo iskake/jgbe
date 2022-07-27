@@ -2,7 +2,7 @@ package iskake.jgbe.gui;
 
 public class Main {
     public static void main(String[] args) {
-        JGBEWindow gui = new JGBEWindow();
+        GUI gui = new GUI();
         gui.init();
         gui.run();
         gui.dispose();
