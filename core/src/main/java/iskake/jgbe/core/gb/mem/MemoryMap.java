@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * $0000-$ffff ($10000 bytes)
  */
 public class MemoryMap implements WritableMemory, ReadableMemory {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(MemoryMap.class);
     private CartridgeROM rom;
     private final HardwareRegisters hwreg;
     private final VRAM VRAM;

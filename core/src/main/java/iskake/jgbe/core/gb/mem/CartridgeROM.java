@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * {@code ROMBank}s.
  */
 public class CartridgeROM implements ReadableMemory, WritableMemory {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(CartridgeROM.class);
     private final ROMBank[] ROMBanks;
     private final MemoryBankController mbc;
     private final RAM[] RAMBanks;

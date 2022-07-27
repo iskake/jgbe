@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * According to Nintendo, use of this area is prohibited.
  */
 public class ProhibitedMemory implements WritableMemory, ReadableMemory {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(ProhibitedMemory.class);
     private final HardwareRegisters hwreg;
 
     public ProhibitedMemory(HardwareRegisters hwreg) {

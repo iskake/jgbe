@@ -5,8 +5,8 @@ import iskake.jgbe.core.gb.interrupt.InterruptHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CPU {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+public class CPU  {
+    private static final Logger log = LoggerFactory.getLogger(CPU.class);
     private final IGameBoy gb;
     private final InterruptHandler interrupts;
 

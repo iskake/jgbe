@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * Represents a Game Boy (model 'DMG')
  */
 public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(GameBoy.class);
     // TODO: joypad handling+dma
     public final ProgramCounter pc;
     public final StackPointer sp;

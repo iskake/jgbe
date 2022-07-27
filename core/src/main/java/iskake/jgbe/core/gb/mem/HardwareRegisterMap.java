@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * Memory map of hardware registers.
  */
 public class HardwareRegisterMap implements ReadableMemory, WritableMemory {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(HardwareRegisterMap.class);
     private final HardwareRegisters hwreg;
 
     public HardwareRegisterMap(HardwareRegisters hwreg) {
