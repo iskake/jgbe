@@ -22,7 +22,7 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <lwjgl.version>3.3.1</lwjgl.version>
-	    <lwjgl3-awt.version>0.1.8</lwjgl3-awt.version>
+	    <imgui.java.version>1.86.4</imgui.java.version>
     </properties>
 
     <profiles>
@@ -123,6 +123,21 @@
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-nfd</artifactId>
 			<classifier>${lwjgl.natives}</classifier>
+		</dependency>
+		<dependency>
+			<groupId>io.github.spair</groupId>
+			<artifactId>imgui-java-binding</artifactId>
+			<version>${imgui.java.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.spair</groupId>
+			<artifactId>imgui-java-lwjgl3</artifactId>
+			<version>${imgui.java.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.spair</groupId>
+			<artifactId>imgui-java-natives-linux</artifactId>
+			<version>${imgui.java.version}</version>
 		</dependency>
     </dependencies>
 

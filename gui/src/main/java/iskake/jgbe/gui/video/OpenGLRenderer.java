@@ -41,7 +41,7 @@ public class OpenGLRenderer {
         }
         """;
 
-    private static final float verticesRect[] = {
+    private static final float[] verticesRect = {
         // positions         // texture coords
          1.0f,  1.0f, 0.0f,   1.0f, 0.0f,   // top right
          1.0f, -1.0f, 0.0f,   1.0f, 1.0f,   // bottom right
@@ -49,24 +49,18 @@ public class OpenGLRenderer {
         -1.0f,  1.0f, 0.0f,   0.0f, 0.0f    // top left 
     };
 
-    private static final int indices[] = {
+    private static final int[] indices = {
         0, 1, 3,    // first triangle
         1, 2, 3     // second triangle
     };
 
-    // TODO: Check if this is needed.
-    private int width;
-    private int height;
-
     private int vao;
     private int vbo;
     private int ebo;
-    private int tex;
+    public int tex;
 
     private void framebufferSizeCallback(long window, int width, int height) {
-        this.width = width;
-        this.height = height;
-        glViewport(0, 0, this.width, this.height);
+        glViewport(0, 0, width, height);
     }
 
     public void init(long window) {
@@ -137,10 +131,12 @@ public class OpenGLRenderer {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public void renderFrame() {
-        glClearColor(0f, 0f, 0f, 1f);
+    public void clear() {
+        glClearColor(0.133f, 0.125f, 0.2f, 1f);
         glClear(GL_COLOR_BUFFER_BIT);
+    }
 
+    public void renderFrame() {
         glBindTexture(GL_TEXTURE_2D, tex);
 
         glBindVertexArray(vao);
