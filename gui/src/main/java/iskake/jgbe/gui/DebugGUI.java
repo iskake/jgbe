@@ -28,6 +28,9 @@ public class DebugGUI {
     public void draw(int screenTex) {
         if (ImGui.beginMainMenuBar()) {
             if (ImGui.beginMenu("Debug")) {
+                if (ImGui.menuItem("Toggle debugger")) {
+                    gb.enableDebugger();
+                }
                 ImGui.menuItem("Show VRAM view", "", showVram);
                 ImGui.endMenu();
             }

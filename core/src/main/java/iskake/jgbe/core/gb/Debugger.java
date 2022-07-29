@@ -4,6 +4,8 @@ import iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister;
 import iskake.jgbe.core.gb.cpu.CPU;
 import iskake.jgbe.core.gb.cpu.Opcodes;
 import iskake.jgbe.core.Bitwise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,17 +17,28 @@ import java.util.Scanner;
  * Note: the debugger is inspired by GDB, so usage is similar.
  */
 public class Debugger {
+    private static final Logger log = LoggerFactory.getLogger(Debugger.class);
 
     private final GameBoy gb;
     private final CPU cpu;
     private final HardwareRegisters hwreg;
 
-    private Scanner sc;
-    private String[] input;
+    private final Scanner sc;
     private String[] lastInput = { "c" };
-    private ArrayList<Integer> breakPoints;
+    private final ArrayList<Integer> breakPoints;
     private boolean print;
-    private HashMap<String, String> commands;
+    private boolean hasStepped = false;
+    private final HashMap<String, String> commands;
+
+    private enum DebuggerState {
+        BREAK,
+        CONTINUE,
+        STEP_INTO,
+        TRY_STEP_OVER,
+        STEP_OVER,
+    }
+
+    private DebuggerState state = DebuggerState.BREAK;
 
     public Debugger(GameBoy gb, CPU cpu, HardwareRegisters hwreg) {
         this.gb = gb;
@@ -64,6 +77,10 @@ public class Debugger {
                         + "For example, if the last command was `n`, then pressing enter will have the same effect as typing `n` and pressing enter.");
     }
 
+    public void restart() {
+        state = DebuggerState.BREAK;
+    }
+
     /**
      * Step the debugger. This method should be invoked in the GameBoy.run()
      * method.
@@ -72,10 +89,20 @@ public class Debugger {
      * @see CPU#step()
      */
     public void step() {
+        hasStepped = false;
+        switch (state) {
+            case BREAK -> parse();
+            case CONTINUE -> continueRunning();
+            case STEP_INTO -> stepInto();
+            case TRY_STEP_OVER, STEP_OVER -> stepOver();
+        }
+    }
+
+    private void parse() {
         printCPUInfo();
 
         System.out.print("> ");
-        input = sc.nextLine().split(" ");
+        String[] input = sc.nextLine().split(" ");
 
         if (!gb.isRunning()) {
             return;
@@ -91,9 +118,9 @@ public class Debugger {
             case "h", "help" -> printHelp();
             case "q", "quit", "exit" -> gb.stopRunning();
             case "disable" -> gb.disableDebugger();
-            case "c", "continue" -> continueRunning();
-            case "s", "step" -> stepInto();
-            case "n", "next" -> stepOver();
+            case "c", "continue" -> state = DebuggerState.CONTINUE;
+            case "s", "step" -> state = DebuggerState.STEP_INTO;
+            case "n", "next" -> state = DebuggerState.STEP_OVER;
             case "b", "break" -> handleBreakpoints(input);
             case "d", "delete" -> handleBreakpointDeletion(input);
             case "x" -> examine(input);
@@ -102,6 +129,21 @@ public class Debugger {
             case "_jp" -> debugJump(input); // Temp!!
             case "_ld" -> debugLoad(input); // Temp!!
             default -> System.err.println("Unknown command: " + input[0]);
+        }
+    }
+
+    /**
+     * Do a single CPU step.
+     * Note that the debugger is only allowed to step ONCE per debug step, as failing to conform to this
+     * may lead to undesired behaviour.
+     */
+    private void doCPUStep() {
+        if (!hasStepped) {
+            cpu.step();
+            hasStepped = true;
+        } else {
+            log.error("The debugger tried to performed an illegal operation (stepping twice) and will be stopped.");
+            gb.disableDebugger();
         }
     }
 
@@ -116,7 +158,7 @@ public class Debugger {
 
     /**
      * Helper method to print the specified string with the specified length and
-     * with teh spcecified leading string.
+     * with teh specified leading string.
      * 
      * @param s       The string to print.
      * @param length  The length of each line.
@@ -202,21 +244,13 @@ public class Debugger {
         }
         try {
             int b = Bitwise.decodeInt(in[1]);
-            breakPoints.remove(breakPoints.indexOf(b));
+            breakPoints.remove((Integer) b);
             System.out.printf("Deleted breakpoint at: $%04x\n", b);
         } catch (IndexOutOfBoundsException e) {
             System.err.println("No such breakpoint defined. (use `b` to list brekpoints.)");
         } catch (NumberFormatException e) {
             System.err.println("Invalid syntax. Usage: `d [ |$|0x|%|0b]{MEM_ADDR}`");
         }
-    }
-
-    /**
-     * Step the program one instruction forward, including stepping into 'function'
-     * calls.
-     */
-    private void stepInto() {
-        cpu.step();
     }
 
     /**
@@ -235,9 +269,14 @@ public class Debugger {
         return false;
     }
 
+    private void stepInto() {
+        doCPUStep();
+        state = DebuggerState.BREAK;
+    }
+
     /**
      * Step the program one instruction forward, stepping over 'function' calls
-     * (until a {@code ret} instruction is ran)
+     * (until a {@code ret} instruction is run)
      * <p>
      * Note: if a breakpoint is hit within the function call (before a {@code ret}
      * is executed), then the debugger will stop stepping over.
@@ -245,26 +284,20 @@ public class Debugger {
     private void stepOver() {
         byte opcode = gb.readAddress(gb.pc().get());
         String name = Opcodes.getOpcode(opcode).getName();
-        cpu.step();
-        if (name.startsWith("call") || name.startsWith("rst")) {
-            while (true && gb.isRunning()) {
-                if (checkBreakpointHit()) {
-                    break;
-                }
 
-                opcode = gb.readAddress(gb.pc().get());
-                name = Opcodes.getOpcode(opcode).getName();
+        short oldPC = gb.pc().get();
+        doCPUStep();
+        short newPC = gb.pc().get();
 
-                if (name.startsWith("ret")) {
-                    short oldPC = gb.pc().get();
-                    cpu.step();
-                    short newPC = gb.pc().get();
-
-                    if ((short) (oldPC + 1) != newPC) {
-                        break;
-                    }
-                } else {
-                    cpu.step();
+        state = checkBreakpointHit() ? DebuggerState.BREAK : state;
+        if (state == DebuggerState.TRY_STEP_OVER) {
+            if (name.startsWith("call") || name.startsWith("rst")) {
+                state = DebuggerState.STEP_OVER;
+            }
+        } else {
+            if (name.startsWith("ret")) {
+                if ((short) (oldPC + 1) != newPC) {
+                    state = DebuggerState.BREAK;
                 }
             }
         }
@@ -274,18 +307,8 @@ public class Debugger {
      * Continue the execution of the program until a breakpoint is hit.
      */
     private void continueRunning() {
-        cpu.step();
-
-        boolean run = true;
-        while (run && gb.isRunning()) {
-            run = !checkBreakpointHit();
-            if (run) {
-                cpu.step();
-                if (print) {
-                    printCPUInfo();
-                }
-            }
-        }
+        doCPUStep();
+        state = checkBreakpointHit() ? DebuggerState.BREAK : DebuggerState.CONTINUE;
     }
 
     /**
