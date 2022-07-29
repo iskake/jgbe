@@ -57,7 +57,6 @@ public class OpenGLRenderer {
     private int vao;
     private int vbo;
     private int ebo;
-    public int tex;
 
     private void framebufferSizeCallback(long window, int width, int height) {
         glViewport(0, 0, width, height);
@@ -96,16 +95,13 @@ public class OpenGLRenderer {
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * SIZEOF_FLOAT, (3 * SIZEOF_FLOAT));
         glEnableVertexAttribArray(1);
 
-        // Texture
-        tex = createTexture();
-
         shaderProg.use();
         glUniform1i(glGetUniformLocation(shaderProg.ID, "ourTexture"), 0);
 
         glfwShowWindow(window);
     }
 
-    private int createTexture() {
+    public int createTexture(int width, int height) {
         int texID = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texID);
 
@@ -114,20 +110,20 @@ public class OpenGLRenderer {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 160, 144, 0, GL_RGB, GL_UNSIGNED_BYTE, (ByteBuffer)null);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, (ByteBuffer)null);
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
         return texID;
     }
 
-    public void updateTexture(ByteBuffer data) {
-        if (data.limit() != 160*144*3) {
+    public void updateTexture(int tex, int width, int height, ByteBuffer data) {
+        if (data.limit() != width * height * 3) {
             System.err.println("Invalid data size!");
         }
 
         glBindTexture(GL_TEXTURE_2D, tex);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 160, 144, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
@@ -136,7 +132,7 @@ public class OpenGLRenderer {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    public void renderFrame() {
+    public void renderFrame(int tex) {
         glBindTexture(GL_TEXTURE_2D, tex);
 
         glBindVertexArray(vao);
@@ -146,9 +142,12 @@ public class OpenGLRenderer {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    public void disposeTexture(int tex) {
+        glDeleteTextures(tex);
+    }
+
     public void dispose() {
         glDeleteBuffers(vbo);
-        glDeleteTextures(tex);
     }
 
 }

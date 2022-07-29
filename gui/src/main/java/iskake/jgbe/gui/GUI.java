@@ -38,6 +38,7 @@ public class GUI {
     private ImGuiImplGlfw imGuiGlfw;
 
     private long window;
+    private int screenTexture;
 
     private boolean debugMode = false;
     private boolean paused = false;
@@ -115,6 +116,7 @@ public class GUI {
 
         window = initGLFW();
         renderer.init(window);
+        screenTexture = renderer.createTexture(160, 144);
         initImGui(window);
 
         log.info("Finished initialization");
@@ -170,15 +172,15 @@ public class GUI {
                 startImGuiFrame();
                 drawMenuBar();
                 if (!debugMode) {
-                    renderer.renderFrame();
+                    renderer.renderFrame(screenTexture);
                 } else {
                     // We don't call `renderer.renderFrame` since debugGUI will render the
                     // frame (in an ImGui window) using `ImGui.image`.
-                    debugGUI.draw(renderer.tex);
+                    debugGUI.draw(screenTexture);
                 }
                 endImGuiFrame();
 
-                glfwSwapInterval(1); // Ignore vsync
+//                glfwSwapInterval(0); // Ignore vsync
                 glfwSwapBuffers(window);
             }
         }
@@ -196,7 +198,7 @@ public class GUI {
         log.debug("delta: " + deltaTime + "ms");
 
         bb.put(gb.getFrame()).rewind();
-        renderer.updateTexture(bb);
+        renderer.updateTexture(screenTexture, LCD_SIZE_X, LCD_SIZE_Y, bb);
     }
 
     private void drawMenuBar() {
@@ -264,6 +266,7 @@ public class GUI {
     public void dispose() {
         log.info("Terminating glfw");
 
+        renderer.disposeTexture(screenTexture);
         renderer.dispose();
         imGuiGl3.dispose();
         imGuiGlfw.dispose();
