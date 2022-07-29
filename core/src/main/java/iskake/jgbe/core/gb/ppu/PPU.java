@@ -105,7 +105,7 @@ public class PPU {
 
     private void createScanlineSPR(int currScanline, Tile[] tiles0, Tile[] tiles1, Sprite[] sprites) {
         for (int i = 0; i < LCD_SIZE_X; i++) {
-            sprBuffer[currScanline * LCD_SIZE_X + i] = 0;
+            sprBuffer[currScanline * LCD_SIZE_X + i] = -1;
         }
 
         if (!ppuControl.areOBJsEnabled())
@@ -118,11 +118,10 @@ public class PPU {
 
         List<Sprite> spritesToDraw = Arrays.stream(sprites)
                 .filter(s -> currScanline >= (Byte.toUnsignedInt(s.getYPos()) - 16)
-                        && currScanline <= (Byte.toUnsignedInt(s.getYPos()) + spriteSize - 16 - 1))
+                        && currScanline < (Byte.toUnsignedInt(s.getYPos()) - 16 + spriteSize))
                 .toList();
 
-        // TODO! Sprites don't draw correctly
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < MAX_SPRITES_ON_SCANLINE; i++) {
 
             if (spritesToDraw.size() < i + 1)
                 return;
@@ -133,19 +132,31 @@ public class PPU {
             int xPosScreen = (xPos - 8);
 
             int yPos = Byte.toUnsignedInt(sprite.getYPos());
-            int yPosScreen = (yPos - spriteSize);
+            int yPosScreen = (yPos - 16);
 
-            int tile = Byte.toUnsignedInt(sprite.getTileIndex());
-            Tile t = Tile.getTileAtIndex(tile, tiles1, tiles0);
-            t.decode();
             int attr = Byte.toUnsignedInt(sprite.getAttributes());
+            boolean xFilp = Bitwise.isBitSet(attr, Sprite.BIT_FLIP_X);
+            boolean yFilp = Bitwise.isBitSet(attr, Sprite.BIT_FLIP_Y);
 
-            if (xPos > 0 && xPos < LCD_SIZE_X + 8) {
+            // https://gbdev.io/pandocs/OAM.html#byte-2---tile-index
+            int tileIdx = Byte.toUnsignedInt(sprite.getTileIndex());
+            if (spriteSize == 16) {
+                if (!yFilp)
+                    tileIdx = (currScanline - yPosScreen) < 8 ? tileIdx & 0xfe : tileIdx | 0x1;
+                else
+                    tileIdx = (currScanline - yPosScreen) < 8 ? tileIdx | 0x1 : tileIdx & 0xfe;
+            }
+            Tile tile = Tile.getTileAtIndex(tileIdx, tiles1, tiles0);
+            tile.decode();
+
+            if (xPosScreen > 0 && xPosScreen < LCD_SIZE_X + 8) {
                 for (int j = xPosScreen; j < (xPosScreen + 8); j++) {
-                    if (j > 0 && j < LCD_SIZE_X) {
-                        int pal = (attr & Sprite.MASK_PALETTE_NO) == 0 ? obp0 : obp1;
-                        byte dot = t.getDot(j - xPosScreen, currScanline + 8 - yPosScreen);
-                        sprBuffer[currScanline * LCD_SIZE_X + j] = getDotColor(pal, dot);
+                    if (j < LCD_SIZE_X) {
+                        int pal = Bitwise.isBitSet(attr, Sprite.BIT_PALETTE_NO) ? obp1 : obp0;
+                        int dx = xFilp ? 7 - (j - xPosScreen) : j - xPosScreen;
+                        int dy = yFilp ? 7 - ((currScanline - yPosScreen) % 8) : (currScanline - yPosScreen) % 8;
+                        byte dot = tile.getDot(dx, dy);
+                        sprBuffer[currScanline * LCD_SIZE_X + j] = getDotColorObj(pal, dot);
                     }
                 }
             }
@@ -187,6 +198,18 @@ public class PPU {
         return (byte) ((pal & (0b11 << (dot * 2))) >> (dot * 2));
     }
 
+    /**
+     * Get the correct color of the specified dot, according to the palette.
+     *
+     * @param pal The palette to get the color from (either of BGP, OBP0, OPB1)
+     * @param dot The value of the dot.
+     * @return The correct color of the dot.
+     */
+    private byte getDotColorObj(int pal, int dot) {
+        if (dot == 0) return -1;
+        return (byte) (((pal & 0xfc) & (0b11 << (dot * 2))) >> (dot * 2));
+    }
+
     /** Color based on index. */
     private static final byte[] COLORS_MAP = {
             (byte) 0xff,
@@ -202,7 +225,7 @@ public class PPU {
             byte bgColor = bgBuffer[i / 3];
 
             // TODO: Actually handle window dots too.
-            if (sprColor != 0) {
+            if (sprColor != -1) {
                 frameBuffer[i] = COLORS_MAP[sprColor];
                 frameBuffer[i + 1] = COLORS_MAP[sprColor];
                 frameBuffer[i + 2] = COLORS_MAP[sprColor];
