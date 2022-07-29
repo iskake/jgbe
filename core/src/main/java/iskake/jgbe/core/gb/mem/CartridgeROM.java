@@ -26,6 +26,8 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
             // ?Also possible fallback:
             // numROMBanks = (bytes.length / ROMBank.BANK_SIZE);
             // ?If this is used, should we try to assume the MBC type too?
+        } else {
+            log.info("ROM banks: " + numROMBanks);
         }
 
         ROMBanks = new ROMBank[numROMBanks];
@@ -34,25 +36,28 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
             ROMBanks[i] = new ROMBank(Arrays.copyOfRange(bytes, offset, offset + ROMBank.BANK_SIZE));
         }
 
-        MemoryBankController tmpMBC;
-        try {
-            tmpMBC = ROMHeader.getMBCType(ROMBanks[0]);
-        } catch (NotImplementedException | IllegalArgumentException e) {
-            log.warn("Unimplemented/unknown MBC type, assuming no MBC...");
-            tmpMBC = new NoMBC();
-        }
-        mbc = tmpMBC;
-
         int numRAMBanks = ROMHeader.getRAMBanksNum(ROMBanks[0]);
         if (numRAMBanks == -1) {
             log.warn("Invalid/unknown RAM bank size, assuming no external RAM...");
             numRAMBanks = 0;
+        } else {
+            log.info("RAM banks: " + numRAMBanks);
         }
 
         RAMBanks = new RAM[numRAMBanks];
         for (int i = 0; i < RAMBanks.length; i++) {
             RAMBanks[i] = new RAM(0x2000); // TODO? handle RAM size < 8KiB.
         }
+
+        MemoryBankController tmpMBC;
+        try {
+            tmpMBC = ROMHeader.getMBCType(ROMBanks[0], numROMBanks, numRAMBanks);
+        } catch (NotImplementedException | IllegalArgumentException e) {
+            log.error(e.getMessage());
+            log.warn("Unimplemented/unknown MBC type, assuming no MBC...");
+            tmpMBC = new NoMBC(numRAMBanks);
+        }
+        mbc = tmpMBC;
     }
 
     /**
@@ -71,7 +76,7 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
      * @return The correct ROM bank.
      */
     public ROMBank getROMBankX() {
-        return ROMBanks[mbc.getSwitchableIndex()];
+        return ROMBanks[mbc.getROMBankIndex()];
     }
 
     /**
@@ -81,15 +86,14 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
      *         returned instead.
      */
     public RAM getRAMBank() {
-        // TODO: Test what reads to EXTRAM with no RAM bank returns.
-        return RAMBanks[0];
+        if (RAMBanks.length == 0)
+            return null;
+
+        return RAMBanks[mbc.getRAMBankIndex()];
     }
 
     @Override
     public void write(int address, byte value) throws IndexOutOfBoundsException {
-        if (mbc == null)
-            return;
-
         mbc.write(address, value);
     }
 

@@ -57,6 +57,9 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             return (byte) 0xff;
         }
         ReadableMemory memory = (ReadableMemory) getMemoryIndex(address);
+        if (memory == null) {
+            return (byte) 0xff;
+        }
         return memory.read(fixedAddress);
     }
 
@@ -67,6 +70,9 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             throw new RuntimeException("DMA transfer");
         }
         WritableMemory memory = (WritableMemory) getMemoryIndex(address);
+        if (memory == null) {
+            return;
+        }
         memory.write(fixedAddress, value);
     }
 

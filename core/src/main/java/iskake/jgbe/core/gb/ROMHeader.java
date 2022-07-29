@@ -2,6 +2,7 @@ package iskake.jgbe.core.gb;
 
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.NotImplementedException;
+import iskake.jgbe.core.gb.mem.MBC1;
 import iskake.jgbe.core.gb.mem.MemoryBankController;
 import iskake.jgbe.core.gb.mem.NoMBC;
 import iskake.jgbe.core.gb.mem.ROMBank;
@@ -34,7 +35,7 @@ public class ROMHeader {
     /**
      * Get the ROM size in amount of banks, according to the header.
      * 
-     * @param bank The ROM bank to get the data from.
+     * @param data The ROM bank data.
      * @return The ROM size in bytes, or -1 if the detected size is invalid.
      */
     public static int getROMBanksNum(byte[] data) {
@@ -65,12 +66,12 @@ public class ROMHeader {
         return new String(Arrays.copyOfRange(bank.bytes(), 0x134, 0x144));
     }
 
-    public static MemoryBankController getMBCType(ROMBank romBank)
+    public static MemoryBankController getMBCType(ROMBank romBank, int numROM, int numRAM)
             throws NotImplementedException, IllegalArgumentException {
         int MBCType = Byte.toUnsignedInt(romBank.bytes()[0x147]);
         return switch (MBCType) {
-            case 0x00 -> new NoMBC();
-            case 0x01 -> throw new NotImplementedException("Unimplemented MBC: 'MBC1'");
+            case 0x00 -> new NoMBC(numRAM);
+            case 0x01 -> new MBC1(numROM, numRAM);
             case 0x02 -> throw new NotImplementedException("Unimplemented MBC: 'MBC1+RAM'");
             case 0x03 -> throw new NotImplementedException("Unimplemented MBC: 'MBC1+RAM+BATTERY'");
             case 0x05 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2'");
