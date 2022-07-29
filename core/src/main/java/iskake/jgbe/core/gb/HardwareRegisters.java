@@ -6,11 +6,11 @@ import iskake.jgbe.core.Bitwise;
 import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.*;
 
 /**
- * Hardware registers, controls several different parts of the Game Boy
+ * Hardware registers, controls several parts of the Game Boy
  * hardware.
  */
 public class HardwareRegisters {
-    // TODO: not all hwregisters are implemented
+    // TODO: not all registers are implemented
     public enum HardwareRegister {
         /** Joypad */
         P1   (0xff00, 0b0011_0000),
@@ -71,16 +71,16 @@ public class HardwareRegisters {
         DMA  (0xff46, 0b1111_1111),
 
         /** BG Palette data */
-        BGP  (0xff47, 0b1111_1111), // TODO (requires rendering)
+        BGP  (0xff47, 0b1111_1111),
         /** OBJ Palette 0 */
-        OBP0 (0xff48, 0b1111_1111), // TODO (requires rendering)
+        OBP0 (0xff48, 0b1111_1111),
         /** OBJ Palette 1 */
-        OBP1 (0xff49, 0b1111_1111), // TODO (requires rendering)
+        OBP1 (0xff49, 0b1111_1111),
 
         /** Window Y position */
-        WY   (0xff4a, 0b1111_1111), // TODO (requires rendering)
+        WY   (0xff4a, 0b1111_1111),
         /** Window X position */
-        WX   (0xff4b, 0b1111_1111), // TODO (requires rendering)
+        WX   (0xff4b, 0b1111_1111),
 
         KEY1 (0xff4d, 0b1111_1111), //? CGB only
         VBK  (0xff4f, 0b1111_1111), //? CGB only
@@ -106,7 +106,7 @@ public class HardwareRegisters {
         public final int val;
         public final int writableBits;
 
-        private HardwareRegister(int val, int writableBits) {
+        HardwareRegister(int val, int writableBits) {
             this.val = val;
             this. writableBits = writableBits;
         }
@@ -122,9 +122,9 @@ public class HardwareRegisters {
         }
     }
 
-    private byte[] registerValues = new byte[HardwareRegister.values().length];
-    private DMAController dmaControl;
-    private IJoypad joypad;
+    private final byte[] registerValues = new byte[HardwareRegister.values().length];
+    private final DMAController dmaControl;
+    private final IJoypad joypad;
 
     public HardwareRegisters(DMAController dmaControl, IJoypad joypad) {
         this.dmaControl = dmaControl;
@@ -273,7 +273,7 @@ public class HardwareRegisters {
     /**
      * Handle 'special writes' on registers.
      * 
-     * @param hwreg
+     * @param hwreg The register to potentially handle a special write to.
      * @return {@code true} if the specified register needed special writes,
      *         {@code false} otherwise.
      */
@@ -321,49 +321,51 @@ public class HardwareRegisters {
 
     /**
      * Set the bit in the specified register.
-     * 
+     *
      * @param hwreg The register to set.
      * @param bit   The bit to set.
-     * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean setBit(HardwareRegister hwreg, int bit) {
+    public void setBit(HardwareRegister hwreg, int bit) {
         if (hwreg == null) {
-            return false;
+            return;
         }
-        return write(hwreg, Bitwise.setBit(read(hwreg), bit));
+        write(hwreg, Bitwise.setBit(read(hwreg), bit));
     }
 
     /**
      * Reset the bit in the specified register.
-     * 
+     *
      * @param hwreg The register to reset.
      * @param bit   The bit to reset.
-     * @return {@code true} if the write was successful, {@code false} otherwise.
      */
-    public boolean resetBit(HardwareRegister hwreg, int bit) {
+    public void resetBit(HardwareRegister hwreg, int bit) {
         if (hwreg == null) {
-            return false;
+            return;
         }
-        return write(hwreg, Bitwise.clearBit(read(hwreg), bit));
+        write(hwreg, Bitwise.clearBit(read(hwreg), bit));
     }
 
 
     /**
      * Set the bit in the specified register.
-     * 
-     * @param hwreg   The register to set/reset.
-     * @param bit     The bit to set
-     * @param boolean Condition to set bit to.
-     * @return {@code true} if the write was successful, {@code false} otherwise.
+     *
+     * @param hwreg     The register to set/reset.
+     * @param bit       The bit to set
+     * @param condition Condition to set bit to.
      */
-    public boolean setBitConditional(HardwareRegister hwreg, int bit, boolean condition) {
+    public void setBitConditional(HardwareRegister hwreg, int bit, boolean condition) {
         if (condition) {
-            return setBit(hwreg, bit);
+            setBit(hwreg, bit);
         } else {
-            return resetBit(hwreg, bit);
+            resetBit(hwreg, bit);
         }
     }
 
+    /**
+     * Checks if a DMA transfer is currently active.
+     *
+     * @return {@code true} if a DMA transfer is active, {@code false} otherwise.
+     */
     public boolean isDMATransfer() {
         return dmaControl.isDMAActive();
     }
