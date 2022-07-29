@@ -62,7 +62,8 @@ public class GUI {
                 case GLFW_KEY_3 -> glfwSetWindowSize(window, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
                 case GLFW_KEY_4 -> glfwSetWindowSize(window, LCD_SIZE_X * 4, LCD_SIZE_Y * 4);
 
-                case GLFW_KEY_O -> reload();
+                case GLFW_KEY_O -> reloadNewROM();
+                case GLFW_KEY_R -> reload();
 
                 case GLFW_KEY_P -> paused = !paused;
                 case GLFW_KEY_LEFT_BRACKET -> advanceOneFrame = true;
@@ -119,7 +120,11 @@ public class GUI {
         log.info("Finished initialization");
     }
 
-    public void reload() {
+    private void reload() {
+        gb.restart();
+    }
+
+    public void reloadNewROM() {
         String romPath = "";
         PointerBuffer romPathPtr = memAllocPointer(1);
 
@@ -201,6 +206,9 @@ public class GUI {
             if (ImGui.beginMainMenuBar()) {
                 if (ImGui.beginMenu("File")) {
                     if (ImGui.menuItem("Open ROM")) {
+                        reloadNewROM();
+                    }
+                    if (ImGui.menuItem("Restart")) {
                         reload();
                     }
                     if (ImGui.menuItem("Quit")) {

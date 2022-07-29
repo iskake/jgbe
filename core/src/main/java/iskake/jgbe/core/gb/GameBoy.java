@@ -36,7 +36,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private final MemoryMap memoryMap;
     private final InterruptHandler interrupts;
 
-    private Debugger dbg;
+    private final Debugger dbg;
     private boolean debuggerEnabled;
     private boolean running;
     private boolean vblankJustCalled;
@@ -62,6 +62,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         interrupts = new InterruptHandler(this, hwreg);
         cpu = new CPU(this, interrupts);
         timing = new Timing(this, hwreg, dmaControl, interrupts, ppu);
+        dbg = new Debugger(this, cpu, hwreg);
     }
 
     /**
@@ -91,15 +92,20 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         boolean willStop = false;
         try {
-            if (!ROMHeader.validLogo(rom.getROMBank0())) {
-                log.warn("Invalid logo!");
+            if (rom == null) {
+                log.warn("No ROM file provided!");
                 willStop = true;
+            } else {
+                if (!ROMHeader.validLogo(rom.getROMBank0())) {
+                    log.warn("Invalid logo!");
+                    willStop = true;
+                }
+                if (!ROMHeader.validHeaderChecksum(rom.getROMBank0())) {
+                    log.warn("Invalid checksum!");
+                    willStop = true;
+                }
             }
-            if (!ROMHeader.validHeaderChecksum(rom.getROMBank0())) {
-                log.warn("Invalid checksum!");
-                willStop = true;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
             log.error(e.toString());
             willStop = true;
         }
@@ -110,8 +116,15 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
             return;
         }
 
-        dbg = new Debugger(this, cpu, hwreg);
         running = true;
+        dbg.restart();
+    }
+
+    /**
+     * Hard reset the Game Boy, starts initialization over again using the currently loaded ROM.
+     */
+    public void restart() {
+        init(rom);
     }
 
     /**
