@@ -3,25 +3,20 @@ package iskake.jgbe.core.gb;
 import iskake.jgbe.core.Bitwise;
 
 public class DMAController {
-    // TODO: make it work correctly
-
     private boolean dmaActive;
-    private boolean dmaJustStarted;
     private long dmaCyclesLeft;
     private byte address;
-    private GameBoy gb;
+    private final GameBoy gb;
 
     public DMAController(GameBoy gb) {
         this.gb = gb;
         dmaActive = false;
-        dmaJustStarted = true;
         dmaCyclesLeft = -1;
         address = (byte)0xff;
     }
 
     public void startDMATransfer(byte address) {
         dmaActive = true;
-        dmaJustStarted = true;
         dmaCyclesLeft = 160 * 4;
         this.address = address;
     }
@@ -32,11 +27,8 @@ public class DMAController {
         } else if (dmaCyclesLeft == 0) {
             dmaActive = false;
             dmaCyclesLeft--;
+            DMATransfer();
         }
-    }
-
-    public boolean DMAJustStarted() {
-        return dmaJustStarted;
     }
 
     public boolean isDMAActive() {
@@ -44,10 +36,10 @@ public class DMAController {
     }
 
     public void DMATransfer() {
-        for (int i = 0; i < 0x100; i++) {
-            short RAMaddress = Bitwise.toShort(address, (byte)i);
-            short OAMaddress = Bitwise.toShort((byte)0xfe, (byte)i);
-            gb.writeAddress(OAMaddress, gb.readAddressNoCycle(RAMaddress));
+        for (int i = 0; i < 160; i++) {
+            short ramAddress = Bitwise.toShort(address, (byte)i);
+            short oamAddress = Bitwise.toShort((byte)0xfe, (byte)i);
+            gb.writeAddressNoCycle(oamAddress, gb.readAddressNoCycle(ramAddress));
         }
     }
 
