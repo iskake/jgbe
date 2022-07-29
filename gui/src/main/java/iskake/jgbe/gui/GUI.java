@@ -2,7 +2,9 @@ package iskake.jgbe.gui;
 
 import imgui.ImGui;
 import iskake.jgbe.core.gb.GameBoy;
+import iskake.jgbe.core.gb.joypad.Input;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
+import iskake.jgbe.gui.controller.GameBoyJoypad;
 import iskake.jgbe.gui.video.OpenGLRenderer;
 
 import java.io.*;
@@ -27,7 +29,7 @@ public class GUI {
     private final static Logger log = LoggerFactory.getLogger(GUI.class);
 
     private final GameBoy gb;
-    // private final GameBoyJoypad joypad;
+    private final GameBoyJoypad joypad;
     private final OpenGLRenderer renderer;
     // TODO? Should this be moved to renderer? (get the frame with callback, for example)
     private final ByteBuffer bb = ByteBuffer.allocateDirect(160 * 144 * 3);
@@ -46,11 +48,10 @@ public class GUI {
     private boolean showMenuBar = false;
 
     public GUI() {
-        // this.joypad = new GameBoyJoypad();
-        gb = new GameBoy(null);
+        joypad = new GameBoyJoypad();
+        gb = new GameBoy(joypad);
         renderer = new OpenGLRenderer();
         debugGUI = new DebugGUI(gb);
-
     }
 
     private void keyCallback(long window, int key, int scancode, int action, int mods) {
@@ -70,6 +71,29 @@ public class GUI {
                 case GLFW_KEY_LEFT_BRACKET -> advanceOneFrame = true;
 
                 case GLFW_KEY_D -> toggleDebugMode();
+
+                case GLFW_KEY_Z -> joypad.setButtonActive(Input.BUTTON_B);
+                case GLFW_KEY_X -> joypad.setButtonActive(Input.BUTTON_A);
+                case GLFW_KEY_ENTER -> joypad.setButtonActive(Input.BUTTON_START);
+                case GLFW_KEY_BACKSPACE -> joypad.setButtonActive(Input.BUTTON_SELECT);
+
+                case GLFW_KEY_RIGHT -> joypad.setDirectionActive(Input.DPAD_RIGHT);
+                case GLFW_KEY_LEFT -> joypad.setDirectionActive(Input.DPAD_LEFT);
+                case GLFW_KEY_UP -> joypad.setDirectionActive(Input.DPAD_UP);
+                case GLFW_KEY_DOWN -> joypad.setDirectionActive(Input.DPAD_DOWN);
+            }
+        }
+        if (action == GLFW_RELEASE) {
+            switch (key) {
+                case GLFW_KEY_Z -> joypad.setButtonInactive(Input.BUTTON_B);
+                case GLFW_KEY_X -> joypad.setButtonInactive(Input.BUTTON_A);
+                case GLFW_KEY_ENTER -> joypad.setButtonInactive(Input.BUTTON_START);
+                case GLFW_KEY_BACKSPACE -> joypad.setButtonInactive(Input.BUTTON_SELECT);
+
+                case GLFW_KEY_RIGHT -> joypad.setDirectionInactive(Input.DPAD_RIGHT);
+                case GLFW_KEY_LEFT -> joypad.setDirectionInactive(Input.DPAD_LEFT);
+                case GLFW_KEY_UP -> joypad.setDirectionInactive(Input.DPAD_UP);
+                case GLFW_KEY_DOWN -> joypad.setDirectionInactive(Input.DPAD_DOWN);
             }
         }
     }

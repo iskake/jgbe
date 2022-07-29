@@ -203,6 +203,17 @@ public class HardwareRegisters {
         if (hwreg == null) {
             return (byte) 0xff;
         }
+        // ?TODO: `handleSpecialReads`?
+        if (hwreg == P1) {
+            int value = Byte.toUnsignedInt(registerValues[P1.ordinal()]) & 0b0011_0000;
+            if (!Bitwise.isBitSet(value, 4)) {
+                writeInternal(P1, value | joypad.getDirectionsAsInt());
+                return registerValues[P1.ordinal()];
+            } else if (!Bitwise.isBitSet(value, 5)) {
+                writeInternal(P1, value | joypad.getButtonsAsInt());
+                return registerValues[P1.ordinal()];
+            }
+        }
         return registerValues[hwreg.ordinal()];
     }
 
@@ -290,16 +301,7 @@ public class HardwareRegisters {
                     break;
                 }
 
-                // ? If both are 0 ?
-                if (!Bitwise.isBitSet(value, 4)) {
-                    int joyVal = joypad.getDirectionsAsInt();
-                    joyVal = Byte.toUnsignedInt(value) | joyVal;
-                    writeInternal(P1, joyVal);
-                } else if (!Bitwise.isBitSet(value, 5)) {
-                    int joyVal = joypad.getButtonsAsInt();
-                    joyVal = Byte.toUnsignedInt(value) | joyVal;
-                    writeInternal(P1, joyVal);
-                }
+                writeInternal(P1, Byte.toUnsignedInt(value) & 0b0011_0000);
             }
             default -> { return false; }
         }
