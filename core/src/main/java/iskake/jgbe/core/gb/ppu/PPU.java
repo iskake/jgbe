@@ -126,11 +126,11 @@ public class PPU {
 
         // TODO! Sprites don't draw correctly
         for (int i = 0; i < 10; i++) {
-            if (spritesToDraw.size() != 0)
-                System.out.println(spritesToDraw);
 
-            if (spritesToDraw.size() < i + 1)
+            if (spritesToDraw.size() < i + 1) {
+                sprBuffer[currScanline * LCD_SIZE_X + i] = 0;
                 return;
+            }
 
             Sprite sprite = spritesToDraw.get(i);
 
