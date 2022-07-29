@@ -98,21 +98,18 @@ public class PPU {
 //            Tile t = map.getTileAtCoordinate(dx, dy, tiles1, tilesN);
 //            t.decode();
 //            byte dotCol = t.getDot(dx % 8, dy % 8);
-            byte dotCol = 4; // TEMP
+            byte dotCol = -1; // TEMP
             winBuffer[currScanline * LCD_SIZE_X + i] = dotCol;
         }
     }
 
-    private void createScanlineSPR(int currScanline, Tile[] tilesN, Tile[] tiles1, Sprite[] sprites) {
-        if (!ppuControl.areOBJsEnabled()) {
-            for (int i = 0; i < LCD_SIZE_X; i++) {
-                sprBuffer[currScanline * LCD_SIZE_X + i] = 0;
-            }
-            return;
+    private void createScanlineSPR(int currScanline, Tile[] tiles0, Tile[] tiles1, Sprite[] sprites) {
+        for (int i = 0; i < LCD_SIZE_X; i++) {
+            sprBuffer[currScanline * LCD_SIZE_X + i] = 0;
         }
 
-        int SCY = hwreg.readAsInt(HardwareRegister.SCY);
-        int SCX = hwreg.readAsInt(HardwareRegister.SCX);
+        if (!ppuControl.areOBJsEnabled())
+            return;
 
         int obp0 = hwreg.readAsInt(HardwareRegister.OBP0);
         int obp1 = hwreg.readAsInt(HardwareRegister.OBP1);
@@ -121,47 +118,37 @@ public class PPU {
 
         List<Sprite> spritesToDraw = Arrays.stream(sprites)
                 .filter(s -> currScanline >= (Byte.toUnsignedInt(s.getYPos()) - 16)
-                        && currScanline <= (Byte.toUnsignedInt(s.getYPos()) + spriteSize - 16))
+                        && currScanline <= (Byte.toUnsignedInt(s.getYPos()) + spriteSize - 16 - 1))
                 .toList();
 
         // TODO! Sprites don't draw correctly
         for (int i = 0; i < 10; i++) {
 
-            if (spritesToDraw.size() < i + 1) {
-                sprBuffer[currScanline * LCD_SIZE_X + i] = 0;
+            if (spritesToDraw.size() < i + 1)
                 return;
-            }
 
             Sprite sprite = spritesToDraw.get(i);
 
             int xPos = Byte.toUnsignedInt(sprite.getXPos());
-            int xPosScreen = (xPos - 8) % 256;
+            int xPosScreen = (xPos - 8);
 
             int yPos = Byte.toUnsignedInt(sprite.getYPos());
-            int yPosScreen = (yPos - spriteSize) % 256;
+            int yPosScreen = (yPos - spriteSize);
 
             int tile = Byte.toUnsignedInt(sprite.getTileIndex());
+            Tile t = Tile.getTileAtIndex(tile, tiles1, tiles0);
+            t.decode();
             int attr = Byte.toUnsignedInt(sprite.getAttributes());
 
             if (xPos > 0 && xPos < LCD_SIZE_X + 8) {
                 for (int j = xPosScreen; j < (xPosScreen + 8); j++) {
-                    if (j > 0 && j < LCD_SIZE_Y) {
+                    if (j > 0 && j < LCD_SIZE_X) {
                         int pal = (attr & Sprite.MASK_PALETTE_NO) == 0 ? obp0 : obp1;
-                        sprBuffer[currScanline * LCD_SIZE_X + j] = getDotColor(pal, tile);
+                        byte dot = t.getDot(j - xPosScreen, currScanline + 8 - yPosScreen);
+                        sprBuffer[currScanline * LCD_SIZE_X + j] = getDotColor(pal, dot);
                     }
                 }
-                Tile t = Tile.getTileAtIndex(tile, tiles1, tilesN);
-
             }
-        }
-
-        for (int i = 0; i < LCD_SIZE_X; i++) {
-            int dx = (SCX + i) & 255;
-            int dy = (SCY + currScanline) & 255;
-            Tile t = Tile.getTileAtIndex(sprites[0].getTileIndex(), tiles1, tilesN);
-            t.decode();
-            byte dotCol = t.getDot(dx % 8, dy % 8);
-            sprBuffer[currScanline * LCD_SIZE_X + i] = dotCol;
         }
     }
 
@@ -179,12 +166,13 @@ public class PPU {
             TileMap window = getWindowTileMap();
 
             Tile[] tilesN = getTilesBlockN();
+            Tile[] tiles0 = getTilesBlock0();
             Tile[] tiles1 = getTilesBlock1();
 
             // Update the scanline buffers.
             createScanlineBG(line, tilesN, tiles1, BG);
             createScanlineWIN(line, tilesN, tiles1, window); // TODO: Handle window
-            createScanlineSPR(line, tilesN, tiles1, sprites);
+            createScanlineSPR(line, tiles0, tiles1, sprites);
         }
     }
 
@@ -200,7 +188,7 @@ public class PPU {
     }
 
     /** Color based on index. */
-    private final byte[] COLORS_MAP = {
+    private static final byte[] COLORS_MAP = {
             (byte) 0xff,
             (byte) 0xaa,
             (byte) 0x55,
@@ -248,6 +236,15 @@ public class PPU {
     // TODO: update docs
     /**
      * Get the tiles in VRAM.
+     *
+     * @return All tiles in VRAM.
+     */
+    public Tile[] getTilesBlock0() {
+        return vram.getTileBlock0();
+    }
+
+    /**
+     * Get the tiles in VRAM.
      * 
      * @return All tiles in VRAM.
      */
@@ -260,7 +257,7 @@ public class PPU {
      *
      * @return The BG and Window tilemap tile data.
      */
-    private Tile[] getTilesBlockN() {
+    public Tile[] getTilesBlockN() {
         int tileDataVal = ppuControl.getBGAndWindowTileBlock();
         return vram.getTileBlock(tileDataVal);
     }
