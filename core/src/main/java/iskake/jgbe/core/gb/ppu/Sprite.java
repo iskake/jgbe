@@ -15,6 +15,12 @@ public class Sprite {
     public static final int MASK_FLIP_Y         = 0b0100_0000;
     public static final int MASK_BG_WIN_OVER    = 0b1000_0000;
 
+    public static final int BIT_TILE_BANK_CGB  = 3;
+    public static final int BIT_PALETTE_NO     = 4;
+    public static final int BIT_FLIP_X         = 5;
+    public static final int BIT_FLIP_Y         = 6;
+    public static final int BIT_BG_WIN_OVER    = 7;
+
     private final MappedByte yPos, xPos, tileIndex, attributes;
 
     public Sprite(ReadableMemory readFunc, WritableMemory writeFunc, int oamIndex) {
