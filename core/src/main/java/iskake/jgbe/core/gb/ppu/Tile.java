@@ -12,12 +12,11 @@ public class Tile {
 
     public boolean isDecoded = false;
     public final MappedByteRange data;
-
-    private final short[] decodedLines;
+    private final byte[] dots;
 
     public Tile(ReadableMemory readFunc, WritableMemory writeFunc, int tileStartAddress) {
         this.data = new MappedByteRange(tileStartAddress, 16, readFunc, writeFunc);
-        decodedLines = new short[TILE_SIZE];
+        dots = new byte[TILE_SIZE * TILE_SIZE];
     }
 
     /**
@@ -49,43 +48,20 @@ public class Tile {
          * Note that: image colors are based on the value in the OBP and BGP hw registers.)
          * See: https://gbdev.io/pandocs/Tile_Data.html
          */
-        // ?Should this loop be unrolled as well?
         for (int i = 0; i < TILE_SIZE; i++) {
             int offset = i * 2;
             int b1 = Byte.toUnsignedInt(data.get(offset));
             int b2 = Byte.toUnsignedInt(data.get(offset + 1));
 
-            b1 = ((b1 & 0b10000000) << 7
-                    | (b1 & 0b01000000) << 6
-                    | (b1 & 0b00100000) << 5
-                    | (b1 & 0b00010000) << 4
-                    | (b1 & 0b00001000) << 3
-                    | (b1 & 0b00000100) << 2
-                    | (b1 & 0b00000010) << 1
-                    | (b1 & 0b00000001));
-            b2 = ((b2 & 0b10000000) << 8
-                    | (b2 & 0b01000000) << 7
-                    | (b2 & 0b00100000) << 6
-                    | (b2 & 0b00010000) << 5
-                    | (b2 & 0b00001000) << 4
-                    | (b2 & 0b00000100) << 3
-                    | (b2 & 0b00000010) << 2
-                    | (b2 & 0b00000001) << 1);
-
-            decodedLines[i] = (short) (b1 | b2);
+            for (int j = 7; j >= 0; j--) {
+                int mask = 1 << j;
+                int b1_ = (b1 & mask) >> j;
+                int b2_ = ((b2 & mask) << 1) >> j;
+                dots[i * TILE_SIZE + (7 - j)] = (byte)(b1_ | b2_);
+            }
         }
 
         isDecoded = true;
-    }
-
-    /**
-     * Get the decoded line of dots specified.
-     * 
-     * @param y The line to get.
-     * @return The line of dots corresponding to the y value.
-     */
-    public int getLine(int y) throws IndexOutOfBoundsException {
-        return Short.toUnsignedInt(decodedLines[y]);
     }
 
     /**
@@ -96,9 +72,16 @@ public class Tile {
      * @return The dot on the specified coordinate.
      */
     public byte getDot(int x, int y) throws IndexOutOfBoundsException {
-        int line = getLine(y);
-        int pixel = 0xe - (x << 1);
-        return (byte)((line & (0b11 << pixel)) >> pixel);
+        return dots[y * TILE_SIZE + x];
+    }
+
+    /**
+     * Get the decoded dots ('pixels') of this tile.
+     *
+     * @return The decoded dots of this tile.
+     */
+    public byte[] getDots() {
+        return dots;
     }
 
     public static Tile getTileAtIndex(int index, Tile[] tiles1, Tile[] tilesN) {
