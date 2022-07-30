@@ -2,8 +2,10 @@ package iskake.jgbe.gui;
 
 import imgui.ImGui;
 import iskake.jgbe.core.gb.GameBoy;
+import iskake.jgbe.core.gb.ROMHeader;
 import iskake.jgbe.core.gb.joypad.Input;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
+import iskake.jgbe.core.gb.mem.ROMFactory;
 import iskake.jgbe.gui.controller.GameBoyJoypad;
 import iskake.jgbe.gui.video.OpenGLRenderer;
 
@@ -31,6 +33,7 @@ public class GUI {
     private final GameBoy gb;
     private final GameBoyJoypad joypad;
     private final OpenGLRenderer renderer;
+    private final ROMFactory romFactory;
     // TODO? Should this be moved to renderer? (get the frame with callback, for example)
     private final ByteBuffer bb = ByteBuffer.allocateDirect(160 * 144 * 3);
 
@@ -50,6 +53,7 @@ public class GUI {
     public GUI() {
         joypad = new GameBoyJoypad();
         gb = new GameBoy(joypad);
+        romFactory = new ROMFactory();
         renderer = new OpenGLRenderer();
         debugGUI = new DebugGUI(gb);
     }
@@ -111,7 +115,7 @@ public class GUI {
         int width = LCD_SIZE_X * 3;
         int height = LCD_SIZE_Y * 3;
 
-        window = glfwCreateWindow(width, height, "JGBE", 0, 0);
+        window = glfwCreateWindow(width, height, "JGBE - (no game loaded)", 0, 0);
         if (window == 0) {
             throw new RuntimeException("Failed to create GLFW window.");
         }
@@ -147,10 +151,12 @@ public class GUI {
     }
 
     private void reload() {
+        log.info("Reloading emulator.");
         gb.restart();
     }
 
     public void reloadNewROM() {
+        log.info("Loading new ROM.");
         String romPath = "";
         PointerBuffer romPathPtr = memAllocPointer(1);
 
@@ -165,7 +171,14 @@ public class GUI {
         }
 
         if (!romPath.equals("")) {
-            gb.restart(loadROM(romPath));
+            CartridgeROM rom = romFactory.getROM(romPath);
+            gb.restart(rom);
+            if (rom != null) {
+                String title = ROMHeader.getTitle(rom.getROMBank0());
+                glfwSetWindowTitle(window, "JGBE - " + title);
+            } else {
+                glfwSetWindowTitle(window, "JGBE - (no game loaded)");
+            }
         } else {
             log.info("No file selected.");
         }
@@ -254,36 +267,6 @@ public class GUI {
             glfwSetWindowSize(window, 1280, 800);
         } else {
             glfwSetWindowSize(window, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
-        }
-    }
-
-    /**
-     * Load a new ROM file.
-     *
-     * @param pathString the path to the ROM file.
-     */
-    private CartridgeROM loadROM(String pathString) {
-        log.info("Loading rom: " + pathString);
-        Path path = Paths.get(pathString);
-        byte[] romFile;
-
-        try {
-            romFile = Files.readAllBytes(path);
-        } catch (IOException e) {
-            String reason = e instanceof FileNotFoundException
-                    || e instanceof NoSuchFileException
-                            ? "file not found."
-                            : "an exception occurred: " + e;
-            log.error("Could not read the file " + path.getFileName() + ": " + reason);
-            return null;
-        }
-
-        try {
-            return new CartridgeROM(romFile);
-        } catch (Exception e) {
-            log.error("Could not load the file " + path.getFileName() +
-                    ": an exception occurred: " + e);
-            return null;
         }
     }
 

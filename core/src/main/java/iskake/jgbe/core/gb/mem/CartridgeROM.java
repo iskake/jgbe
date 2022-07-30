@@ -17,47 +17,10 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
     private final MemoryBankController mbc;
     private final RAM[] RAMBanks;
 
-    public CartridgeROM(byte[] bytes) {
-        int numROMBanks = ROMHeader.getROMBanksNum(bytes);
-        if (numROMBanks == -1) {
-            log.warn("Invalid/unknown ROM bank size, assuming no extra banks...");
-            numROMBanks = 2;
-
-            // ?Also possible fallback:
-            // numROMBanks = (bytes.length / ROMBank.BANK_SIZE);
-            // ?If this is used, should we try to assume the MBC type too?
-        } else {
-            log.info("ROM banks: " + numROMBanks);
-        }
-
-        ROMBanks = new ROMBank[numROMBanks];
-        for (int i = 0; i < numROMBanks; i++) {
-            int offset = i * ROMBank.BANK_SIZE;
-            ROMBanks[i] = new ROMBank(Arrays.copyOfRange(bytes, offset, offset + ROMBank.BANK_SIZE));
-        }
-
-        int numRAMBanks = ROMHeader.getRAMBanksNum(ROMBanks[0]);
-        if (numRAMBanks == -1) {
-            log.warn("Invalid/unknown RAM bank size, assuming no external RAM...");
-            numRAMBanks = 0;
-        } else {
-            log.info("RAM banks: " + numRAMBanks);
-        }
-
-        RAMBanks = new RAM[numRAMBanks];
-        for (int i = 0; i < RAMBanks.length; i++) {
-            RAMBanks[i] = new RAM(0x2000); // TODO? handle RAM size < 8KiB.
-        }
-
-        MemoryBankController tmpMBC;
-        try {
-            tmpMBC = ROMHeader.getMBCType(ROMBanks[0], numROMBanks, numRAMBanks);
-        } catch (NotImplementedException | IllegalArgumentException e) {
-            log.error(e.getMessage());
-            log.warn("Unimplemented/unknown MBC type, assuming no MBC...");
-            tmpMBC = new NoMBC(numRAMBanks);
-        }
-        mbc = tmpMBC;
+    CartridgeROM(ROMBank[] romBanks, RAM[] ramBanks, MemoryBankController mbc) {
+        this.ROMBanks = romBanks;
+        this.RAMBanks = ramBanks;
+        this.mbc = mbc;
     }
 
     /**
