@@ -34,10 +34,10 @@ public final class Timers {
         int val = hwreg.readAsInt(HardwareRegister.TAC);
 
         return switch (val & 0b11) {
-            case 0b00 -> CPU.CLOCK_SPEED / 0x400;
-            case 0b01 -> CPU.CLOCK_SPEED / 0x10;
-            case 0b10 -> CPU.CLOCK_SPEED / 0x40;
-            case 0b11 -> CPU.CLOCK_SPEED / 0x100;
+            case 0b00 -> 0x400;
+            case 0b01 -> 0x10;
+            case 0b10 -> 0x40;
+            case 0b11 -> 0x100;
             default -> throw new RuntimeException("Something went very wrong.");
         };
     }
