@@ -85,6 +85,8 @@ public class GUI {
                 case GLFW_KEY_LEFT -> joypad.setDirectionActive(Input.DPAD_LEFT);
                 case GLFW_KEY_UP -> joypad.setDirectionActive(Input.DPAD_UP);
                 case GLFW_KEY_DOWN -> joypad.setDirectionActive(Input.DPAD_DOWN);
+
+                case GLFW_KEY_SPACE -> glfwSwapInterval(0);
             }
         }
         if (action == GLFW_RELEASE) {
@@ -98,6 +100,8 @@ public class GUI {
                 case GLFW_KEY_LEFT -> joypad.setDirectionInactive(Input.DPAD_LEFT);
                 case GLFW_KEY_UP -> joypad.setDirectionInactive(Input.DPAD_UP);
                 case GLFW_KEY_DOWN -> joypad.setDirectionInactive(Input.DPAD_DOWN);
+
+                case GLFW_KEY_SPACE -> glfwSwapInterval(1);
             }
         }
     }
