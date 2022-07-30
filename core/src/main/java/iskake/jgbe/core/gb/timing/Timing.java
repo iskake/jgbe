@@ -17,6 +17,7 @@ public class Timing {
     // TODO: many things are not working correctly. For example, opcode timing, DAM
     // transfers, hwregister reading, etc...
     private long cycles;
+    private long vblankWaitCycles;
 
     private final GameBoy gb;
     private final PPU ppu;
@@ -113,7 +114,16 @@ public class Timing {
     private void handleVideo(long cycle) {
         if (!Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
             hwreg.writeInternal(LY, (byte) 0);
-            return;
+
+            // TODO? temp. workaround for hanging application (when lcd is never enabled)
+            vblankWaitCycles++;
+            if (vblankWaitCycles == FRAME_CYCLES) {
+                ppu.clearFrameBuffer();
+                gb.setVBlankJustCalled();
+                vblankWaitCycles = 0;
+            }
+
+//            return;
         }
         // VBlank
         if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
@@ -123,6 +133,7 @@ public class Timing {
             if (ly_val == 0x90) {
                 interrupts.setWaitingToCall(InterruptType.VBLANK);
                 gb.setVBlankJustCalled();
+                vblankWaitCycles = 0;
             } else if (ly_val > 0x99) {
                 hwreg.write(LY, 0);
             }

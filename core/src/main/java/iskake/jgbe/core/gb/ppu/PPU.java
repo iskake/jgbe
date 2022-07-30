@@ -189,6 +189,13 @@ public class PPU {
         }
     }
 
+    public void clearFrameBuffer() {
+        // Temp.
+        Arrays.fill(bgBuffer, COLORS_MAP[0]);
+        Arrays.fill(winBuffer, COLORS_MAP[0]);
+        Arrays.fill(sprBuffer, COLORS_MAP[0]);
+    }
+
     /**
      * Get the correct color of the specified dot, according to the palette.
      *
