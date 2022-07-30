@@ -82,23 +82,23 @@ public class HardwareRegisters {
         /** Window X position */
         WX   (0xff4b, 0b1111_1111),
 
-        KEY1 (0xff4d, 0b1111_1111), //? CGB only
-        VBK  (0xff4f, 0b1111_1111), //? CGB only
+        KEY1 (0xff4d, 0b0000_0000), //? CGB only
+        VBK  (0xff4f, 0b0000_0000), //? CGB only
 
-        HDMA1(0xff51, 0b1111_1111), //? CGB only
-        HDMA2(0xff52, 0b1111_1111), //? CGB only
-        HDMA3(0xff53, 0b1111_1111), //? CGB only
-        HDMA4(0xff54, 0b1111_1111), //? CGB only
-        HDMA5(0xff55, 0b1111_1111), //? CGB only
+        HDMA1(0xff51, 0b0000_0000), //? CGB only
+        HDMA2(0xff52, 0b0000_0000), //? CGB only
+        HDMA3(0xff53, 0b0000_0000), //? CGB only
+        HDMA4(0xff54, 0b0000_0000), //? CGB only
+        HDMA5(0xff55, 0b0000_0000), //? CGB only
 
-        RP   (0xff56, 0b1111_1111), //? CGB only
+        RP   (0xff56, 0b0000_0000), //? CGB only
 
-        BCPS (0xff68, 0b1111_1111), //? CGB only
-        BCPD (0xff69, 0b1111_1111), //? CGB only
-        OCPS (0xff6a, 0b1111_1111), //? CGB only
-        OCPD (0xff6b, 0b1111_1111), //? CGB only
+        BCPS (0xff68, 0b0000_0000), //? CGB only
+        BCPD (0xff69, 0b0000_0000), //? CGB only
+        OCPS (0xff6a, 0b0000_0000), //? CGB only
+        OCPD (0xff6b, 0b0000_0000), //? CGB only
 
-        SVBK (0xff70, 0b1111_1111), //? CGB only
+        SVBK (0xff70, 0b0000_0000), //? CGB only
 
         /** Interrupt enable */
         IE   (0xffff, 0b1111_1111);
