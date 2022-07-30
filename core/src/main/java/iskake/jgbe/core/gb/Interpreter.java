@@ -198,7 +198,7 @@ public class Interpreter {
                     byte[] romFile;
                     romFile = Files.readAllBytes(path);
 
-                    CartridgeROM rom = new CartridgeROM(romFile);
+                    CartridgeROM rom = null;//new CartridgeROM(romFile);
                     gb.enableDebugger();
                     gb.restart(rom);
                     finishedInterpreting = true;
