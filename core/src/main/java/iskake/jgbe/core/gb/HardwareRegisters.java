@@ -12,12 +12,13 @@ import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.*;
 public class HardwareRegisters {
     // TODO: not all registers are implemented
     public enum HardwareRegister {
+        // Note: writable bit masks are for DMG (and MGB, SGB), not CGB.
         /** Joypad */
         P1   (0xff00, 0b0011_0000),
 
         /* Serial data transfer */
         SB   (0xff01, 0b1111_1111), //?
-        SC   (0xff02, 0b1111_1111), //?
+        SC   (0xff02, 0b1000_0001), //? (Bit 1 is CGB only)
 
         /** Divider register */
         DIV  (0xff04, 0b1111_1111),
@@ -29,10 +30,10 @@ public class HardwareRegisters {
         TAC  (0xff07, 0b0000_0111),
 
         /** Interrupt flag */
-        IF   (0xff0f, 0b1111_1111),
+        IF   (0xff0f, 0b0001_1111),
 
         /* Sound control */
-        NR10 (0xff10, 0b1111_1111), //? Requires audio
+        NR10 (0xff10, 0b0111_1111), //? Requires audio
         NR11 (0xff11, 0b1111_1111), //? Requires audio
         NR12 (0xff12, 0b1111_1111), //? Requires audio
         NR13 (0xff13, 0b1111_1111), //? Requires audio
@@ -41,23 +42,23 @@ public class HardwareRegisters {
         NR22 (0xff17, 0b1111_1111), //? Requires audio
         NR23 (0xff18, 0b1111_1111), //? Requires audio
         NR24 (0xff19, 0b1111_1111), //? Requires audio
-        NR30 (0xff1a, 0b1111_1111), //? Requires audio
+        NR30 (0xff1a, 0b1000_0000), //? Requires audio
         NR31 (0xff1b, 0b1111_1111), //? Requires audio
-        NR32 (0xff1c, 0b1111_1111), //? Requires audio
+        NR32 (0xff1c, 0b0110_0000), //? Requires audio
         NR33 (0xff1d, 0b1111_1111), //? Requires audio
         NR34 (0xff1e, 0b1111_1111), //? Requires audio
-        NR41 (0xff20, 0b1111_1111), //? Requires audio
+        NR41 (0xff20, 0b0011_1111), //? Requires audio
         NR42 (0xff21, 0b1111_1111), //? Requires audio
         NR43 (0xff22, 0b1111_1111), //? Requires audio
-        NR44 (0xff23, 0b1111_1111), //? Requires audio
+        NR44 (0xff23, 0b1100_0000), //? Requires audio
         NR50 (0xff24, 0b1111_1111), //? Requires audio
         NR51 (0xff25, 0b1111_1111), //? Requires audio
-        NR52 (0xff26, 0b1111_1111), //? Requires audio
+        NR52 (0xff26, 0b1000_1111), //? Requires audio
 
         /** LCD Control */
         LCDC (0xff40, 0b1111_1111),
         /** LCD STATus */
-        STAT (0xff41, 0b1111_1111),
+        STAT (0xff41, 0b0111_1111),
         /** Scroll Y */
         SCY  (0xff42, 0b1111_1111),
         /** Scroll X */
@@ -205,14 +206,17 @@ public class HardwareRegisters {
         }
         // ?TODO: `handleSpecialReads`?
         if (hwreg == P1) {
-            int value = Byte.toUnsignedInt(registerValues[P1.ordinal()]) & 0b0011_0000;
+            int value = Byte.toUnsignedInt(registerValues[P1.ordinal()]);
             if (!Bitwise.isBitSet(value, 4)) {
-                writeInternal(P1, value | joypad.getDirectionsAsInt());
-                return registerValues[P1.ordinal()];
+                writeInternal(P1, (value | joypad.getDirectionsAsInt()));
             } else if (!Bitwise.isBitSet(value, 5)) {
-                writeInternal(P1, value | joypad.getButtonsAsInt());
-                return registerValues[P1.ordinal()];
+                writeInternal(P1, (value | joypad.getButtonsAsInt()));
+            } else {
+                writeInternal(P1, value);
             }
+            return registerValues[P1.ordinal()];
+        } else if (hwreg.writableBits != 0xff && hwreg != LY) {
+            return (byte)(Byte.toUnsignedInt(registerValues[hwreg.ordinal()]) | (~(hwreg.writableBits) & 0xff));
         }
         return registerValues[hwreg.ordinal()];
     }
@@ -301,7 +305,7 @@ public class HardwareRegisters {
                     break;
                 }
 
-                writeInternal(P1, Byte.toUnsignedInt(value) & 0b0011_0000);
+                writeInternal(hwreg, (Byte.toUnsignedInt(value) & hwreg.writableBits) | 0b1100_0000);
             }
             default -> { return false; }
         }
