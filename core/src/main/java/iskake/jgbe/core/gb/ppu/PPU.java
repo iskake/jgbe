@@ -53,8 +53,7 @@ public class PPU {
     private void createScanlineBG(int currScanline, Tile[] tilesN, Tile[] tiles1, TileMap bg) {
         if (!ppuControl.isBGAndWindowEnabled()) {
             for (int i = 0; i < LCD_SIZE_X; i++) {
-                // Possible 'solution' to missing tiles: use invalid index (4, -1, etc.) to represent
-                // 'invisible' or no values, for use when bg is not enabled (when the screen is off as well)
+                // We use -1 for 'invisible' dots.
                 bgBuffer[currScanline * LCD_SIZE_X + i] = -1;
             }
             return;
@@ -82,8 +81,7 @@ public class PPU {
         boolean coordinateInRange = (wx <= 166) && (wy <= 143);
 
         if (!coordinateInRange || !ppuControl.isBGAndWindowEnabled() || !ppuControl.isWindowEnabled()) {
-            // Possible 'solution' to missing tiles: use invalid index (4, -1, etc.) to represent
-            // 'invisible' or no values, for use when window is not enabled (/ no tiles?)
+            // We use -1 for 'invisible' dots.
             for (int i = 0; i < LCD_SIZE_X; i++) {
                 winBuffer[currScanline * LCD_SIZE_X + i] = -1;
             }
@@ -105,6 +103,7 @@ public class PPU {
 
     private void createScanlineSPR(int currScanline, Tile[] tiles0, Tile[] tiles1, Sprite[] sprites) {
         for (int i = 0; i < LCD_SIZE_X; i++) {
+            // We use -1 for 'invisible' dots.
             sprBuffer[currScanline * LCD_SIZE_X + i] = -1;
         }
 
@@ -149,14 +148,17 @@ public class PPU {
             Tile tile = Tile.getTileAtIndex(tileIdx, tiles1, tiles0);
             tile.decode();
 
-            if (xPosScreen > 0 && xPosScreen < LCD_SIZE_X + 8) {
+            if (xPos > 0 && xPos < LCD_SIZE_X + 8) {
                 for (int j = xPosScreen; j < (xPosScreen + 8); j++) {
                     if (j < LCD_SIZE_X) {
                         int pal = Bitwise.isBitSet(attr, Sprite.BIT_PALETTE_NO) ? obp1 : obp0;
                         int dx = xFilp ? 7 - (j - xPosScreen) : j - xPosScreen;
                         int dy = yFilp ? 7 - ((currScanline - yPosScreen) % 8) : (currScanline - yPosScreen) % 8;
                         byte dot = tile.getDot(dx, dy);
-                        sprBuffer[currScanline * LCD_SIZE_X + j] = getDotColorObj(pal, dot);
+                        byte color = getDotColorObj(pal, dot);
+                        // Allow sprite overlap
+                        if (color != -1 && j >= 0)
+                            sprBuffer[currScanline * LCD_SIZE_X + j] = color;
                     }
                 }
             }
