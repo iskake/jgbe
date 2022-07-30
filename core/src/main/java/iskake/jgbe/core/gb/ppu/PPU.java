@@ -59,14 +59,14 @@ public class PPU {
             return;
         }
 
-        int SCY = hwreg.readAsInt(HardwareRegister.SCY);
-        int SCX = hwreg.readAsInt(HardwareRegister.SCX);
+        int scy = hwreg.readAsInt(HardwareRegister.SCY);
+        int scx = hwreg.readAsInt(HardwareRegister.SCX);
 
         int bgp = hwreg.readAsInt(HardwareRegister.BGP);
 
         for (int i = 0; i < LCD_SIZE_X; i++) {
-            int dx = (SCX + i) & 255;
-            int dy = (SCY + currScanline) & 255;
+            int dx = (scx + i) & 255;
+            int dy = (scy + currScanline) & 255;
             Tile t = bg.getTileAtCoordinate(dx, dy, tiles1, tilesN);
             t.decode();
             int colorIndex = Byte.toUnsignedInt(t.getDot(dx % 8, dy % 8));
@@ -75,12 +75,13 @@ public class PPU {
     }
 
     private void createScanlineWIN(int currScanline, Tile[] tilesN, Tile[] tiles1, TileMap map) {
-        int wx = hwreg.readAsInt(HardwareRegister.WX); // TODO: use this to calculate dots
-        int wy = hwreg.readAsInt(HardwareRegister.WY); // TODO: use this to calculate dots
+        int wy = hwreg.readAsInt(HardwareRegister.WY);
+        int wx = hwreg.readAsInt(HardwareRegister.WX);
+        int wxScreen = wx - 7;
 
         boolean coordinateInRange = (wx <= 166) && (wy <= 143);
 
-        if (!coordinateInRange || !ppuControl.isBGAndWindowEnabled() || !ppuControl.isWindowEnabled()) {
+        if (currScanline < wy || !coordinateInRange || !ppuControl.isBGAndWindowEnabled() || !ppuControl.isWindowEnabled()) {
             // We use -1 for 'invisible' dots.
             for (int i = 0; i < LCD_SIZE_X; i++) {
                 winBuffer[currScanline * LCD_SIZE_X + i] = -1;
@@ -91,12 +92,17 @@ public class PPU {
         int bgp = hwreg.readAsInt(HardwareRegister.BGP);
 
         for (int i = 0; i < LCD_SIZE_X; i++) {
-//            int dx = i & 255;
-//            int dy = currScanline & 255;
-//            Tile t = map.getTileAtCoordinate(dx, dy, tiles1, tilesN);
-//            t.decode();
-//            byte dotCol = t.getDot(dx % 8, dy % 8);
-            byte dotCol = -1; // TEMP
+            byte dotCol;
+            if (i < wxScreen) {
+                dotCol = -1;
+            } else {
+                int dx = (i - wxScreen) & 255;
+                int dy = (currScanline - wy) & 255;
+                Tile t = map.getTileAtCoordinate(dx, dy, tiles1, tilesN);
+                t.decode();
+                byte dot = t.getDot(dx % 8, dy % 8);
+                dotCol = getDotColor(bgp, dot);
+            }
             winBuffer[currScanline * LCD_SIZE_X + i] = dotCol;
         }
     }
@@ -119,10 +125,22 @@ public class PPU {
                 .filter(s -> currScanline >= (Byte.toUnsignedInt(s.getYPos()) - 16)
                         && currScanline < (Byte.toUnsignedInt(s.getYPos()) - 16 + spriteSize))
                 .toList();
+//        Sprite[] spritesToDraw = new Sprite[10];
+//        int c = 0;
+//        for (Sprite s : sprites) {
+//            if (currScanline >= (Byte.toUnsignedInt(s.getYPos()) - 16)
+//                && currScanline < (Byte.toUnsignedInt(s.getYPos()) - 16 + spriteSize)) {
+//                spritesToDraw[c] = s;
+//                c++;
+//                if (c == MAX_SPRITES_ON_SCANLINE) {
+//                    break;
+//                }
+//            }
+//        }
+
 
         for (int i = 0; i < MAX_SPRITES_ON_SCANLINE; i++) {
-
-            if (spritesToDraw.size() < i + 1)
+            if (i >= spritesToDraw.size())
                 return;
 
             Sprite sprite = spritesToDraw.get(i);
