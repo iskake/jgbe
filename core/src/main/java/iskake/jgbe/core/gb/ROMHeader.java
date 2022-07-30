@@ -71,9 +71,7 @@ public class ROMHeader {
         int MBCType = Byte.toUnsignedInt(romBank.bytes()[0x147]);
         return switch (MBCType) {
             case 0x00 -> new NoMBC(numRAM);
-            case 0x01 -> new MBC1(numROM, numRAM);
-            case 0x02 -> throw new NotImplementedException("Unimplemented MBC: 'MBC1+RAM'");
-            case 0x03 -> throw new NotImplementedException("Unimplemented MBC: 'MBC1+RAM+BATTERY'");
+            case 0x01, 0x02, 0x03 -> new MBC1(numROM, numRAM);
             case 0x05 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2'");
             case 0x06 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2+BATTERY'");
             case 0x08 -> throw new NotImplementedException("Unimplemented MBC: 'ROM+RAM 1'");
