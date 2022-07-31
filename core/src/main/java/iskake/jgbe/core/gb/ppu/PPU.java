@@ -7,6 +7,7 @@ import iskake.jgbe.core.gb.mem.VRAM;
 import iskake.jgbe.core.Bitwise;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -28,6 +29,10 @@ public class PPU {
     private final byte[] sprBuffer;
     /** Buffer used to hold the pixels of the screen mapped to RGB values. */
     private final byte[] frameBuffer;
+
+    public boolean drawBG = true;
+    public boolean drawWin = true;
+    public boolean drawSpr = true;
 
     public PPU(VRAM vram, OAM oam, HardwareRegisters hwreg, PPUController ppuControl) {
         this.vram = vram;
@@ -51,7 +56,7 @@ public class PPU {
      * @param bg           The background tilemap to draw.
      */
     private void createScanlineBG(int currScanline, Tile[] tilesN, Tile[] tiles1, TileMap bg) {
-        if (!ppuControl.isBGAndWindowEnabled()) {
+        if (!ppuControl.isBGAndWindowEnabled() || !drawBG) {
             for (int i = 0; i < LCD_SIZE_X; i++) {
                 // We use -1 for 'invisible' dots.
                 bgBuffer[currScanline * LCD_SIZE_X + i] = -1;
@@ -81,7 +86,11 @@ public class PPU {
 
         boolean coordinateInRange = (wx <= 166) && (wy <= 143);
 
-        if (currScanline < wy || !coordinateInRange || !ppuControl.isBGAndWindowEnabled() || !ppuControl.isWindowEnabled()) {
+        if (currScanline < wy
+                || !coordinateInRange
+                || !ppuControl.isBGAndWindowEnabled()
+                || !ppuControl.isWindowEnabled()
+                || !drawWin) {
             // We use -1 for 'invisible' dots.
             for (int i = 0; i < LCD_SIZE_X; i++) {
                 winBuffer[currScanline * LCD_SIZE_X + i] = -1;
@@ -96,6 +105,7 @@ public class PPU {
             if (i < wxScreen) {
                 dotCol = -1;
             } else {
+                // TODO: Use internal line count of window.
                 int dx = (i - wxScreen) & 255;
                 int dy = (currScanline - wy) & 255;
                 Tile t = map.getTileAtCoordinate(dx, dy, tiles1, tilesN);
@@ -113,7 +123,7 @@ public class PPU {
             sprBuffer[currScanline * LCD_SIZE_X + i] = -1;
         }
 
-        if (!ppuControl.areOBJsEnabled())
+        if (!ppuControl.areOBJsEnabled() || !drawSpr)
             return;
 
         int obp0 = hwreg.readAsInt(HardwareRegister.OBP0);
@@ -124,25 +134,12 @@ public class PPU {
         List<Sprite> spritesToDraw = Arrays.stream(sprites)
                 .filter(s -> currScanline >= (Byte.toUnsignedInt(s.getYPos()) - 16)
                         && currScanline < (Byte.toUnsignedInt(s.getYPos()) - 16 + spriteSize))
+                .sorted(Comparator.comparingInt(Sprite::getXPos))
+                .limit(MAX_SPRITES_ON_SCANLINE)
                 .toList();
-//        Sprite[] spritesToDraw = new Sprite[10];
-//        int c = 0;
-//        for (Sprite s : sprites) {
-//            if (currScanline >= (Byte.toUnsignedInt(s.getYPos()) - 16)
-//                && currScanline < (Byte.toUnsignedInt(s.getYPos()) - 16 + spriteSize)) {
-//                spritesToDraw[c] = s;
-//                c++;
-//                if (c == MAX_SPRITES_ON_SCANLINE) {
-//                    break;
-//                }
-//            }
-//        }
 
-
-        for (int i = 0; i < MAX_SPRITES_ON_SCANLINE; i++) {
-            if (i >= spritesToDraw.size())
-                return;
-
+        // TODO: actually handle sprite priority instead of looping backwards (which only works under certain circumstances)
+        for (int i = spritesToDraw.size() - 1; i >= 0; i--) {
             Sprite sprite = spritesToDraw.get(i);
 
             int xPos = Byte.toUnsignedInt(sprite.getXPos());
@@ -152,8 +149,11 @@ public class PPU {
             int yPosScreen = (yPos - 16);
 
             int attr = Byte.toUnsignedInt(sprite.getAttributes());
+
+            boolean sprUnderBGWin = Bitwise.isBitSet(attr, Sprite.BIT_BG_WIN_OVER);
             boolean xFilp = Bitwise.isBitSet(attr, Sprite.BIT_FLIP_X);
             boolean yFilp = Bitwise.isBitSet(attr, Sprite.BIT_FLIP_Y);
+            int pal = Bitwise.isBitSet(attr, Sprite.BIT_PALETTE_NO) ? obp1 : obp0;
 
             // https://gbdev.io/pandocs/OAM.html#byte-2---tile-index
             int tileIdx = Byte.toUnsignedInt(sprite.getTileIndex());
@@ -169,14 +169,17 @@ public class PPU {
             if (xPos > 0 && xPos < LCD_SIZE_X + 8) {
                 for (int j = xPosScreen; j < (xPosScreen + 8); j++) {
                     if (j < LCD_SIZE_X) {
-                        int pal = Bitwise.isBitSet(attr, Sprite.BIT_PALETTE_NO) ? obp1 : obp0;
                         int dx = xFilp ? 7 - (j - xPosScreen) : j - xPosScreen;
                         int dy = yFilp ? 7 - ((currScanline - yPosScreen) % 8) : (currScanline - yPosScreen) % 8;
                         byte dot = tile.getDot(dx, dy);
                         byte color = getDotColorObj(pal, dot);
                         // Allow sprite overlap
-                        if (color != -1 && j >= 0)
+                        if (color != -1 && j >= 0) {
+                            // TODO: priority when s1.x == s2.x
+                            // TODO: also... rework sprite layer handling, don't use wierd bit masking on colors...
+                            color = sprUnderBGWin ? (byte)(color | 0b1000) : color;
                             sprBuffer[currScanline * LCD_SIZE_X + j] = color;
+                        }
                     }
                 }
             }
@@ -239,6 +242,7 @@ public class PPU {
 
     /** Color based on index. */
     private static final byte[] COLORS_MAP = {
+            // TODO: Handle more colors? (such as on sgb)
             (byte) 0xff,
             (byte) 0xaa,
             (byte) 0x55,
@@ -251,8 +255,12 @@ public class PPU {
             byte winColor = winBuffer[i / 3];
             byte bgColor = bgBuffer[i / 3];
 
-            // TODO: Actually handle window dots too.
-            if (sprColor != -1) {
+            // TODO: don't use weird color hack to find out if the sprite is underneath...
+            boolean spriteUnder = sprColor > 0b11;
+            boolean drawSpriteUnder = (winColor <= 0 && bgColor <= 0) || !spriteUnder;
+
+            if (sprColor != -1 && drawSpriteUnder) {
+                sprColor = spriteUnder ? (byte)(Byte.toUnsignedInt(sprColor) & 0b11) : sprColor;
                 frameBuffer[i] = COLORS_MAP[sprColor];
                 frameBuffer[i + 1] = COLORS_MAP[sprColor];
                 frameBuffer[i + 2] = COLORS_MAP[sprColor];
