@@ -85,6 +85,7 @@ public class Timing {
     private void handleCycles(long oldCycles) {
         for (long cycle = oldCycles; cycle < cycles; cycle++) {
             dmaControl.decCycles();
+            interrupts.cycle();
             handleTimers(cycle);
             handleVideo(cycle);
         }
@@ -105,13 +106,14 @@ public class Timing {
 
                 if (hwreg.readAsInt(TIMA) == 0) {
                     hwreg.write(TIMA, hwreg.read(TMA)); // ? check TIM write when TIMA overflow
-                    interrupts.setWaitingToCall(InterruptType.TIMER);
+                    interrupts.dispatch(InterruptType.TIMER);
                 }
             }
         }
     }
 
     private void handleVideo(long cycle) {
+        boolean doVblankThingsAfterEverythingIsSet = false;
         if (!Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
             hwreg.writeInternal(LY, (byte) 0);
 
@@ -124,18 +126,21 @@ public class Timing {
             }
 
 //            return;
-        }
-        // VBlank
-        if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
-            ppu.addScanline();
-            hwreg.inc(LY);
-            int ly_val = hwreg.readAsInt(LY);
-            if (ly_val == 0x90) {
-                interrupts.setWaitingToCall(InterruptType.VBLANK);
-                gb.setVBlankJustCalled();
-                vblankWaitCycles = 0;
-            } else if (ly_val > 0x99) {
-                hwreg.write(LY, 0);
+        } else {
+            // VBlank
+            if ((cycle % (MODE3_END_MIN)) == 0)
+                ppu.addScanline();
+
+            if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
+                hwreg.inc(LY);
+                int ly_val = hwreg.readAsInt(LY);
+                if (ly_val == 0x90) {
+                    interrupts.dispatch(InterruptType.VBLANK);
+                    gb.setVBlankJustCalled();
+                    vblankWaitCycles = 0;
+                } else if (ly_val > 0x99) {
+                    hwreg.write(LY, 0);
+                }
             }
         }
 
@@ -145,7 +150,7 @@ public class Timing {
         // 0xff41 (STAT)
         long scanDot = (cycle % SCANLINE_CYCLES);
 
-        if ((cycle % FRAME_CYCLES) >= MODE1_START) {
+        if ((cycle % FRAME_CYCLES) >= MODE1_START || !Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
             // Mode 1 (VBlank)
             hwreg.setBit(STAT, 0);
             hwreg.resetBit(STAT, 1);
@@ -158,7 +163,7 @@ public class Timing {
             // For simplicity, assume minimum cycles spent drawing
             hwreg.setBit(STAT, 0);
             hwreg.setBit(STAT, 1);
-        } else if (scanDot < MODE0_END_MAX) {
+        } else {
             // Mode 0 (HBlank)
             // For simplicity, assume maximum cycles spend in HBlank
             hwreg.resetBit(STAT, 0);
@@ -172,7 +177,7 @@ public class Timing {
         boolean STATVBL = Bitwise.isBitSet(hwreg.read(STAT), 4) && ((hwreg.readAsInt(STAT) & 0b11) == 1);
         boolean STATOAM = Bitwise.isBitSet(hwreg.read(STAT), 5) && ((hwreg.readAsInt(STAT) & 0b11) == 2);
         if (STATLY || STATHBL || STATVBL || STATOAM) {
-            interrupts.setWaitingToCall(InterruptType.STAT);
+            interrupts.dispatch(InterruptType.STAT);
         }
     }
 }

@@ -6,6 +6,8 @@ import iskake.jgbe.core.gb.pointer.ProgramCounter;
 import iskake.jgbe.core.gb.pointer.StackPointer;
 import iskake.jgbe.core.Bitwise;
 
+import java.util.Arrays;
+
 import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IE;
 import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IF;
 
@@ -18,9 +20,9 @@ public class InterruptHandler {
         SERIAL(0x58),
         JOYPAD(0x60);
 
-        int address;
+        final int address;
 
-        private InterruptType(int address) {
+        InterruptType(int address) {
             this.address = address;
         }
     }
@@ -33,13 +35,23 @@ public class InterruptHandler {
     private final GameBoy gb;
 
     /** Currently waiting interrupts */
+    private final boolean[] dispatched = { false, false, false, false, false };
     private final boolean[] waiting = { false, false, false, false, false };
+    private final int[] countDown = { 0, 0, 0, 0, 0 };
 
     public InterruptHandler(GameBoy gb, HardwareRegisters hwreg) {
         this.gb = gb;
         this.pc = gb.pc();
         this.sp = gb.sp();
         this.hwreg = hwreg;
+    }
+
+    public void init() {
+        waitIME = false;
+        ime = false;
+        Arrays.fill(dispatched, false);
+        Arrays.fill(waiting, false);
+        Arrays.fill(countDown, 0);
     }
 
     /**
@@ -89,14 +101,40 @@ public class InterruptHandler {
     }
 
     /**
+     * Advance the interrupt handler by one cycle.
+     */
+    public void cycle() {
+        for (int i = 0; i < dispatched.length; i++) {
+            if (dispatched[i]) {
+                countDown[i]--;
+                if (countDown[i] == 0) {
+                    InterruptType interrupt = InterruptType.values()[i];
+                    setWaitingToCall(interrupt);
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the currently waiting interrupt that will run on the next CPU step.
+     *
+     * @param it The interrupt to set.
+     */
+    private void setWaitingToCall(InterruptType it) {
+        int bit = it.ordinal();
+        waiting[bit] = true;
+        hwreg.setBit(IF, bit);
+    }
+
+    /**
      * Set the currently waiting interrupt that will run on the next CPU step.
      * 
      * @param it The interrupt to set.
      */
-    public void setWaitingToCall(InterruptType it) {
+    public void dispatch(InterruptType it) {
         int bit = it.ordinal();
-        waiting[bit] = true;
-        hwreg.setBit(IF, bit);
+        dispatched[bit] = true;
+        countDown[bit] = 20;
     }
 
     /**
@@ -139,6 +177,7 @@ public class InterruptHandler {
         pc.set(Bitwise.toShort(it.address));
 
         waiting[bit] = false;
+        dispatched[bit] = false;
         hwreg.resetBit(IF, bit);
 
         return true;

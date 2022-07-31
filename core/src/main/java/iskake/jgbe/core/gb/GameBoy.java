@@ -86,6 +86,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         pc.setNoCycle((short) 0x100);
         sp.set((short) 0xfffe);
+        interrupts.init();
         memoryMap.init(rom);
         hwreg.init();
         timing.init();
@@ -118,6 +119,11 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         running = true;
         dbg.restart();
+    }
+
+    // For debugging
+    public PPU getPPU() {
+        return ppu;
     }
 
     /**
@@ -273,7 +279,12 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     @Override
     public void halt() {
-        // TODO
+        // TODO: check if everything works correctly...
+        cpu.halt();
+    }
+
+    public void incCycles() {
+        timing.incCycles();
     }
 
     @Override
