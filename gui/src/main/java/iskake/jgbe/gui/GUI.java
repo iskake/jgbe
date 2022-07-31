@@ -229,21 +229,21 @@ public class GUI {
             if (!paused || advanceOneFrame) {
                 advanceOneFrame = false;
                 runFrame();
-                renderer.clear();
-                startImGuiFrame();
-                drawMenuBar();
-                if (!debugMode) {
-                    renderer.renderFrame(screenTexture);
-                } else {
-                    // We don't call `renderer.renderFrame` since debugGUI will render the
-                    // frame (in an ImGui window) using `ImGui.image`.
-                    debugGUI.draw(screenTexture);
-                }
-                endImGuiFrame();
-
-//                glfwSwapInterval(0); // Ignore vsync
-                glfwSwapBuffers(window);
             }
+            renderer.clear();
+            startImGuiFrame();
+            drawMenuBar();
+            if (!debugMode) {
+                renderer.renderFrame(screenTexture);
+            } else {
+                // We don't call `renderer.renderFrame` since debugGUI will render the
+                // frame (in an ImGui window) using `ImGui.image`.
+                debugGUI.draw(screenTexture);
+            }
+            endImGuiFrame();
+
+//               glfwSwapInterval(0); // Ignore vsync
+            glfwSwapBuffers(window);
         }
 
         log.info("Exited the run loop");
