@@ -10,7 +10,9 @@ public final class Timers {
     private Timers() {}
 
     /** The DIV register increment rate. */
-    public static final int DIV_CLOCK = 0x4000;
+    // TODO: Replace with internal timer (see TCAGBD ch.5)
+    public static final int DIV_CLOCK = 0x100;
+
 
     /**
      * Check if the TIMA register is enabled (bit 2 of the TAC register.)
