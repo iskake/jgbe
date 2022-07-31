@@ -9,9 +9,7 @@ import iskake.jgbe.core.gb.mem.ROMFactory;
 import iskake.jgbe.gui.controller.GameBoyJoypad;
 import iskake.jgbe.gui.video.OpenGLRenderer;
 
-import java.io.*;
 import java.nio.*;
-import java.nio.file.*;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
@@ -68,7 +66,7 @@ public class GUI {
                 case GLFW_KEY_3 -> glfwSetWindowSize(window, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
                 case GLFW_KEY_4 -> glfwSetWindowSize(window, LCD_SIZE_X * 4, LCD_SIZE_Y * 4);
 
-                case GLFW_KEY_O -> reloadNewROM();
+                case GLFW_KEY_O -> reloadNewROM(getROMPathFileDialog());
                 case GLFW_KEY_R -> reload();
 
                 case GLFW_KEY_P -> paused = !paused;
@@ -106,6 +104,22 @@ public class GUI {
         }
     }
 
+    private void dropCallback(long window, int count, long stringPtrPtr) {
+        if (count > 1) {
+            log.warn("Multiple files dragged, only the first Game Boy ROM file will be opened.");
+        }
+        for (int i = 0; i < count; i++) {
+            String name = GLFWDropCallback.getName(stringPtrPtr, i);
+            if (name.endsWith(".gb") || name.endsWith(".gbc")) {
+                log.info("Dragged Game Boy ROM detected: " + name);
+                reloadNewROM(name);
+                break;
+            } else {
+                log.warn("File '" + name + "' is not a Game Boy ROM.");
+            }
+        }
+    }
+
     private void cursorEnterCallback(long window, boolean entered) {
         showMenuBar = entered;
     }
@@ -126,6 +140,7 @@ public class GUI {
 
         glfwMakeContextCurrent(window);
         glfwSetKeyCallback(window, this::keyCallback);
+        glfwSetDropCallback(window, this::dropCallback);
         glfwSetCursorEnterCallback(window, this::cursorEnterCallback);
         return window;
     }
@@ -159,20 +174,8 @@ public class GUI {
         gb.restart();
     }
 
-    public void reloadNewROM() {
+    public void reloadNewROM(String romPath) {
         log.info("Loading new ROM.");
-        String romPath = "";
-        PointerBuffer romPathPtr = memAllocPointer(1);
-
-        try {
-            int result = NFD_OpenDialog("gb,gbc", null, romPathPtr);
-            if (result == NFD_OKAY) {
-                romPath = romPathPtr.getStringUTF8();
-                log.info("Selected file: " + romPath);
-            }
-        } finally {
-            memFree(romPathPtr);
-        }
 
         if (!romPath.equals("")) {
             CartridgeROM rom = romFactory.getROM(romPath);
@@ -186,6 +189,23 @@ public class GUI {
         } else {
             log.info("No file selected.");
         }
+    }
+
+    public String getROMPathFileDialog() {
+        String romPath = "";
+        PointerBuffer romPathPtr = memAllocPointer(1);
+
+        try {
+            int result = NFD_OpenDialog("gb,gbc", null, romPathPtr);
+            if (result == NFD_OKAY) {
+                romPath = romPathPtr.getStringUTF8();
+                log.info("Selected file: " + romPath);
+            }
+        } finally {
+            memFree(romPathPtr);
+        }
+
+        return romPath;
     }
 
     /** This function should be called before a frame's ImGui functionality has been run. */
@@ -249,7 +269,7 @@ public class GUI {
             if (ImGui.beginMainMenuBar()) {
                 if (ImGui.beginMenu("File")) {
                     if (ImGui.menuItem("Open ROM")) {
-                        reloadNewROM();
+                        reloadNewROM(getROMPathFileDialog());
                     }
                     if (ImGui.menuItem("Restart")) {
                         reload();

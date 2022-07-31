@@ -17,6 +17,10 @@ public class DebugGUI {
 
     private final ImBoolean showMem = new ImBoolean(false);
     private final ImBoolean showVram = new ImBoolean(false);
+
+    private final ImBoolean showBG = new ImBoolean(true);
+    private final ImBoolean showWin = new ImBoolean(true);
+    private final ImBoolean showSpr = new ImBoolean(true);
     private final GameBoy gb;
 //    private final Debugger dbg;
 
@@ -66,13 +70,16 @@ public class DebugGUI {
             // Temp.
             if (ImGui.beginMenuBar()) {
                 if (ImGui.beginMenu("View")) {
-                    ImGui.menuItem("Show background layer", "", true);
-                    ImGui.menuItem("Show window layer", "", true);
-                    ImGui.menuItem("Show sprite layer", "", true);
+                    ImGui.menuItem("Show background layer", "", showBG);
+                    ImGui.menuItem("Show window layer", "", showWin);
+                    ImGui.menuItem("Show sprite layer", "", showSpr);
                     ImGui.endMenu();
                 }
                 ImGui.endMenuBar();
             }
+            gb.getPPU().drawBG = showBG.get();
+            gb.getPPU().drawWin = showWin.get();
+            gb.getPPU().drawSpr = showSpr.get();
             ImGui.image(screenTex, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
         }
         ImGui.end();
