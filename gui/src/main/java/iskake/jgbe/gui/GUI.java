@@ -268,7 +268,7 @@ public class GUI {
     private void toggleDebugMode() {
         debugMode = !debugMode;
         if (debugMode) {
-            glfwSetWindowSize(window, 1280, 800);
+            glfwSetWindowSize(window, 1600, 1000);
         } else {
             glfwSetWindowSize(window, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
         }
