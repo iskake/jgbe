@@ -33,7 +33,7 @@ public class DebugGUI {
         if (ImGui.beginMainMenuBar()) {
             if (ImGui.beginMenu("Debug")) {
                 if (ImGui.menuItem("Toggle debugger")) {
-                    gb.enableDebugger();
+                    gb.toggleDebugger();
                 }
                 ImGui.menuItem("Show memory view", "", showMem);
                 ImGui.menuItem("Show VRAM view", "", showVram);

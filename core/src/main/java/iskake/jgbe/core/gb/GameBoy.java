@@ -228,6 +228,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
      */
     public void enableDebugger() {
         debuggerEnabled = true;
+        dbg.restart();
         log.info("Debugger was enabled.");
     }
 
@@ -237,6 +238,17 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     public void disableDebugger() {
         debuggerEnabled = false;
         log.info("Debugger was disabled.");
+    }
+
+    /**
+     * Toggle the debugger.
+     */
+    public void toggleDebugger() {
+        if (debuggerEnabled) {
+            disableDebugger();
+        } else {
+            enableDebugger();
+        }
     }
 
     /**
