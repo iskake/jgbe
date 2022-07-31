@@ -17,7 +17,6 @@ public class Timing {
     // TODO: many things are not working correctly. For example, opcode timing, DAM
     // transfers, hwregister reading, etc...
     private long cycles;
-    private long vblankWaitCycles;
 
     private final GameBoy gb;
     private final PPU ppu;
@@ -113,37 +112,6 @@ public class Timing {
     }
 
     private void handleVideo(long cycle) {
-        boolean doVblankThingsAfterEverythingIsSet = false;
-        if (!Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
-            hwreg.writeInternal(LY, (byte) 0);
-
-            // TODO? temp. workaround for hanging application (when lcd is never enabled)
-            vblankWaitCycles++;
-            if (vblankWaitCycles == FRAME_CYCLES) {
-                ppu.clearFrameBuffer();
-                gb.setVBlankJustCalled();
-                vblankWaitCycles = 0;
-            }
-
-//            return;
-        } else {
-            // VBlank
-            if ((cycle % (MODE3_END_MIN)) == 0)
-                ppu.addScanline();
-
-            if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
-                hwreg.inc(LY);
-                int ly_val = hwreg.readAsInt(LY);
-                if (ly_val == 0x90) {
-                    interrupts.dispatch(InterruptType.VBLANK);
-                    gb.setVBlankJustCalled();
-                    vblankWaitCycles = 0;
-                } else if (ly_val > 0x99) {
-                    hwreg.write(LY, 0);
-                }
-            }
-        }
-
         // 0xff40 LCDC
         // 'Automatically' 'handled' in PPUController
 
@@ -178,6 +146,21 @@ public class Timing {
         boolean STATOAM = Bitwise.isBitSet(hwreg.read(STAT), 5) && ((hwreg.readAsInt(STAT) & 0b11) == 2);
         if (STATLY || STATHBL || STATVBL || STATOAM) {
             interrupts.dispatch(InterruptType.STAT);
+        }
+
+        // VBlank
+        if ((cycle % (MODE3_END_MIN)) == 0)
+            ppu.addScanline(); // TODO: move to using pixel FIFO
+
+        if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
+            hwreg.inc(LY);
+            int ly_val = hwreg.readAsInt(LY);
+            if (ly_val == 0x90) {
+                interrupts.dispatch(InterruptType.VBLANK);
+                gb.setVBlankJustCalled();
+            } else if (ly_val > 0x99) {
+                hwreg.write(LY, 0);
+            }
         }
     }
 }

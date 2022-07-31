@@ -56,7 +56,7 @@ public class PPU {
      * @param bg           The background tilemap to draw.
      */
     private void createScanlineBG(int currScanline, Tile[] tilesN, Tile[] tiles1, TileMap bg) {
-        if (!ppuControl.isBGAndWindowEnabled() || !drawBG) {
+        if (!ppuControl.isLCDEnabled() || !ppuControl.isBGAndWindowEnabled() || !drawBG) {
             for (int i = 0; i < LCD_SIZE_X; i++) {
                 // We use -1 for 'invisible' dots.
                 bgBuffer[currScanline * LCD_SIZE_X + i] = -1;
@@ -86,7 +86,8 @@ public class PPU {
 
         boolean coordinateInRange = (wx <= 166) && (wy <= 143);
 
-        if (currScanline < wy
+        if (!ppuControl.isLCDEnabled()
+                || currScanline < wy
                 || !coordinateInRange
                 || !ppuControl.isBGAndWindowEnabled()
                 || !ppuControl.isWindowEnabled()
@@ -123,7 +124,7 @@ public class PPU {
             sprBuffer[currScanline * LCD_SIZE_X + i] = -1;
         }
 
-        if (!ppuControl.areOBJsEnabled() || !drawSpr)
+        if (!ppuControl.isLCDEnabled() || !ppuControl.areOBJsEnabled() || !drawSpr)
             return;
 
         int obp0 = hwreg.readAsInt(HardwareRegister.OBP0);
