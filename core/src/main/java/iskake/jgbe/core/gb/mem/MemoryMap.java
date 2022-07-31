@@ -45,11 +45,12 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     public void init(CartridgeROM rom) {
         this.rom = rom;
         VRAM.clear();
+        OAM.clear();
+        wavePatternRAM.clear();
+
         WRAM1.randomize();
         WRAM2.randomize();
-        OAM.randomize();
         HRAM.randomize();
-        wavePatternRAM.clear();
     }
 
     @Override
