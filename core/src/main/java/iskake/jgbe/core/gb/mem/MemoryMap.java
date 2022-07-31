@@ -21,6 +21,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     private final OAM OAM;
     private final ProhibitedMemory prohibited;
     private final HardwareRegisterMap IO;
+    private final RAM wavePatternRAM;
     private final RAM HRAM;
 
     private int fixedAddress;
@@ -35,6 +36,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         IO = new HardwareRegisterMap(hwreg);
         prohibited = new ProhibitedMemory(hwreg);
         HRAM = new RAM(0x200);
+        wavePatternRAM = new RAM(0x10);
     }
 
     /**
@@ -47,6 +49,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         WRAM2.randomize();
         OAM.randomize();
         HRAM.randomize();
+        wavePatternRAM.clear();
     }
 
     @Override
@@ -113,13 +116,13 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
         } else if (address < 0xF000) {
             // e000-f000 = 1000
             // (Mirror of c000-ddff)
-             log.warn("Accessing ECHO RAM.");
+            log.warn("Accessing ECHO RAM.");
             fixedAddress -= 0xe000;
             return WRAM1;
         } else if (address < 0xFE00) {
             // e000-fdff = e00
             // (Mirror of c000-ddff)
-             log.warn("Accessing ECHO RAM.");
+            log.warn("Accessing ECHO RAM.");
             fixedAddress -= 0xf000;
             return WRAM2;
         } else if (address < 0xFEA0) {
@@ -130,9 +133,14 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             // fea0-feff = 60
             // ('Not usable/prohibited' memory)
             return prohibited;
-        } else if (address < 0xFF80 || address == 0xFFFF) {
-            // ff00-ff7f = 80
+        } else if (((address < 0xFF30) || (address < 0xFF80 && address > 0xFF3F)) || address == 0xFFFF) {
+            // ff00-ff2f = 30
+            // ff40-ff7f = 40
             return IO;
+        } else if (address < 0xFF40) {
+            // ff30-ff3f = 10
+            fixedAddress -= 0xff30;
+            return wavePatternRAM;
         } else {
             // ff80-fffe (HRAM)
             fixedAddress -= 0xff80;
