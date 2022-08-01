@@ -1,15 +1,7 @@
 package iskake.jgbe.core.gb.interrupt;
 
 import iskake.jgbe.core.gb.GameBoy;
-import iskake.jgbe.core.gb.HardwareRegisters;
-import iskake.jgbe.core.gb.pointer.ProgramCounter;
-import iskake.jgbe.core.gb.pointer.StackPointer;
 import iskake.jgbe.core.Bitwise;
-
-import java.util.Arrays;
-
-import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IE;
-import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IF;
 
 public class InterruptHandler {
 
@@ -27,31 +19,37 @@ public class InterruptHandler {
         }
     }
 
+    private byte IF;
+    private byte IE;
     private boolean ime;
     private boolean waitIME = false;
-    private final ProgramCounter pc;
-    private final StackPointer sp;
-    private final HardwareRegisters hwreg;
     private final GameBoy gb;
 
-    /** Currently waiting interrupts */
-    private final boolean[] dispatched = { false, false, false, false, false };
-    private final boolean[] waiting = { false, false, false, false, false };
-    private final int[] countDown = { 0, 0, 0, 0, 0 };
-
-    public InterruptHandler(GameBoy gb, HardwareRegisters hwreg) {
+    public InterruptHandler(GameBoy gb) {
         this.gb = gb;
-        this.pc = gb.pc();
-        this.sp = gb.sp();
-        this.hwreg = hwreg;
     }
 
     public void init() {
+        IF = (byte)0xe1; // no BootROM
+        IE = (byte)0x00; // no BootROM
         waitIME = false;
         ime = false;
-        Arrays.fill(dispatched, false);
-        Arrays.fill(waiting, false);
-        Arrays.fill(countDown, 0);
+    }
+
+    public byte readIE() {
+        return IF;
+    }
+
+    public void writeIE(byte value) {
+        IE = value;
+    }
+
+    public byte readIF() {
+        return IF;
+    }
+
+    public void writeIF(byte value) {
+        IF = (byte)(Byte.toUnsignedInt(value) | 0b1110_0000);
     }
 
     /**
@@ -70,7 +68,7 @@ public class InterruptHandler {
     }
 
     /**
-     * Enable all interrupts speficied in the {@code ie} hardware register.
+     * Enable all interrupts specified in the {@code ie} hardware register.
      * <p>
      * Should only be called if either {@code waitForIME()} has been called or when
      * using the {@code reti} instruction.
@@ -101,57 +99,34 @@ public class InterruptHandler {
     }
 
     /**
-     * Advance the interrupt handler by one cycle.
-     */
-    public void cycle() {
-        for (int i = 0; i < dispatched.length; i++) {
-            if (dispatched[i]) {
-                countDown[i]--;
-                if (countDown[i] == 0) {
-                    InterruptType interrupt = InterruptType.values()[i];
-                    setWaitingToCall(interrupt);
-                }
-            }
-        }
-    }
-
-    /**
      * Set the currently waiting interrupt that will run on the next CPU step.
      *
      * @param it The interrupt to set.
      */
-    private void setWaitingToCall(InterruptType it) {
+    public void setWaitingToCall(InterruptType it) {
         int bit = it.ordinal();
-        waiting[bit] = true;
-        hwreg.setBit(IF, bit);
+        IF = Bitwise.setBit(IF, bit);
     }
 
     /**
-     * Set the currently waiting interrupt that will run on the next CPU step.
-     * 
-     * @param it The interrupt to set.
-     */
-    public void dispatch(InterruptType it) {
-        int bit = it.ordinal();
-        dispatched[bit] = true;
-        countDown[bit] = 20;
-    }
-
-    /**
-     * Call the currently waiting interrupt.
+     * Call the first currently waiting interrupt (VBlank -> ... -> Joypad).
      * 
      * @return {@code true} if the call was successful, {@code false} otherwise.
      */
     public boolean callWaiting() {
-        for (int i = 0; i < waiting.length; i++) {
-            if (waiting[i]) {
-                InterruptType interruptToCall = InterruptType.values()[i];
+        for (int bit = 0; bit < InterruptType.values().length; bit++) {
+            if (Bitwise.isBitSet(IF, bit)) {
+                InterruptType interruptToCall = InterruptType.values()[bit];
                 if (callInterrupt(interruptToCall)) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public boolean anyIFSet() {
+        return (Byte.toUnsignedInt(IF) & 0b0001_1111) != 0;
     }
 
     /**
@@ -165,20 +140,18 @@ public class InterruptHandler {
         if (!enabled()) {
             return false;
         } else {
-            if (!(Bitwise.isBitSet(hwreg.read(IE), bit)) || !(Bitwise.isBitSet(hwreg.read(IF), bit))) {
+            if (!(Bitwise.isBitSet(IE, bit)) || !(Bitwise.isBitSet(IF, bit))) {
                 return false;
             }
         }
         disable();
         gb.timing.incCycles();
         gb.timing.incCycles();
-        sp.push(pc.get());
+        gb.sp().push(gb.pc().get());
 
-        pc.set(Bitwise.toShort(it.address));
+        gb.pc().set(Bitwise.toShort(it.address));
 
-        waiting[bit] = false;
-        dispatched[bit] = false;
-        hwreg.resetBit(IF, bit);
+        IF = Bitwise.clearBit(IF, bit);
 
         return true;
     }

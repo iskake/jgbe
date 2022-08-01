@@ -1,5 +1,6 @@
 package iskake.jgbe.core.gb;
 
+import iskake.jgbe.core.gb.interrupt.InterruptHandler;
 import iskake.jgbe.core.gb.joypad.IJoypad;
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.gb.timing.Timers;
@@ -127,11 +128,13 @@ public class HardwareRegisters {
     private final byte[] registerValues = new byte[HardwareRegister.values().length];
     private final DMAController dmaControl;
     private final Timers timers;
+    private final InterruptHandler interrupts;
     private final IJoypad joypad;
 
-    public HardwareRegisters(DMAController dmaControl, Timers timers, IJoypad joypad) {
+    public HardwareRegisters(DMAController dmaControl, Timers timers, InterruptHandler interrupts, IJoypad joypad) {
         this.dmaControl = dmaControl;
         this.timers = timers;
+        this.interrupts = interrupts;
         this.joypad = joypad;
     }
 
@@ -146,7 +149,7 @@ public class HardwareRegisters {
         writeInternal(TIMA,  0x00);
         writeInternal(TMA,   0x00);
         writeInternal(TAC,   0xF8);
-        writeInternal(IF,    0xE1);
+        write        (IF,    0xE1);
         writeInternal(NR10,  0x80);
         writeInternal(NR11,  0xBF);
         writeInternal(NR12,  0xF3);
@@ -193,7 +196,7 @@ public class HardwareRegisters {
         writeInternal(OCPS,  0xFF);
         writeInternal(OCPD,  0xFF);
         writeInternal(SVBK,  0xFF);
-        writeInternal(IE,    0x00);
+        write        (IE,    0x00);
     }
 
     /**
@@ -228,6 +231,35 @@ public class HardwareRegisters {
      */
     public int readAsInt(HardwareRegister hwreg) {
         return Byte.toUnsignedInt(read(hwreg));
+    }
+
+    /**
+     * Handle 'special reads' on registers.
+     *
+     * @param hwreg The register to potentially handle a special write to.
+     * @return The correct byte value, or an integer larger than 255 (no special reads).
+     */
+    private int handleSpecialReads(HardwareRegister hwreg) {
+        return switch (hwreg) {
+            case IE -> interrupts.readIE();
+            case IF -> interrupts.readIF();
+            case DIV -> timers.readDIV();
+            case TIMA -> timers.readTIMA();
+            case TMA -> timers.readTMA();
+            case TAC -> timers.readTAC();
+            case P1 -> {
+                int value = Byte.toUnsignedInt(registerValues[P1.ordinal()]);
+                if (!Bitwise.isBitSet(value, 4)) {
+                    writeInternal(P1, (value | joypad.getDirectionsAsInt()));
+                } else if (!Bitwise.isBitSet(value, 5)) {
+                    writeInternal(P1, (value | joypad.getButtonsAsInt()));
+                } else {
+                    writeInternal(P1, value);
+                }
+                yield registerValues[P1.ordinal()];
+            }
+            default -> 0x100;
+        };
     }
 
     /**
@@ -283,33 +315,6 @@ public class HardwareRegisters {
     }
 
     /**
-     * Handle 'special reads' on registers.
-     *
-     * @param hwreg The register to potentially handle a special write to.
-     * @return The correct byte value, or an integer larger than 255 (no special reads).
-     */
-    private int handleSpecialReads(HardwareRegister hwreg) {
-        return switch (hwreg) {
-            case DIV -> timers.readDIV();
-            case TIMA -> timers.readTIMA();
-            case TMA -> timers.readTMA();
-            case TAC -> timers.readTAC();
-            case P1 -> {
-                int value = Byte.toUnsignedInt(registerValues[P1.ordinal()]);
-                if (!Bitwise.isBitSet(value, 4)) {
-                    writeInternal(P1, (value | joypad.getDirectionsAsInt()));
-                } else if (!Bitwise.isBitSet(value, 5)) {
-                    writeInternal(P1, (value | joypad.getButtonsAsInt()));
-                } else {
-                    writeInternal(P1, value);
-                }
-                yield registerValues[P1.ordinal()];
-            }
-            default -> 0x100;
-        };
-    }
-
-    /**
      * Handle 'special writes' on registers.
      * 
      * @param hwreg The register to potentially handle a special write to.
@@ -318,6 +323,8 @@ public class HardwareRegisters {
      */
     private boolean handleSpecialWrites(HardwareRegister hwreg, byte value) {
         switch (hwreg) {
+            case IE -> interrupts.writeIE(value);
+            case IF -> interrupts.writeIF(value);
             case DIV -> timers.writeDIV();
             case TIMA -> timers.writeTIMA();
             case TMA -> timers.writeTMA(value);

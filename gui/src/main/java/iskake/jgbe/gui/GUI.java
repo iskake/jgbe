@@ -48,6 +48,9 @@ public class GUI {
     private boolean advanceOneFrame = false;
     private boolean showMenuBar = false;
 
+    private int frames = 0;
+    private int frameMod = 1;
+
     public GUI() {
         joypad = new GameBoyJoypad();
         gb = new GameBoy(joypad);
@@ -84,7 +87,7 @@ public class GUI {
                 case GLFW_KEY_UP -> joypad.setDirectionActive(Input.DPAD_UP);
                 case GLFW_KEY_DOWN -> joypad.setDirectionActive(Input.DPAD_DOWN);
 
-                case GLFW_KEY_SPACE -> glfwSwapInterval(0);
+                case GLFW_KEY_SPACE -> frameMod = 4;
             }
         }
         if (action == GLFW_RELEASE) {
@@ -99,7 +102,7 @@ public class GUI {
                 case GLFW_KEY_UP -> joypad.setDirectionInactive(Input.DPAD_UP);
                 case GLFW_KEY_DOWN -> joypad.setDirectionInactive(Input.DPAD_DOWN);
 
-                case GLFW_KEY_SPACE -> glfwSwapInterval(1);
+                case GLFW_KEY_SPACE -> frameMod = 1;
             }
         }
     }
@@ -243,7 +246,8 @@ public class GUI {
             endImGuiFrame();
 
 //               glfwSwapInterval(0); // Ignore vsync
-            glfwSwapBuffers(window);
+            if ((frames % frameMod == 0))
+                glfwSwapBuffers(window);
         }
 
         log.info("Exited the run loop");
@@ -258,8 +262,10 @@ public class GUI {
         float deltaTime = (end - start) / 1_000_000f;
         log.debug("delta: " + deltaTime + "ms");
 
-        bb.put(gb.getFrame()).rewind();
+        if (frames % frameMod == 0)
+            bb.put(gb.getFrame()).rewind();
         renderer.updateTexture(screenTexture, LCD_SIZE_X, LCD_SIZE_Y, bb);
+        frames++;
     }
 
     private void drawMenuBar() {

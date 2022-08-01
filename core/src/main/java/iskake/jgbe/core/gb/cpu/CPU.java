@@ -34,7 +34,9 @@ public class CPU  {
                     halted = false;
                 }
             } else {
-                halted = false;
+                if (interrupts.anyIFSet()) {
+                    halted = false;
+                }
             }
         } else {
             short oldPC = gb.pc().get();

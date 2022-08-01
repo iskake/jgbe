@@ -105,7 +105,11 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
             // a000-bfff = 2000
             // Optional switchable bank from Cartridge
             fixedAddress -= 0xa000;
-            return rom.getRAMBank();
+            try {
+                return rom.getRAMBank();
+            } catch (NullPointerException e) {
+                return null;
+            }
         } else if (address < 0xD000) {
             // c000-cfff = 1000
             fixedAddress -= 0xc000;

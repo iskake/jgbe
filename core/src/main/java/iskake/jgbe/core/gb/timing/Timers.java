@@ -105,23 +105,4 @@ public class Timers {
             default -> throw new RuntimeException("Something went very wrong.");
         };
     }
-
-    /**
-     * Get the rate to increment the TIMA register to
-     * (bits 0-1 of the TAC register.)
-     * 
-     * @param hwreg the hardware registers to get the TIMA register from.
-     * @return The frequency specified in the TAC register.
-     */
-    public static int getTACFrequency(HardwareRegisters hwreg) {
-        int val = hwreg.readAsInt(HardwareRegister.TAC);
-
-        return switch (val & 0b11) {
-            case 0b00 -> 0x400;
-            case 0b01 -> 0x10;
-            case 0b10 -> 0x40;
-            case 0b11 -> 0x100;
-            default -> throw new RuntimeException("Something went very wrong.");
-        };
-    }
 }

@@ -50,7 +50,8 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         DMAController dmaControl = new DMAController(this);
         reg = new Registers(this);
         timers = new Timers();
-        hwreg = new HardwareRegisters(dmaControl, timers, joypad);
+        interrupts = new InterruptHandler(this);
+        hwreg = new HardwareRegisters(dmaControl, timers, interrupts, joypad);
 
         PPUController ppuControl = new PPUController(hwreg);
         VRAM vram = new VRAM(0x2000, ppuControl);
@@ -62,7 +63,6 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         pc = new ProgramCounter(this, (short) 0x100);
         sp = new StackPointer(this, (short) 0xfffe);
 
-        interrupts = new InterruptHandler(this, hwreg);
         cpu = new CPU(this, interrupts);
         timing = new Timing(this, hwreg, dmaControl, timers, interrupts, ppu);
         dbg = new Debugger(this, cpu, hwreg);

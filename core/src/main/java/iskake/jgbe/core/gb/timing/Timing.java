@@ -17,6 +17,7 @@ public class Timing {
     // TODO: many things are not working correctly. For example, opcode timing, DAM
     // transfers, hwregister reading, etc...
     private long cycles;
+    private int vblankWaitCycles;
 
     private final GameBoy gb;
     private final PPU ppu;
@@ -57,6 +58,7 @@ public class Timing {
      */
     public void init() {
         cycles = 0;
+        vblankWaitCycles = 0;
     }
 
     /**
@@ -86,7 +88,6 @@ public class Timing {
     private void handleCycles(long oldCycles) {
         for (long cycle = oldCycles; cycle < cycles; cycle++) {
             dmaControl.decCycles();
-            interrupts.cycle();
             handleTimers(cycle);
             handleVideo(cycle);
         }
@@ -100,12 +101,26 @@ public class Timing {
         timers.tick();
 
         if (timers.shouldDispatchInterrupt()) {
-            interrupts.setWaitingToCall(InterruptHandler.InterruptType.TIMER);
+            interrupts.setWaitingToCall(InterruptType.TIMER);
             timers.shouldNotDispatchInterrupt();
         }
     }
 
     private void handleVideo(long cycle) {
+        boolean doVblankThingsAfterEverythingIsSet = false;
+        if (!Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
+            hwreg.writeInternal(LY, (byte) 0);
+
+            // TODO? temp. workaround for hanging application (when lcd is never enabled)
+            vblankWaitCycles++;
+            if (vblankWaitCycles == FRAME_CYCLES) {
+                ppu.clearFrameBuffer();
+                gb.setVBlankJustCalled();
+                vblankWaitCycles = 0;
+            }
+        } else {
+            doVblankThingsAfterEverythingIsSet = true;
+        }
         // 0xff40 LCDC
         // 'Automatically' 'handled' in PPUController
 
@@ -139,21 +154,24 @@ public class Timing {
         boolean STATVBL = Bitwise.isBitSet(hwreg.read(STAT), 4) && ((hwreg.readAsInt(STAT) & 0b11) == 1);
         boolean STATOAM = Bitwise.isBitSet(hwreg.read(STAT), 5) && ((hwreg.readAsInt(STAT) & 0b11) == 2);
         if (STATLY || STATHBL || STATVBL || STATOAM) {
-            interrupts.dispatch(InterruptType.STAT);
+            interrupts.setWaitingToCall(InterruptType.STAT);
         }
 
-        // VBlank
-        if ((cycle % (MODE3_END_MIN)) == 0)
-            ppu.addScanline(); // TODO: move to using pixel FIFO
+        if (doVblankThingsAfterEverythingIsSet) {
+            // VBlank
+            if ((cycle % (MODE3_END_MIN)) == 0)
+                ppu.addScanline(); // TODO: move to using pixel FIFO
 
-        if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
-            hwreg.inc(LY);
-            int ly_val = hwreg.readAsInt(LY);
-            if (ly_val == 0x90) {
-                interrupts.dispatch(InterruptType.VBLANK);
-                gb.setVBlankJustCalled();
-            } else if (ly_val > 0x99) {
-                hwreg.write(LY, 0);
+            if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
+                hwreg.inc(LY);
+                int ly_val = hwreg.readAsInt(LY);
+                if (ly_val == 0x90) {
+                    interrupts.setWaitingToCall(InterruptType.VBLANK);
+                    gb.setVBlankJustCalled();
+                    vblankWaitCycles = 0;
+                } else if (ly_val > 0x99) {
+                    hwreg.writeInternal(LY, (byte)0);
+                }
             }
         }
     }
