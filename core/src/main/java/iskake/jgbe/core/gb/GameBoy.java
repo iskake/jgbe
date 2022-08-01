@@ -13,6 +13,7 @@ import iskake.jgbe.core.gb.pointer.ProgramCounter;
 import iskake.jgbe.core.gb.pointer.StackPointer;
 import iskake.jgbe.core.gb.ppu.PPU;
 import iskake.jgbe.core.gb.ppu.PPUController;
+import iskake.jgbe.core.gb.timing.Timers;
 import iskake.jgbe.core.gb.timing.Timing;
 import iskake.jgbe.core.Bitwise;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private final CPU cpu;
     private final PPU ppu;
     private final HardwareRegisters hwreg;
+    private final Timers timers;
     private final MemoryMap memoryMap;
     private final InterruptHandler interrupts;
 
@@ -47,7 +49,8 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         DMAController dmaControl = new DMAController(this);
         reg = new Registers(this);
-        hwreg = new HardwareRegisters(dmaControl, joypad);
+        timers = new Timers();
+        hwreg = new HardwareRegisters(dmaControl, timers, joypad);
 
         PPUController ppuControl = new PPUController(hwreg);
         VRAM vram = new VRAM(0x2000, ppuControl);
@@ -61,7 +64,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         interrupts = new InterruptHandler(this, hwreg);
         cpu = new CPU(this, interrupts);
-        timing = new Timing(this, hwreg, dmaControl, interrupts, ppu);
+        timing = new Timing(this, hwreg, dmaControl, timers, interrupts, ppu);
         dbg = new Debugger(this, cpu, hwreg);
     }
 
@@ -75,6 +78,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
         // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
+        cpu.init();
         reg.writeByte(Register.A, 0x01);
         reg.setFlag(Flags.Z);
         reg.resetFlag(Flags.N);
@@ -88,6 +92,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         sp.set((short) 0xfffe);
         interrupts.init();
         memoryMap.init(rom);
+        timers.init();
         hwreg.init();
         timing.init();
 

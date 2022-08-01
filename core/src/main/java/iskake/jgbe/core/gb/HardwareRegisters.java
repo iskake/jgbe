@@ -2,6 +2,7 @@ package iskake.jgbe.core.gb;
 
 import iskake.jgbe.core.gb.joypad.IJoypad;
 import iskake.jgbe.core.Bitwise;
+import iskake.jgbe.core.gb.timing.Timers;
 
 import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.*;
 
@@ -125,10 +126,12 @@ public class HardwareRegisters {
 
     private final byte[] registerValues = new byte[HardwareRegister.values().length];
     private final DMAController dmaControl;
+    private final Timers timers;
     private final IJoypad joypad;
 
-    public HardwareRegisters(DMAController dmaControl, IJoypad joypad) {
+    public HardwareRegisters(DMAController dmaControl, Timers timers, IJoypad joypad) {
         this.dmaControl = dmaControl;
+        this.timers = timers;
         this.joypad = joypad;
     }
 
@@ -139,7 +142,7 @@ public class HardwareRegisters {
         writeInternal(P1,    0xCF);
         writeInternal(SB,    0x00);
         writeInternal(SC,    0x7E);
-        writeInternal(DIV,   0xAB);
+        timers.writeDIVInternal(0xABCC);
         writeInternal(TIMA,  0x00);
         writeInternal(TMA,   0x00);
         writeInternal(TAC,   0xF8);
@@ -204,21 +207,15 @@ public class HardwareRegisters {
         if (hwreg == null) {
             return (byte) 0xff;
         }
-        // ?TODO: `handleSpecialReads`?
-        if (hwreg == P1) {
-            int value = Byte.toUnsignedInt(registerValues[P1.ordinal()]);
-            if (!Bitwise.isBitSet(value, 4)) {
-                writeInternal(P1, (value | joypad.getDirectionsAsInt()));
-            } else if (!Bitwise.isBitSet(value, 5)) {
-                writeInternal(P1, (value | joypad.getButtonsAsInt()));
-            } else {
-                writeInternal(P1, value);
-            }
-            return registerValues[P1.ordinal()];
+
+        int value = handleSpecialReads(hwreg);
+        if ((byte)value == value) {
+            return (byte)value;
         } else if (hwreg.writableBits != 0xff && hwreg != LY) {
             return (byte)(Byte.toUnsignedInt(registerValues[hwreg.ordinal()]) | (~(hwreg.writableBits) & 0xff));
+        } else {
+            return registerValues[hwreg.ordinal()];
         }
-        return registerValues[hwreg.ordinal()];
     }
 
     /**
@@ -286,6 +283,33 @@ public class HardwareRegisters {
     }
 
     /**
+     * Handle 'special reads' on registers.
+     *
+     * @param hwreg The register to potentially handle a special write to.
+     * @return The correct byte value, or an integer larger than 255 (no special reads).
+     */
+    private int handleSpecialReads(HardwareRegister hwreg) {
+        return switch (hwreg) {
+            case DIV -> timers.readDIV();
+            case TIMA -> timers.readTIMA();
+            case TMA -> timers.readTMA();
+            case TAC -> timers.readTAC();
+            case P1 -> {
+                int value = Byte.toUnsignedInt(registerValues[P1.ordinal()]);
+                if (!Bitwise.isBitSet(value, 4)) {
+                    writeInternal(P1, (value | joypad.getDirectionsAsInt()));
+                } else if (!Bitwise.isBitSet(value, 5)) {
+                    writeInternal(P1, (value | joypad.getButtonsAsInt()));
+                } else {
+                    writeInternal(P1, value);
+                }
+                yield registerValues[P1.ordinal()];
+            }
+            default -> 0x100;
+        };
+    }
+
+    /**
      * Handle 'special writes' on registers.
      * 
      * @param hwreg The register to potentially handle a special write to.
@@ -294,7 +318,10 @@ public class HardwareRegisters {
      */
     private boolean handleSpecialWrites(HardwareRegister hwreg, byte value) {
         switch (hwreg) {
-            case DIV -> writeInternal(hwreg, (byte)0x00);
+            case DIV -> timers.writeDIV();
+            case TIMA -> timers.writeTIMA();
+            case TMA -> timers.writeTMA(value);
+            case TAC -> timers.writeTAC(value);
             case DMA -> {
                 writeInternal(hwreg, value);
                 dmaControl.startDMATransfer(value);

@@ -22,6 +22,7 @@ public class Timing {
     private final PPU ppu;
     private final HardwareRegisters hwreg;
     private final DMAController dmaControl;
+    private final Timers timers;
     private final InterruptHandler interrupts;
 
     private final int MODE2_CYCLES = 80;
@@ -40,10 +41,11 @@ public class Timing {
     private final int MODE0_END_MAX = MODE3_END_MIN + MODE0_CYCLES_MAX;
     private final int MODE1_START = SCANLINE_CYCLES * 144;
 
-    public Timing(GameBoy gb, HardwareRegisters hwreg, DMAController dmaControl, InterruptHandler interrupts, PPU ppu) {
+    public Timing(GameBoy gb, HardwareRegisters hwreg, DMAController dmaControl, Timers timers, InterruptHandler interrupts, PPU ppu) {
         this.gb = gb;
         this.hwreg = hwreg;
         this.dmaControl = dmaControl;
+        this.timers = timers;
         this.interrupts = interrupts;
         this.ppu = ppu;
         init();
@@ -95,19 +97,11 @@ public class Timing {
             return;
         }
 
-        if (cycle % Timers.DIV_CLOCK == 0) {
-            hwreg.inc(DIV);
-        }
+        timers.tick();
 
-        if (Timers.isTIMAEnabled(hwreg)) {
-            if (cycle % Timers.getTACFrequency(hwreg) == 0) {
-                hwreg.inc(TIMA);
-
-                if (hwreg.readAsInt(TIMA) == 0) {
-                    hwreg.write(TIMA, hwreg.read(TMA)); // ? check TIM write when TIMA overflow
-                    interrupts.dispatch(InterruptType.TIMER);
-                }
-            }
+        if (timers.shouldDispatchInterrupt()) {
+            interrupts.setWaitingToCall(InterruptHandler.InterruptType.TIMER);
+            timers.shouldNotDispatchInterrupt();
         }
     }
 

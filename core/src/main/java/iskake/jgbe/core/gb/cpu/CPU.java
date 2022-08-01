@@ -19,6 +19,10 @@ public class CPU  {
         this.interrupts = interrupts;
     }
 
+    public void init() {
+        halted = false;
+    }
+
     /**
      * 'Step' the CPU forward by a single instruction.
      */
