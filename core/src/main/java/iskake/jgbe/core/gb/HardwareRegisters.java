@@ -1,6 +1,5 @@
 package iskake.jgbe.core.gb;
 
-import iskake.jgbe.core.gb.interrupt.InterruptHandler;
 import iskake.jgbe.core.gb.joypad.IJoypad;
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.gb.timing.Timers;
@@ -128,13 +127,11 @@ public class HardwareRegisters {
     private final byte[] registerValues = new byte[HardwareRegister.values().length];
     private final DMAController dmaControl;
     private final Timers timers;
-    private final InterruptHandler interrupts;
     private final IJoypad joypad;
 
-    public HardwareRegisters(DMAController dmaControl, Timers timers, InterruptHandler interrupts, IJoypad joypad) {
+    public HardwareRegisters(DMAController dmaControl, Timers timers, IJoypad joypad) {
         this.dmaControl = dmaControl;
         this.timers = timers;
-        this.interrupts = interrupts;
         this.joypad = joypad;
     }
 
@@ -241,8 +238,6 @@ public class HardwareRegisters {
      */
     private int handleSpecialReads(HardwareRegister hwreg) {
         return switch (hwreg) {
-            case IE -> interrupts.readIE();
-            case IF -> interrupts.readIF();
             case DIV -> timers.readDIV();
             case TIMA -> timers.readTIMA();
             case TMA -> timers.readTMA();
@@ -323,8 +318,6 @@ public class HardwareRegisters {
      */
     private boolean handleSpecialWrites(HardwareRegister hwreg, byte value) {
         switch (hwreg) {
-            case IE -> interrupts.writeIE(value);
-            case IF -> interrupts.writeIF(value);
             case DIV -> timers.writeDIV();
             case TIMA -> timers.writeTIMA();
             case TMA -> timers.writeTMA(value);

@@ -3,6 +3,9 @@ package iskake.jgbe.core.gb.interrupt;
 import iskake.jgbe.core.gb.GameBoy;
 import iskake.jgbe.core.Bitwise;
 
+import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IE;
+import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.IF;
+
 public class InterruptHandler {
 
     public enum InterruptType {
@@ -19,8 +22,6 @@ public class InterruptHandler {
         }
     }
 
-    private byte IF;
-    private byte IE;
     private boolean ime;
     private boolean waitIME = false;
     private final GameBoy gb;
@@ -30,26 +31,8 @@ public class InterruptHandler {
     }
 
     public void init() {
-        IF = (byte)0xe1; // no BootROM
-        IE = (byte)0x00; // no BootROM
         waitIME = false;
         ime = false;
-    }
-
-    public byte readIE() {
-        return IF;
-    }
-
-    public void writeIE(byte value) {
-        IE = value;
-    }
-
-    public byte readIF() {
-        return IF;
-    }
-
-    public void writeIF(byte value) {
-        IF = (byte)(Byte.toUnsignedInt(value) | 0b1110_0000);
     }
 
     /**
@@ -105,7 +88,7 @@ public class InterruptHandler {
      */
     public void setWaitingToCall(InterruptType it) {
         int bit = it.ordinal();
-        IF = Bitwise.setBit(IF, bit);
+        gb.hwreg().setBit(IF, bit);
     }
 
     /**
@@ -115,7 +98,7 @@ public class InterruptHandler {
      */
     public boolean callWaiting() {
         for (int bit = 0; bit < InterruptType.values().length; bit++) {
-            if (Bitwise.isBitSet(IF, bit)) {
+            if (Bitwise.isBitSet(gb.hwreg().read(IF), bit)) {
                 InterruptType interruptToCall = InterruptType.values()[bit];
                 if (callInterrupt(interruptToCall)) {
                     return true;
@@ -126,7 +109,7 @@ public class InterruptHandler {
     }
 
     public boolean anyIFSet() {
-        return (Byte.toUnsignedInt(IF) & 0b0001_1111) != 0;
+        return (gb.hwreg().readAsInt(IF) & 0b0001_1111) != 0;
     }
 
     /**
@@ -140,7 +123,7 @@ public class InterruptHandler {
         if (!enabled()) {
             return false;
         } else {
-            if (!(Bitwise.isBitSet(IE, bit)) || !(Bitwise.isBitSet(IF, bit))) {
+            if (!(Bitwise.isBitSet(gb.hwreg().read(IE), bit)) || !(Bitwise.isBitSet(gb.hwreg().read(IF), bit))) {
                 return false;
             }
         }
@@ -151,7 +134,7 @@ public class InterruptHandler {
 
         gb.pc().set(Bitwise.toShort(it.address));
 
-        IF = Bitwise.clearBit(IF, bit);
+        gb.hwreg().resetBit(IF, bit);
 
         return true;
     }
