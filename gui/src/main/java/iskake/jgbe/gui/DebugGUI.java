@@ -106,7 +106,7 @@ public class DebugGUI {
                 ImGui.text("%04x  ".formatted(address + i * 16));
                 ImGui.sameLine();
                 for (int j = 0; j < 16; j++) {
-                    int value = Byte.toUnsignedInt(gb.readAddress((short)(address + (i * 16 + j))));
+                    int value = Byte.toUnsignedInt(gb.readAddressNoCycle((short)(address + (i * 16 + j))));
                     ImGui.text("%02x".formatted(value));
                     ImGui.sameLine();
                 }
