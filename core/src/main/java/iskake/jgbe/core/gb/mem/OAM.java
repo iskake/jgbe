@@ -15,13 +15,13 @@ public class OAM extends RAM {
         super(size);
         this.ppuControl = ppuControl;
         for (int i = 0; i < sprites.length; i++) {
-            sprites[i] = new Sprite(this::read, this::write, i*4);
+            sprites[i] = new Sprite(this, this, i*4);
         }
     }
 
     @Override
     public byte read(int address) throws IndexOutOfBoundsException {
-        if (!ppuControl.isOAMAccessable()) {
+        if (!ppuControl.isOAMAccessible()) {
             return (byte) 0xff;
         }
         return super.read(address);
@@ -29,7 +29,7 @@ public class OAM extends RAM {
 
     @Override
     public void write(int address, byte value) throws IndexOutOfBoundsException {
-        if (!ppuControl.isOAMAccessable()) {
+        if (!ppuControl.isOAMAccessible()) {
             return;
         }
         super.write(address, value);

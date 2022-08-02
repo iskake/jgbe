@@ -5,7 +5,7 @@ import iskake.jgbe.core.gb.ppu.Tile;
 import iskake.jgbe.core.gb.ppu.TileMap;
 
 /**
- * Video memory. Only accessable in modes 0-2 (STAT register bits 0-1).
+ * Video memory. Only accessible in modes 0-2 (STAT register bits 0-1).
  */
 public class VRAM extends RAM {
     private final PPUController ppuControl;
@@ -20,17 +20,17 @@ public class VRAM extends RAM {
         this.ppuControl = ppu;
         for (int i = 0; i < 0x80; i++) {
             int offset = i * 16;
-            tileBlock0[i] = new Tile(this::read, this::write, offset);
-            tileBlock1[i] = new Tile(this::read, this::write, 0x800 + offset);
-            tileBlock2[i] = new Tile(this::read, this::write, 0x1000 + offset);
+            tileBlock0[i] = new Tile(this, this, offset);
+            tileBlock1[i] = new Tile(this, this, 0x800 + offset);
+            tileBlock2[i] = new Tile(this, this, 0x1000 + offset);
         }
-        tileMaps[0] = new TileMap(this::read, this::write, 0x1800);
-        tileMaps[1] = new TileMap(this::read, this::write, 0x1c00);
+        tileMaps[0] = new TileMap(this, this, 0x1800);
+        tileMaps[1] = new TileMap(this, this, 0x1c00);
     }
 
     @Override
     public byte read(int address) throws IndexOutOfBoundsException {
-        if (!ppuControl.isVRAMAccessable()) {
+        if (!ppuControl.isVRAMAccessible()) {
             return (byte) 0xff;
         }
         return super.read(address);
@@ -38,7 +38,7 @@ public class VRAM extends RAM {
 
     @Override
     public void write(int address, byte value) throws IndexOutOfBoundsException {
-        if (!ppuControl.isVRAMAccessable()) {
+        if (!ppuControl.isVRAMAccessible()) {
             return;
         }
         super.write(address, value);

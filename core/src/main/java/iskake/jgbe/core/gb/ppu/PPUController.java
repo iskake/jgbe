@@ -132,23 +132,25 @@ public class PPUController {
     }
 
     /**
-     * Check if the VRAM is accessable.
+     * Check if the VRAM is accessible.
      * 
-     * @return {@code true} if the VRAM is accessable, {@code false} otherwise.
+     * @return {@code true} if the VRAM is accessible, {@code false} otherwise.
      */
-    public boolean isVRAMAccessable() {
+    public boolean isVRAMAccessible() {
         int i = hwreg.readAsInt(HardwareRegister.STAT) & 0b11;
-        return (i != 3) || (!lcdEnabled);
+        // TODO: actually checking if lcd is enabled breaks rendering...
+        return true; //(i != 3) || !isLCDEnabled();
     }
 
     /**
-     * Check if the OAM is accessable.
+     * Check if the OAM is accessible.
      * 
-     * @return {@code true} if the OAM is accessable, {@code false} otherwise.
+     * @return {@code true} if the OAM is accessible, {@code false} otherwise.
      */
-    public boolean isOAMAccessable() {
+    public boolean isOAMAccessible() {
         int i = hwreg.readAsInt(HardwareRegister.STAT) & 0b11;
-        return (i <= 1) || (!lcdEnabled);
+        // TODO: actually checking if lcd is enabled breaks rendering...
+        return true; //(i <= 1) || !isLCDEnabled();
     }
 
 }
