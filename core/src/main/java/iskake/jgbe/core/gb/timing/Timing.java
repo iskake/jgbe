@@ -18,7 +18,8 @@ public class Timing {
     // TODO: many things are not working correctly. For example, opcode timing, DAM
     // transfers, hwregister reading, etc...
     private long cycles;
-    private int vblankWaitCycles;
+    private long cyclesSinceLCDEnable;
+    private long vblankWaitCycles;
 
     private final GameBoy gb;
     private final PPU ppu;
@@ -61,6 +62,7 @@ public class Timing {
      */
     public void init() {
         cycles = 0;
+        cyclesSinceLCDEnable = 0;
         vblankWaitCycles = 0;
     }
 
@@ -102,10 +104,6 @@ public class Timing {
     }
 
     private void handleTimers(long cycle) {
-        if (cycle == 0) {
-            return;
-        }
-
         timers.tick();
 
         if (timers.shouldDispatchInterrupt()) {
@@ -117,6 +115,7 @@ public class Timing {
     private void handleVideo(long cycle) {
         boolean doVblankThingsAfterEverythingIsSet = false;
         if (!Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
+            cyclesSinceLCDEnable = 0;
             hwreg.writeInternal(LY, (byte) 0);
 
             // TODO? temp. workaround for hanging application (when lcd is never enabled)
@@ -128,14 +127,15 @@ public class Timing {
             }
         } else {
             doVblankThingsAfterEverythingIsSet = true;
+            cyclesSinceLCDEnable++;
         }
         // 0xff40 LCDC
         // 'Automatically' 'handled' in PPUController
 
         // 0xff41 (STAT)
-        long scanDot = (cycle % SCANLINE_CYCLES);
+        long scanDot = (cyclesSinceLCDEnable % SCANLINE_CYCLES);
 
-        if ((cycle % FRAME_CYCLES) >= MODE1_START || !Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
+        if ((cyclesSinceLCDEnable % FRAME_CYCLES) >= MODE1_START || !Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
             // Mode 1 (VBlank)
             hwreg.setBit(STAT, 0);
             hwreg.resetBit(STAT, 1);
@@ -167,10 +167,10 @@ public class Timing {
 
         if (doVblankThingsAfterEverythingIsSet) {
             // VBlank
-            if ((cycle % (MODE3_END_MIN)) == 0)
-                ppu.addScanline(); // TODO: move to using pixel FIFO
+            if ((cyclesSinceLCDEnable % (MODE3_END_MIN)) == 0)
+                ppu.addScanline(0, PPU.LCD_SIZE_X); // TODO: actually use pixel FIFO
 
-            if ((cycle % SCANLINE_CYCLES) == 0 && cycle != 0) {
+            if ((cyclesSinceLCDEnable % SCANLINE_CYCLES) == 0 && cyclesSinceLCDEnable != 0) {
                 hwreg.inc(LY);
                 int ly_val = hwreg.readAsInt(LY);
                 if (ly_val == 0x90) {

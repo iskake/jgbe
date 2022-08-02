@@ -55,9 +55,12 @@ public class PPU {
      * @param tilesN       The tiles to use for the tilemap.
      * @param bg           The background tilemap to draw.
      */
-    private void createScanlineBG(int currScanline, Tile[] tilesN, Tile[] tiles1, TileMap bg) {
-        if (!ppuControl.isLCDEnabled() || !ppuControl.isBGAndWindowEnabled() || !drawBG) {
-            for (int i = 0; i < LCD_SIZE_X; i++) {
+    private void createScanlineBG(int currScanline, int start, int length, Tile[] tilesN, Tile[] tiles1, TileMap bg) {
+        if ((start + length) > LCD_SIZE_X)
+            return;
+
+        if (!ppuControl.isLCDEnabled() || !ppuControl.isBGAndWindowEnabled()) {
+            for (int i = start; i < start + length; i++) {
                 // We use -1 for 'invisible' dots.
                 bgBuffer[currScanline * LCD_SIZE_X + i] = -1;
             }
@@ -69,7 +72,7 @@ public class PPU {
 
         int bgp = hwreg.readAsInt(HardwareRegister.BGP);
 
-        for (int i = 0; i < LCD_SIZE_X; i++) {
+        for (int i = start; i < start + length; i++) {
             int dx = (scx + i) & 255;
             int dy = (scy + currScanline) & 255;
             Tile t = bg.getTileAtCoordinate(dx, dy, tiles1, tilesN);
@@ -79,7 +82,10 @@ public class PPU {
         }
     }
 
-    private void createScanlineWIN(int currScanline, Tile[] tilesN, Tile[] tiles1, TileMap map) {
+    private void createScanlineWIN(int currScanline, int start, int length, Tile[] tilesN, Tile[] tiles1, TileMap map) {
+        if ((start + length) > LCD_SIZE_X)
+            return;
+
         int wy = hwreg.readAsInt(HardwareRegister.WY);
         int wx = hwreg.readAsInt(HardwareRegister.WX);
         int wxScreen = wx - 7;
@@ -90,10 +96,9 @@ public class PPU {
                 || currScanline < wy
                 || !coordinateInRange
                 || !ppuControl.isBGAndWindowEnabled()
-                || !ppuControl.isWindowEnabled()
-                || !drawWin) {
+                || !ppuControl.isWindowEnabled()) {
             // We use -1 for 'invisible' dots.
-            for (int i = 0; i < LCD_SIZE_X; i++) {
+            for (int i = start; i < start + length; i++) {
                 winBuffer[currScanline * LCD_SIZE_X + i] = -1;
             }
             return;
@@ -101,7 +106,7 @@ public class PPU {
 
         int bgp = hwreg.readAsInt(HardwareRegister.BGP);
 
-        for (int i = 0; i < LCD_SIZE_X; i++) {
+        for (int i = start; i < start + length; i++) {
             byte dotCol;
             if (i < wxScreen) {
                 dotCol = -1;
@@ -118,13 +123,14 @@ public class PPU {
         }
     }
 
-    private void createScanlineSPR(int currScanline, Tile[] tiles0, Tile[] tiles1, Sprite[] sprites) {
+    private void createScanlineSPR(int currScanline, int start, int length, Tile[] tiles0, Tile[] tiles1, Sprite[] sprites) {
+        // TODO: implement actual pixel FIFO behaviour for sprites...
         for (int i = 0; i < LCD_SIZE_X; i++) {
             // We use -1 for 'invisible' dots.
             sprBuffer[currScanline * LCD_SIZE_X + i] = -1;
         }
 
-        if (!ppuControl.isLCDEnabled() || !ppuControl.areOBJsEnabled() || !drawSpr)
+        if (!ppuControl.isLCDEnabled() || !ppuControl.areOBJsEnabled())
             return;
 
         int obp0 = hwreg.readAsInt(HardwareRegister.OBP0);
@@ -191,7 +197,7 @@ public class PPU {
      * Add a scanline to the current frame.
      * Adds the scanline specified in the LY register, unless the value is >= 144.
      */
-    public void addScanline() {
+    public void addScanline(int start, int length) {
         // TODO: https://gbdev.io/pandocs/Scrolling.html#mid-frame-behavior
         int line = hwreg.readAsInt(HardwareRegister.LY);
 
@@ -205,9 +211,9 @@ public class PPU {
             Tile[] tiles1 = getTilesBlock1();
 
             // Update the scanline buffers.
-            createScanlineBG(line, tilesN, tiles1, BG);
-            createScanlineWIN(line, tilesN, tiles1, window); // TODO: Handle window
-            createScanlineSPR(line, tiles0, tiles1, sprites);
+            createScanlineBG(line, start, length, tilesN, tiles1, BG);
+            createScanlineWIN(line, start, length, tilesN, tiles1, window);
+            createScanlineSPR(line, start, length, tiles0, tiles1, sprites);
         }
     }
 
@@ -260,16 +266,16 @@ public class PPU {
             boolean spriteUnder = sprColor > 0b11;
             boolean drawSpriteUnder = (winColor <= 0 && bgColor <= 0) || !spriteUnder;
 
-            if (sprColor != -1 && drawSpriteUnder) {
+            if (sprColor != -1 && drawSpriteUnder && drawSpr) {
                 sprColor = spriteUnder ? (byte)(Byte.toUnsignedInt(sprColor) & 0b11) : sprColor;
                 frameBuffer[i] = COLORS_MAP[sprColor];
                 frameBuffer[i + 1] = COLORS_MAP[sprColor];
                 frameBuffer[i + 2] = COLORS_MAP[sprColor];
-            } else if (winColor != -1) {
+            } else if (winColor != -1 && drawWin) {
                 frameBuffer[i] = COLORS_MAP[winColor];
                 frameBuffer[i + 1] = COLORS_MAP[winColor];
                 frameBuffer[i + 2] = COLORS_MAP[winColor];
-            } else if (bgColor != -1) {
+            } else if (bgColor != -1 && drawBG) {
                 frameBuffer[i] = COLORS_MAP[bgColor];
                 frameBuffer[i + 1] = COLORS_MAP[bgColor];
                 frameBuffer[i + 2] = COLORS_MAP[bgColor];
