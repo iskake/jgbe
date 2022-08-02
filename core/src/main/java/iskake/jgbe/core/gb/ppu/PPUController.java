@@ -138,8 +138,7 @@ public class PPUController {
      */
     public boolean isVRAMAccessible() {
         int i = hwreg.readAsInt(HardwareRegister.STAT) & 0b11;
-        // TODO: actually checking if lcd is enabled breaks rendering...
-        return true; //(i != 3) || !isLCDEnabled();
+        return (i != 3) || !isLCDEnabled();
     }
 
     /**
@@ -149,8 +148,7 @@ public class PPUController {
      */
     public boolean isOAMAccessible() {
         int i = hwreg.readAsInt(HardwareRegister.STAT) & 0b11;
-        // TODO: actually checking if lcd is enabled breaks rendering...
-        return true; //(i <= 1) || !isLCDEnabled();
+        return (i <= 1) || !isLCDEnabled();
     }
 
 }

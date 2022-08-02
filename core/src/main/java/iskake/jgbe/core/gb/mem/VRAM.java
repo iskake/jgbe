@@ -20,12 +20,12 @@ public class VRAM extends RAM {
         this.ppuControl = ppu;
         for (int i = 0; i < 0x80; i++) {
             int offset = i * 16;
-            tileBlock0[i] = new Tile(this, this, offset);
-            tileBlock1[i] = new Tile(this, this, 0x800 + offset);
-            tileBlock2[i] = new Tile(this, this, 0x1000 + offset);
+            tileBlock0[i] = new Tile(this::readInternal, this::writeInternal, offset);
+            tileBlock1[i] = new Tile(this::readInternal, this::writeInternal, 0x800 + offset);
+            tileBlock2[i] = new Tile(this::readInternal, this::writeInternal, 0x1000 + offset);
         }
-        tileMaps[0] = new TileMap(this, this, 0x1800);
-        tileMaps[1] = new TileMap(this, this, 0x1c00);
+        tileMaps[0] = new TileMap(this::readInternal, this::writeInternal, 0x1800);
+        tileMaps[1] = new TileMap(this::readInternal, this::writeInternal, 0x1c00);
     }
 
     @Override
@@ -33,6 +33,10 @@ public class VRAM extends RAM {
         if (!ppuControl.isVRAMAccessible()) {
             return (byte) 0xff;
         }
+        return super.read(address);
+    }
+
+    public byte readInternal(int address) throws IndexOutOfBoundsException {
         return super.read(address);
     }
 
@@ -51,6 +55,10 @@ public class VRAM extends RAM {
         } else if (address < 0x1800) {
             tileBlock2[(address - 0x1000) / 16].isDecoded = false;
         }
+    }
+
+    public void writeInternal(int address, byte value) throws IndexOutOfBoundsException {
+        super.write(address, value);
     }
 
     public Tile[] getTileBlock(int tileDataVal) {

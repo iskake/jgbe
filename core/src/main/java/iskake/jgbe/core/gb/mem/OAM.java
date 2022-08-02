@@ -15,7 +15,7 @@ public class OAM extends RAM {
         super(size);
         this.ppuControl = ppuControl;
         for (int i = 0; i < sprites.length; i++) {
-            sprites[i] = new Sprite(this, this, i*4);
+            sprites[i] = new Sprite(this::readInternal, this::writeInternal, i*4);
         }
     }
 
@@ -27,11 +27,19 @@ public class OAM extends RAM {
         return super.read(address);
     }
 
+    public byte readInternal(int address) throws IndexOutOfBoundsException {
+        return super.read(address);
+    }
+
     @Override
     public void write(int address, byte value) throws IndexOutOfBoundsException {
         if (!ppuControl.isOAMAccessible()) {
             return;
         }
+        super.write(address, value);
+    }
+
+    public void writeInternal(int address, byte value) throws IndexOutOfBoundsException {
         super.write(address, value);
     }
 
