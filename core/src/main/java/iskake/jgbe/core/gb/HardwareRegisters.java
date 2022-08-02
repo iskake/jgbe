@@ -139,7 +139,7 @@ public class HardwareRegisters {
      * Initialize hardware registers. (Based on DMG reset)
      */
     public void init() {
-        writeInternal(P1,    0xCF);
+        write        (P1,    0xCF);
         writeInternal(SB,    0x00);
         writeInternal(SC,    0x7E);
         timers.writeDIVInternal(0xABCC);
@@ -243,15 +243,10 @@ public class HardwareRegisters {
             case TMA -> timers.readTMA();
             case TAC -> timers.readTAC();
             case P1 -> {
-                int value = Byte.toUnsignedInt(registerValues[P1.ordinal()]);
-                if (!Bitwise.isBitSet(value, 4)) {
-                    writeInternal(P1, (value | joypad.getDirectionsAsInt()));
-                } else if (!Bitwise.isBitSet(value, 5)) {
-                    writeInternal(P1, (value | joypad.getButtonsAsInt()));
-                } else {
-                    writeInternal(P1, value);
-                }
-                yield registerValues[P1.ordinal()];
+                if (joypad == null)
+                    yield 0x100;
+
+                yield joypad.read();
             }
             default -> 0x100;
         };
@@ -332,7 +327,7 @@ public class HardwareRegisters {
                     break;
                 }
 
-                writeInternal(hwreg, (Byte.toUnsignedInt(value) & hwreg.writableBits) | 0b1100_0000);
+                joypad.write(value);
             }
             default -> { return false; }
         }

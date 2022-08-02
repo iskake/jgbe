@@ -5,6 +5,7 @@ import iskake.jgbe.core.gb.GameBoy;
 import iskake.jgbe.core.gb.HardwareRegisters;
 import iskake.jgbe.core.gb.interrupt.InterruptHandler;
 import iskake.jgbe.core.gb.interrupt.InterruptHandler.InterruptType;
+import iskake.jgbe.core.gb.joypad.IJoypad;
 import iskake.jgbe.core.gb.ppu.PPU;
 import iskake.jgbe.core.Bitwise;
 
@@ -24,6 +25,7 @@ public class Timing {
     private final HardwareRegisters hwreg;
     private final DMAController dmaControl;
     private final Timers timers;
+    private final IJoypad joypad;
     private final InterruptHandler interrupts;
 
     private final int MODE2_CYCLES = 80;
@@ -42,11 +44,12 @@ public class Timing {
     private final int MODE0_END_MAX = MODE3_END_MIN + MODE0_CYCLES_MAX;
     private final int MODE1_START = SCANLINE_CYCLES * 144;
 
-    public Timing(GameBoy gb, HardwareRegisters hwreg, DMAController dmaControl, Timers timers, InterruptHandler interrupts, PPU ppu) {
+    public Timing(GameBoy gb, HardwareRegisters hwreg, DMAController dmaControl, Timers timers, IJoypad joypad, InterruptHandler interrupts, PPU ppu) {
         this.gb = gb;
         this.hwreg = hwreg;
         this.dmaControl = dmaControl;
         this.timers = timers;
+        this.joypad = joypad;
         this.interrupts = interrupts;
         this.ppu = ppu;
         init();
@@ -88,9 +91,14 @@ public class Timing {
     private void handleCycles(long oldCycles) {
         for (long cycle = oldCycles; cycle < cycles; cycle++) {
             dmaControl.decCycles();
+            handleJoypad(cycle);
             handleTimers(cycle);
             handleVideo(cycle);
         }
+    }
+
+    private void handleJoypad(long cycles) {
+//        TODO: joypad interrupt
     }
 
     private void handleTimers(long cycle) {

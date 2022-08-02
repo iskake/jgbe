@@ -64,7 +64,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         interrupts = new InterruptHandler(this);
         cpu = new CPU(this, interrupts);
-        timing = new Timing(this, hwreg, dmaControl, timers, interrupts, ppu);
+        timing = new Timing(this, hwreg, dmaControl, timers, joypad, interrupts, ppu);
         dbg = new Debugger(this, cpu, hwreg);
     }
 

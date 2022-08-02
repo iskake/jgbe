@@ -6,6 +6,20 @@ package iskake.jgbe.core.gb.joypad;
 public interface IJoypad {
 
     /**
+     * Read the value of the joypad, for use in the P1 register.
+     *
+     * @param value The value to write to the P1 register.
+     */
+    void write(byte value);
+
+    /**
+     * Read the value of the joypad, for use in the P1 register.
+     *
+     * @return The value of the P1 register.
+     */
+    byte read();
+
+    /**
      * Set the specified button to be active (pressed).
      * 
      * @param button The button to be set as active.

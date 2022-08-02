@@ -1,11 +1,36 @@
 package iskake.jgbe.gui.controller;
 
+import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.gb.joypad.IJoypad;
 import iskake.jgbe.core.gb.joypad.Input;
 
 public class GameBoyJoypad implements IJoypad {
+    private boolean directionsSet = true;
+    private boolean buttonsSet = false;
     private final boolean[] inputsButton = new boolean[4];
     private final boolean[] inputsDirection = new boolean[4];
+
+    @Override
+    public void write(byte value) {
+        int bits = Byte.toUnsignedInt(value);
+        directionsSet = !Bitwise.isBitSet(bits, 4);
+        buttonsSet = !Bitwise.isBitSet(bits, 5);
+    }
+
+    @Override
+    public byte read() {
+        int value = 0b1111_0000;
+        if (directionsSet) {
+            value &= 0b1101_1111;
+            value |= getDirectionsAsInt();
+        } else if (buttonsSet) {
+            value &= 0b1110_1111;
+            value |= getButtonsAsInt();
+        } else {
+            value |= 0b0000_1111;
+        }
+        return (byte)(value);
+    }
 
     @Override
     public void setButtonActive(Input button) {
