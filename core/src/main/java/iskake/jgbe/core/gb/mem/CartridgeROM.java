@@ -32,7 +32,7 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
     public void tryRestoreRAM() {
         if (mbc.battery && (RAMBanks != null)) {
             try {
-                String inName = romName + ".sram";
+                String inName = getPathNoExt(romName);
                 FileInputStream fp = new FileInputStream(inName);
                 for (RAM bank : RAMBanks) {
                     fp.read(bank.bytes);
@@ -52,7 +52,7 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
     public void trySaveRAM() {
         if (mbc.battery && (RAMBanks != null)) {
             try {
-                String outName = romName + ".sram";
+                String outName = getPathNoExt(romName);
                 FileOutputStream fp = new FileOutputStream(outName);
                 for (RAM bank : RAMBanks) {
                     fp.write(bank.bytes);
@@ -63,6 +63,15 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
             } catch (IOException ignored) {
                 log.warn("Tried to write save RAM to file, but failed.");
             }
+        }
+    }
+
+    private static String getPathNoExt(String path) {
+        if (path.endsWith(".gb") || path.endsWith(".gbc")) {
+            return path.substring(0, path.indexOf(".")) + ".sav";
+        } else {
+            log.warn("The provided file does not have the extension: `.gb` or `.gbc`. Appending `.sav` to filename...");
+            return path + ".sav";
         }
     }
 
