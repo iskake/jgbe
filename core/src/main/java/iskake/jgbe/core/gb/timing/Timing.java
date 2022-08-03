@@ -45,6 +45,8 @@ public class Timing {
     private final int MODE0_END_MAX = MODE3_END_MIN + MODE0_CYCLES_MAX;
     private final int MODE1_START = SCANLINE_CYCLES * 144;
 
+    private boolean hasDoneSTAT = false;
+
     public Timing(GameBoy gb, HardwareRegisters hwreg, DMAController dmaControl, Timers timers, IJoypad joypad, InterruptHandler interrupts, PPU ppu) {
         this.gb = gb;
         this.hwreg = hwreg;
@@ -64,6 +66,7 @@ public class Timing {
         cycles = 0;
         cyclesSinceLCDEnable = 0;
         vblankWaitCycles = 0;
+        hasDoneSTAT = false;
     }
 
     /**
@@ -113,7 +116,7 @@ public class Timing {
     }
 
     private void handleVideo(long cycle) {
-        boolean doVblankThingsAfterEverythingIsSet = false;
+        boolean doVBlank = false;
         if (!Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
             cyclesSinceLCDEnable = 0;
             hwreg.writeInternal(LY, (byte) 0);
@@ -126,8 +129,7 @@ public class Timing {
                 vblankWaitCycles = 0;
             }
         } else {
-            doVblankThingsAfterEverythingIsSet = true;
-            cyclesSinceLCDEnable++;
+            doVBlank = true;
         }
         // 0xff40 LCDC
         // 'Automatically' 'handled' in PPUController
@@ -135,6 +137,11 @@ public class Timing {
         // 0xff41 (STAT)
         long scanDot = (cyclesSinceLCDEnable % SCANLINE_CYCLES);
 
+        if (scanDot == 0) {
+            hasDoneSTAT = false;
+        }
+
+        int oldSTAT = hwreg.readAsInt(STAT);
         if ((cyclesSinceLCDEnable % FRAME_CYCLES) >= MODE1_START || !Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
             // Mode 1 (VBlank)
             hwreg.setBit(STAT, 0);
@@ -154,20 +161,23 @@ public class Timing {
             hwreg.resetBit(STAT, 0);
             hwreg.resetBit(STAT, 1);
         }
-
         hwreg.setBitConditional(STAT, 2, (hwreg.read(LY) == hwreg.read(LYC)));
+        int newSTAT = hwreg.readAsInt(STAT);
 
-        boolean STATLY = Bitwise.isBitSet(hwreg.read(STAT), 2) && Bitwise.isBitSet(hwreg.read(STAT), 6);
-        boolean STATHBL = Bitwise.isBitSet(hwreg.read(STAT), 3) && ((hwreg.readAsInt(STAT) & 0b11) == 0);
-        boolean STATVBL = Bitwise.isBitSet(hwreg.read(STAT), 4) && ((hwreg.readAsInt(STAT) & 0b11) == 1);
-        boolean STATOAM = Bitwise.isBitSet(hwreg.read(STAT), 5) && ((hwreg.readAsInt(STAT) & 0b11) == 2);
-        if (STATLY || STATHBL || STATVBL || STATOAM) {
-            interrupts.setWaitingToCall(InterruptType.STAT);
+        if (oldSTAT != newSTAT && !hasDoneSTAT) {
+            boolean STATLY = Bitwise.isBitSet(newSTAT, 2) && Bitwise.isBitSet(newSTAT, 6);
+            boolean STATHBL = Bitwise.isBitSet(newSTAT, 3) && ((newSTAT & 0b11) == 0);
+            boolean STATVBL = Bitwise.isBitSet(newSTAT, 4) && ((newSTAT & 0b11) == 1);
+            boolean STATOAM = Bitwise.isBitSet(newSTAT, 5) && ((newSTAT & 0b11) == 2);
+            if (STATLY || STATHBL || STATVBL || STATOAM) {
+                interrupts.setWaitingToCall(InterruptType.STAT);
+                hasDoneSTAT = true;
+            }
         }
 
-        if (doVblankThingsAfterEverythingIsSet) {
+        if (doVBlank) {
             // VBlank
-            if ((cyclesSinceLCDEnable % (MODE3_END_MIN)) == 0)
+            if (scanDot == MODE3_END_MIN)
                 ppu.addScanline(0, PPU.LCD_SIZE_X); // TODO: actually use pixel FIFO
 
             if ((cyclesSinceLCDEnable % SCANLINE_CYCLES) == 0 && cyclesSinceLCDEnable != 0) {
@@ -181,6 +191,7 @@ public class Timing {
                     hwreg.writeInternal(LY, (byte)0);
                 }
             }
+            cyclesSinceLCDEnable++;
         }
     }
 }
