@@ -1,7 +1,6 @@
 package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.NotImplementedException;
-import iskake.jgbe.core.gb.ROMHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

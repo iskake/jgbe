@@ -1,4 +1,4 @@
-package iskake.jgbe.core.gb;
+package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.NotImplementedException;

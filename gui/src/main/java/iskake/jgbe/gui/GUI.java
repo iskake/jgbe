@@ -2,7 +2,7 @@ package iskake.jgbe.gui;
 
 import imgui.ImGui;
 import iskake.jgbe.core.gb.GameBoy;
-import iskake.jgbe.core.gb.ROMHeader;
+import iskake.jgbe.core.gb.mem.ROMHeader;
 import iskake.jgbe.core.gb.joypad.Input;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
 import iskake.jgbe.core.gb.mem.ROMFactory;
