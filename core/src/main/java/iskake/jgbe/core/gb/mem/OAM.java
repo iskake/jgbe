@@ -7,7 +7,7 @@ import iskake.jgbe.core.gb.ppu.Sprite;
  * Object Attribute Memory ('Sprite Attribute Table'). 
  * Only accessible in modes 0-1 (STAT register bits 0-1).
  */
-public class OAM extends RAM {
+public class OAM extends RAM implements ReadableMemoryUnrestricted, WritableMemoryUnrestricted {
     private final PPUController ppuControl;
     private final Sprite[] sprites = new Sprite[40];
 
@@ -15,7 +15,7 @@ public class OAM extends RAM {
         super(size);
         this.ppuControl = ppuControl;
         for (int i = 0; i < sprites.length; i++) {
-            sprites[i] = new Sprite(this::readInternal, this::writeInternal, i*4);
+            sprites[i] = new Sprite(this::readUnrestricted, this::writeUnrestricted, i*4);
         }
     }
 
@@ -27,7 +27,8 @@ public class OAM extends RAM {
         return super.read(address);
     }
 
-    public byte readInternal(int address) throws IndexOutOfBoundsException {
+    @Override
+    public byte readUnrestricted(int address) throws IndexOutOfBoundsException {
         return super.read(address);
     }
 
@@ -39,7 +40,8 @@ public class OAM extends RAM {
         super.write(address, value);
     }
 
-    public void writeInternal(int address, byte value) throws IndexOutOfBoundsException {
+    @Override
+    public void writeUnrestricted(int address, byte value) throws IndexOutOfBoundsException {
         super.write(address, value);
     }
 

@@ -180,6 +180,18 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         memoryMap.write(address, value);
     }
 
+    /**
+     * Internal write function for unrestricted writes. Does not increase the cycle count.
+     * Note: should only be used for DMA transfers, as VRAM and OAM already handle
+     * unrestricted writes.
+     *
+     * @param address The memory address to write to.
+     * @param value The value to write to the memory address.
+     */
+    public void writeAddressInternal(short address, byte value) {
+        memoryMap.writeUnrestricted(address, value);
+    }
+
     @Override
     public byte readAddress(short address) {
         timing.incCycles();
@@ -189,6 +201,18 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     @Override
     public byte readAddressNoCycle(short address) {
         return memoryMap.read(address);
+    }
+
+    /**
+     * Internal read function for unrestricted reads. Does not increase the cycle count.
+     * Note: should only be used for DMA transfers, as VRAM and OAM already handle
+     * unrestricted reads.
+     *
+     * @param address The memory address to read from.
+     * @return The value at the address.
+     */
+    public byte readAddressInternal(short address) {
+        return memoryMap.readUnrestricted(address);
     }
 
     /**

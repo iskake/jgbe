@@ -7,7 +7,7 @@ import iskake.jgbe.core.gb.ppu.TileMap;
 /**
  * Video memory. Only accessible in modes 0-2 (STAT register bits 0-1).
  */
-public class VRAM extends RAM {
+public class VRAM extends RAM implements ReadableMemoryUnrestricted, WritableMemoryUnrestricted  {
     private final PPUController ppuControl;
     private final Tile[] tileBlock0 = new Tile[0x80];
     private final Tile[] tileBlock1 = new Tile[0x80];
@@ -20,12 +20,12 @@ public class VRAM extends RAM {
         this.ppuControl = ppu;
         for (int i = 0; i < 0x80; i++) {
             int offset = i * 16;
-            tileBlock0[i] = new Tile(this::readInternal, this::writeInternal, offset);
-            tileBlock1[i] = new Tile(this::readInternal, this::writeInternal, 0x800 + offset);
-            tileBlock2[i] = new Tile(this::readInternal, this::writeInternal, 0x1000 + offset);
+            tileBlock0[i] = new Tile(this::readUnrestricted, this::writeUnrestricted, offset);
+            tileBlock1[i] = new Tile(this::readUnrestricted, this::writeUnrestricted, 0x800 + offset);
+            tileBlock2[i] = new Tile(this::readUnrestricted, this::writeUnrestricted, 0x1000 + offset);
         }
-        tileMaps[0] = new TileMap(this::readInternal, this::writeInternal, 0x1800);
-        tileMaps[1] = new TileMap(this::readInternal, this::writeInternal, 0x1c00);
+        tileMaps[0] = new TileMap(this::readUnrestricted, this::writeUnrestricted, 0x1800);
+        tileMaps[1] = new TileMap(this::readUnrestricted, this::writeUnrestricted, 0x1c00);
     }
 
     @Override
@@ -36,7 +36,8 @@ public class VRAM extends RAM {
         return super.read(address);
     }
 
-    public byte readInternal(int address) throws IndexOutOfBoundsException {
+    @Override
+    public byte readUnrestricted(int address) throws IndexOutOfBoundsException {
         return super.read(address);
     }
 
@@ -57,7 +58,8 @@ public class VRAM extends RAM {
         }
     }
 
-    public void writeInternal(int address, byte value) throws IndexOutOfBoundsException {
+    @Override
+    public void writeUnrestricted(int address, byte value) throws IndexOutOfBoundsException {
         super.write(address, value);
     }
 

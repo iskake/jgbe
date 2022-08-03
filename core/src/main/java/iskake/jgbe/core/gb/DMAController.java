@@ -25,9 +25,9 @@ public class DMAController {
         if (dmaCyclesLeft > 0) {
             dmaCyclesLeft--;
         } else if (dmaCyclesLeft == 0) {
+            DMATransfer();
             dmaActive = false;
             dmaCyclesLeft--;
-            DMATransfer();
         }
     }
 
@@ -39,7 +39,7 @@ public class DMAController {
         for (int i = 0; i < 160; i++) {
             short ramAddress = Bitwise.toShort(address, (byte)i);
             short oamAddress = Bitwise.toShort((byte)0xfe, (byte)i);
-            gb.writeAddressNoCycle(oamAddress, gb.readAddressNoCycle(ramAddress));
+            gb.writeAddressInternal(oamAddress, gb.readAddressInternal(ramAddress));
         }
     }
 

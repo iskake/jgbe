@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * The memory map contains the current addressable memory, with a range of
  * $0000-$ffff ($10000 bytes)
  */
-public class MemoryMap implements WritableMemory, ReadableMemory {
+public class MemoryMap implements WritableMemoryUnrestricted, ReadableMemoryUnrestricted {
     private static final Logger log = LoggerFactory.getLogger(MemoryMap.class);
     private CartridgeROM rom;
     private final HardwareRegisters hwreg;
@@ -55,8 +55,7 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
 
     @Override
     public byte read(int address) {
-        // TODO: DMA
-        if (hwreg.isDMATransfer() && Bitwise.intAsShort(address) < (short)0xff00) {
+        if (hwreg.isDMATransfer() && Bitwise.intAsShort(address) < 0xff00) {
             log.warn("Attempting to read memory address during DMA: $%04x".formatted(address));
             return (byte) 0xff;
         }
@@ -68,16 +67,37 @@ public class MemoryMap implements WritableMemory, ReadableMemory {
     }
 
     @Override
+    public byte readUnrestricted(int address) {
+        ReadableMemory memory = (ReadableMemory) getMemoryIndex(address);
+        if (memory instanceof ReadableMemoryUnrestricted memoryUn) {
+            return memoryUn.readUnrestricted(fixedAddress);
+        } else if (memory != null) {
+            return memory.read(fixedAddress);
+        } else {
+            return (byte) 0xff;
+        }
+    }
+
+    @Override
     public void write(int address, byte value) {
-        // TODO: DMA
         if (hwreg.isDMATransfer() && Bitwise.intAsShort(address) < (short)0xff00) {
-            throw new RuntimeException("DMA transfer");
+            throw new RuntimeException("DMA transfer"); // TODO: should this be handled?
         }
         WritableMemory memory = (WritableMemory) getMemoryIndex(address);
         if (memory == null) {
             return;
         }
         memory.write(fixedAddress, value);
+    }
+
+    @Override
+    public void writeUnrestricted(int address, byte value) {
+        WritableMemory memory = (WritableMemory) getMemoryIndex(address);
+        if (memory instanceof WritableMemoryUnrestricted memoryUn) {
+            memoryUn.writeUnrestricted(fixedAddress, value);
+        } else if (memory != null) {
+            memory.write(fixedAddress, value);
+        }
     }
 
     /**
