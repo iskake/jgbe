@@ -39,6 +39,7 @@ public class InterruptHandler {
      * Disable all interrupts.
      */
     public void disable() {
+        waitIME = false;
         ime = false;
     }
 
@@ -46,8 +47,9 @@ public class InterruptHandler {
      * Set the interrupts waiting to be enabled.
      */
     public void waitForIME() {
-        waitIME = true;
-        ime = false;
+        if (!ime) {
+            waitIME = true;
+        }
     }
 
     /**
