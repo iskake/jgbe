@@ -29,6 +29,7 @@ public class PPU {
     private final byte[] sprBuffer;
     /** Buffer used to hold the pixels of the screen mapped to RGB values. */
     private final byte[] frameBuffer;
+    private int windowInternalLineCount;
 
     public boolean drawBG = true;
     public boolean drawWin = true;
@@ -111,9 +112,8 @@ public class PPU {
             if (i < wxScreen) {
                 dotCol = -1;
             } else {
-                // TODO: Use internal line count of window.
                 int dx = (i - wxScreen) & 255;
-                int dy = (currScanline - wy) & 255;
+                int dy = windowInternalLineCount;
                 Tile t = map.getTileAtCoordinate(dx, dy, tiles1, tilesN);
                 t.decode();
                 byte dot = t.getDot(dx % 8, dy % 8);
@@ -121,6 +121,7 @@ public class PPU {
             }
             winBuffer[currScanline * LCD_SIZE_X + i] = dotCol;
         }
+        windowInternalLineCount++;
     }
 
     private void createScanlineSPR(int currScanline, int start, int length, Tile[] tiles0, Tile[] tiles1, Sprite[] sprites) {
@@ -200,6 +201,10 @@ public class PPU {
     public void addScanline(int start, int length) {
         // TODO: https://gbdev.io/pandocs/Scrolling.html#mid-frame-behavior
         int line = hwreg.readAsInt(HardwareRegister.LY);
+
+        if (line == 0) {
+            windowInternalLineCount = 0;
+        }
 
         if (line < LCD_SIZE_Y) {
             Sprite[] sprites = getSprites();
