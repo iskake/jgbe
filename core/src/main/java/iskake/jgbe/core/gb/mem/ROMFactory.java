@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class ROMFactory {
     private static final Logger log = LoggerFactory.getLogger(ROMFactory.class);
 
-    public CartridgeROM getROM(byte[] bytes) {
+    public CartridgeROM getROM(String name, byte[] bytes) {
         int numROMBanks = ROMHeader.getROMBanksNum(bytes);
         if (numROMBanks == -1) {
             log.warn("Invalid/unknown ROM bank size, assuming no extra banks...");
@@ -54,7 +54,7 @@ public class ROMFactory {
             tmpMBC = new NoMBC(numRAMBanks);
         }
 
-        return new CartridgeROM(ROMBanks, RAMBanks, tmpMBC);
+        return new CartridgeROM(name, ROMBanks, RAMBanks, tmpMBC);
     }
 
     /**
@@ -78,7 +78,7 @@ public class ROMFactory {
         }
 
         try {
-            return getROM(romFile);
+            return getROM(pathString, romFile);
         } catch (Exception e) {
             log.error("Could not load the file " + path.getFileName() + ": an exception occurred: " + e);
             return null;

@@ -1,10 +1,13 @@
 package iskake.jgbe.core.gb.mem;
 
 public class MBC1 extends MemoryBankController {
-    private boolean ramEnable = false; // TODO...
+    // TODO: move ram enabling to either:
+    // - 'Ram enabled mbc', new mbc?
+    // - The MemoryBankController constructor, non-ram (NoMBC) just uses `false` for this.
+    private boolean ramEnable = false;
 
-    public MBC1(int numROMBanks, int numRAMBanks) {
-        super(numROMBanks, numRAMBanks);
+    public MBC1(int numROMBanks, int numRAMBanks, boolean battery) {
+        super(numROMBanks, numRAMBanks, battery);
     }
 
     @Override
@@ -20,8 +23,7 @@ public class MBC1 extends MemoryBankController {
             currROMBank = bank;
         } else if (address < 0x6000) {
             // TODO: mbc for banks which need > 5bits for bank selection
-            int bank = Byte.toUnsignedInt(value) & 0b11;
-            currRAMBank = bank;
+            currRAMBank = Byte.toUnsignedInt(value) & 0b11;
         } else {
             int bank = Byte.toUnsignedInt(value) & 1;
             // TODO: switchable bank0?

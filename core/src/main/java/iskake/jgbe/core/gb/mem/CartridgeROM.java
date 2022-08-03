@@ -3,20 +3,67 @@ package iskake.jgbe.core.gb.mem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * Read Only Memory of 'Game Boy game pak', separated into multiple
  * {@code ROMBank}s.
  */
 public class CartridgeROM implements ReadableMemory, WritableMemory {
     private static final Logger log = LoggerFactory.getLogger(CartridgeROM.class);
+    private final String romName;
     private final ROMBank[] ROMBanks;
     private final MemoryBankController mbc;
     private final RAM[] RAMBanks;
 
-    CartridgeROM(ROMBank[] romBanks, RAM[] ramBanks, MemoryBankController mbc) {
+    CartridgeROM(String romName, ROMBank[] romBanks, RAM[] ramBanks, MemoryBankController mbc) {
+        this.romName = romName;
         this.ROMBanks = romBanks;
         this.RAMBanks = ramBanks;
         this.mbc = mbc;
+    }
+
+    /**
+     * Try to restore all RAM banks, if possible.
+     * Will attempt to read the 'save RAM' file if the ROM has battery support.
+     */
+    public void tryRestoreRAM() {
+        if (mbc.battery && (RAMBanks != null)) {
+            try {
+                String inName = romName + ".sram";
+                FileInputStream fp = new FileInputStream(inName);
+                for (RAM bank : RAMBanks) {
+                    fp.read(bank.bytes);
+                }
+                fp.close();
+                log.info("Read saveram: " + inName);
+            } catch (IOException ignored) {
+                log.warn("Tried to restore save RAM, but failed.");
+            }
+        }
+    }
+
+    /**
+     * Try to save all RAM banks, if possible.
+     * Will attempt to write all RAM banks if the ROM has battery support.
+     */
+    public void trySaveRAM() {
+        if (mbc.battery && (RAMBanks != null)) {
+            try {
+                String outName = romName + ".sram";
+                FileOutputStream fp = new FileOutputStream(outName);
+                for (RAM bank : RAMBanks) {
+                    fp.write(bank.bytes);
+                }
+                fp.flush();
+                fp.close();
+                log.info("Wrote saveram: " + outName);
+            } catch (IOException ignored) {
+                log.warn("Tried to write save RAM to file, but failed.");
+            }
+        }
     }
 
     /**

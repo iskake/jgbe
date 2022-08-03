@@ -71,7 +71,9 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
      * ('powered on').
      */
     private void init(CartridgeROM rom) {
+        saveRAM();
         this.rom = rom;
+        restoreRAM();
 
         // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
         // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
@@ -121,6 +123,16 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
         running = true;
         dbg.restart();
+    }
+
+    private void restoreRAM() {
+        if (rom != null)
+            rom.tryRestoreRAM();
+    }
+
+    private void saveRAM() {
+        if (rom != null)
+            rom.trySaveRAM();
     }
 
     // For debugging
@@ -237,6 +249,7 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
      * Stop execution.
      */
     public void stopRunning() {
+        saveRAM();
         running = false;
     }
 

@@ -5,12 +5,14 @@ package iskake.jgbe.core.gb.mem;
  * banks.
  */
 public abstract class MemoryBankController implements WritableMemory {
+    public final boolean battery;
     protected final int numROMBanks;
     protected final int numRAMBanks;
     protected int currROMBank = 1;
     protected int currRAMBank = 0;
 
-    public MemoryBankController(int numROMBanks, int numRAMBanks) {
+    public MemoryBankController(int numROMBanks, int numRAMBanks, boolean battery) {
+        this.battery = battery;
         this.numROMBanks = numROMBanks;
         this.numRAMBanks = numRAMBanks;
     }

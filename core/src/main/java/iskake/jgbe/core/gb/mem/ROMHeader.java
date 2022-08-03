@@ -2,10 +2,6 @@ package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.NotImplementedException;
-import iskake.jgbe.core.gb.mem.MBC1;
-import iskake.jgbe.core.gb.mem.MemoryBankController;
-import iskake.jgbe.core.gb.mem.NoMBC;
-import iskake.jgbe.core.gb.mem.ROMBank;
 
 import java.util.Arrays;
 
@@ -71,7 +67,8 @@ public class ROMHeader {
         int MBCType = Byte.toUnsignedInt(romBank.bytes()[0x147]);
         return switch (MBCType) {
             case 0x00 -> new NoMBC(numRAM);
-            case 0x01, 0x02, 0x03 -> new MBC1(numROM, numRAM);
+            case 0x01, 0x02 -> new MBC1(numROM, numRAM, false);
+            case 0x03 -> new MBC1(numROM, numRAM, true);
             case 0x05 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2'");
             case 0x06 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2+BATTERY'");
             case 0x08 -> throw new NotImplementedException("Unimplemented MBC: 'ROM+RAM 1'");
