@@ -139,9 +139,9 @@ public class PPU {
         int spriteSize = ppuControl.getOBJSize();
 
         List<Sprite> spritesToDraw = Arrays.stream(sprites)
-                .filter(s -> currScanline >= (Byte.toUnsignedInt(s.getYPos()) - 16)
-                        && currScanline < (Byte.toUnsignedInt(s.getYPos()) - 16 + spriteSize))
-                .sorted(Comparator.comparingInt(Sprite::getXPos))
+                .filter(s -> currScanline >= (s.getYPosInt() - 16)
+                        && currScanline < (s.getYPosInt() - 16 + spriteSize))
+                .sorted(Comparator.comparingInt(Sprite::getXPosInt))
                 .limit(MAX_SPRITES_ON_SCANLINE)
                 .toList();
 
@@ -149,10 +149,10 @@ public class PPU {
         for (int i = spritesToDraw.size() - 1; i >= 0; i--) {
             Sprite sprite = spritesToDraw.get(i);
 
-            int xPos = Byte.toUnsignedInt(sprite.getXPos());
+            int xPos = sprite.getXPosInt();
             int xPosScreen = (xPos - 8);
 
-            int yPos = Byte.toUnsignedInt(sprite.getYPos());
+            int yPos = sprite.getYPosInt();
             int yPosScreen = (yPos - 16);
 
             int attr = Byte.toUnsignedInt(sprite.getAttributes());

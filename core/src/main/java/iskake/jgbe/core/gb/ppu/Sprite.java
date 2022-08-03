@@ -41,11 +41,29 @@ public class Sprite {
 
     /**
      * Get the sprite's Y position.
+     *
+     * @return The Y position of the sprite.
+     */
+    public int getYPosInt() {
+        return Byte.toUnsignedInt(yPos.get());
+    }
+
+    /**
+     * Get the sprite's Y position.
      * 
      * @return The X position of the sprite.
      */
     public byte getXPos() {
         return xPos.get();
+    }
+
+    /**
+     * Get the sprite's Y position.
+     *
+     * @return The X position of the sprite.
+     */
+    public int getXPosInt() {
+        return Byte.toUnsignedInt(xPos.get());
     }
 
     /**
@@ -68,8 +86,8 @@ public class Sprite {
 
     @Override
     public String toString() {
-        return "Sprite { y:" + Byte.toUnsignedInt(getYPos())
-                + ", x:" + Byte.toUnsignedInt(getXPos())
+        return "Sprite { y:" + getYPosInt()
+                + ", x:" + getXPosInt()
                 + ", tile:" + Byte.toUnsignedInt(getTileIndex())
                 + ", attrs:" + Integer.toBinaryString(getAttributes())
                 + " }";
