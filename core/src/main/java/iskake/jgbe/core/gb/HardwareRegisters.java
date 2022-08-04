@@ -4,6 +4,10 @@ import iskake.jgbe.core.gb.input.IJoypad;
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.gb.timing.Timers;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.*;
 
 /**
@@ -112,19 +116,13 @@ public class HardwareRegisters {
             this.val = val;
             this. writableBits = writableBits;
         }
-
-        public static HardwareRegister getRegisterFromAddress(int address) {
-            for (HardwareRegister hwr : HardwareRegister.values()) {
-                if (hwr.val == address) {
-                    return hwr;
-                }
-            }
-
-            return null;
-        }
     }
 
-    private final byte[] registerValues = new byte[HardwareRegister.values().length];
+    /** The hardware registers as a map. Each address is mapped to its corresponding register. */
+    public static final Map<Integer, HardwareRegister> map = Arrays.stream(HardwareRegister.values())
+            .collect(Collectors.toMap(r -> r.val, r -> r));
+
+    private final byte[] registerValues = new byte[map.size()];
     private final DMAController dmaControl;
     private final Timers timers;
     private final IJoypad joypad;

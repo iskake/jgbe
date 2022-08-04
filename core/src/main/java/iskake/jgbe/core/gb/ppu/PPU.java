@@ -152,11 +152,13 @@ public class PPU {
             if (c == 10)
                 break;
         }
+        if (c == 0)
+            return;
 
         scanlineSprites.sort(Comparator.comparingInt(Sprite::getXPosInt));
 
         // TODO: actually handle sprite priority (OAM index) instead of looping backwards
-        for (int i = (Math.min(scanlineSprites.size(), MAX_SPRITES_ON_SCANLINE)) - 1; i >= 0; i--) {
+        for (int i = c - 1; i >= 0; i--) {
             Sprite sprite = scanlineSprites.get(i);
 
             int xPos = sprite.getXPosInt();
