@@ -53,7 +53,7 @@ public class ROMFactory {
         } catch (NotImplementedException | IllegalArgumentException e) {
             log.error(e.getMessage());
             log.warn("Unimplemented/unknown MBC type, assuming no MBC...");
-            tmpMBC = new NoMBC(numRAMBanks);
+            tmpMBC = new NoMBC();
         }
 
         return new CartridgeROM(name, ROMBanks, RAMBanks, tmpMBC);
