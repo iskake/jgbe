@@ -73,27 +73,6 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private void init(CartridgeROM rom) {
         saveRAM();
         this.rom = rom;
-        restoreRAM();
-
-        // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
-        // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
-        cpu.init();
-        reg.writeByte(Register.A, 0x01);
-        reg.setFlag(Flags.Z);
-        reg.resetFlag(Flags.N);
-        reg.setFlag(Flags.H);
-        reg.setFlag(Flags.C);
-        reg.writeShort(Register.BC, (short) 0x0013);
-        reg.writeShort(Register.DE, (short) 0x00d8);
-        reg.writeShort(Register.HL, (short) 0x014d);
-
-        pc.setNoCycle((short) 0x100);
-        sp.set((short) 0xfffe);
-        interrupts.init();
-        memoryMap.init(rom);
-        timers.init();
-        hwreg.init();
-        timing.init();
 
         boolean willStop = false;
         try {
@@ -120,6 +99,29 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
             stopRunning();
             return;
         }
+
+        rom.init();
+        restoreRAM();
+
+        // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
+        // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
+        cpu.init();
+        reg.writeByte(Register.A, 0x01);
+        reg.setFlag(Flags.Z);
+        reg.resetFlag(Flags.N);
+        reg.setFlag(Flags.H);
+        reg.setFlag(Flags.C);
+        reg.writeShort(Register.BC, (short) 0x0013);
+        reg.writeShort(Register.DE, (short) 0x00d8);
+        reg.writeShort(Register.HL, (short) 0x014d);
+
+        pc.setNoCycle((short) 0x100);
+        sp.set((short) 0xfffe);
+        interrupts.init();
+        memoryMap.init(rom);
+        timers.init();
+        hwreg.init();
+        timing.init();
 
         running = true;
         dbg.restart();

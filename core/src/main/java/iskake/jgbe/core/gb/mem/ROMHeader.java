@@ -3,6 +3,7 @@ package iskake.jgbe.core.gb.mem;
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.NotImplementedException;
 import iskake.jgbe.core.gb.mem.mbc.MBC1;
+import iskake.jgbe.core.gb.mem.mbc.MBC5;
 import iskake.jgbe.core.gb.mem.mbc.MemoryBankController;
 import iskake.jgbe.core.gb.mem.mbc.NoMBC;
 
@@ -33,7 +34,7 @@ public class ROMHeader {
 
     /**
      * Get the ROM size in amount of banks, according to the header.
-     * 
+     *
      * @param data The ROM bank data.
      * @return The ROM size in bytes, or -1 if the detected size is invalid.
      */
@@ -57,7 +58,7 @@ public class ROMHeader {
 
     /**
      * Get the ROM title, according to the header.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The ROM title.
      */
@@ -69,40 +70,53 @@ public class ROMHeader {
             throws NotImplementedException, IllegalArgumentException {
         int MBCType = Byte.toUnsignedInt(romBank.bytes()[0x147]);
         return switch (MBCType) {
-            case 0x00 -> new NoMBC(numRAM);
-            case 0x01, 0x02 -> new MBC1(numROM, numRAM, false);
+            case 0x00 -> new NoMBC();
+
+            case 0x01 -> new MBC1(numROM, 0, false);
+            case 0x02 -> new MBC1(numROM, numRAM, false);
             case 0x03 -> new MBC1(numROM, numRAM, true);
+
             case 0x05 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2'");
             case 0x06 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2+BATTERY'");
+            //? No licensed games use this
             case 0x08 -> throw new NotImplementedException("Unimplemented MBC: 'ROM+RAM 1'");
             case 0x09 -> throw new NotImplementedException("Unimplemented MBC: 'ROM+RAM+BATTERY 1'");
+
             case 0x0B -> throw new NotImplementedException("Unimplemented MBC: 'MMM01'");
             case 0x0C -> throw new NotImplementedException("Unimplemented MBC: 'MMM01+RAM'");
             case 0x0D -> throw new NotImplementedException("Unimplemented MBC: 'MMM01+RAM+BATTERY'");
+
             case 0x0F -> throw new NotImplementedException("Unimplemented MBC: 'MBC3+TIMER+BATTERY'");
             case 0x10 -> throw new NotImplementedException("Unimplemented MBC: 'MBC3+TIMER+RAM+BATTERY 2'");
             case 0x11 -> throw new NotImplementedException("Unimplemented MBC: 'MBC3'");
             case 0x12 -> throw new NotImplementedException("Unimplemented MBC: 'MBC3+RAM 2'");
             case 0x13 -> throw new NotImplementedException("Unimplemented MBC: 'MBC3+RAM+BATTERY 2'");
-            case 0x19 -> throw new NotImplementedException("Unimplemented MBC: 'MBC5'");
-            case 0x1A -> throw new NotImplementedException("Unimplemented MBC: 'MBC5+RAM'");
-            case 0x1B -> throw new NotImplementedException("Unimplemented MBC: 'MBC5+RAM+BATTERY'");
-            case 0x1C -> throw new NotImplementedException("Unimplemented MBC: 'MBC5+RUMBLE'");
-            case 0x1D -> throw new NotImplementedException("Unimplemented MBC: 'MBC5+RUMBLE+RAM'");
-            case 0x1E -> throw new NotImplementedException("Unimplemented MBC: 'MBC5+RUMBLE+RAM+BATTERY'");
+
+            case 0x19 -> new MBC5(numROM, 0, false, false);
+            case 0x1A -> new MBC5(numROM, numRAM, false, false);
+            case 0x1B -> new MBC5(numROM, numRAM, true, false);
+
+            case 0x1C -> new MBC5(numROM, 0, false, true);   //? RUMBLE
+            case 0x1D -> new MBC5(numROM, numRAM, false, true);           //? RUMBLE
+            case 0x1E -> new MBC5(numROM, numRAM, true, true);            //? RUMBLE
+
             case 0x20 -> throw new NotImplementedException("Unimplemented MBC: 'MBC6'");
+
             case 0x22 -> throw new NotImplementedException("Unimplemented MBC: 'MBC7+SENSOR+RUMBLE+RAM+BATTERY'");
+
             case 0xFC -> throw new NotImplementedException("Unimplemented MBC: 'POCKET CAMERA'");
             case 0xFD -> throw new NotImplementedException("Unimplemented MBC: 'BANDAI TAMA5'");
+
             case 0xFE -> throw new NotImplementedException("Unimplemented MBC: 'HuC3'");
             case 0xFF -> throw new NotImplementedException("Unimplemented MBC: 'HuC1+RAM+BATTERY'");
+
             default -> throw new IllegalArgumentException("Invalid cartridge type: " + Integer.toHexString(MBCType));
         };
     }
 
     /**
      * Get the ROM size, according to the header.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The ROM size in bytes, or -1 if the detected size is invalid.
      */
@@ -123,7 +137,7 @@ public class ROMHeader {
 
     /**
      * Get the ROM size, according to the header.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The ROM size as a formatted string.
      */
@@ -144,7 +158,7 @@ public class ROMHeader {
 
     /**
      * Get the RAM size in amount of banks, according to the header.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The number or RAM banks, or -1 if the detected size is invalid.
      */
@@ -162,7 +176,7 @@ public class ROMHeader {
 
     /**
      * Get the RAM size, according to the header.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The RAM size in bytes, or -1 if the detected size is invalid.
      */
@@ -179,7 +193,7 @@ public class ROMHeader {
 
     /**
      * Get the ROM size, according to the header.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The ROM size as a formatted string.
      */
@@ -196,7 +210,7 @@ public class ROMHeader {
 
     /**
      * Get the destination code, according to the header.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The destination code as a formatted string.
      */
@@ -210,7 +224,7 @@ public class ROMHeader {
 
     /**
      * Get the version number from the header data.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The version number as an int.
      */
@@ -220,7 +234,7 @@ public class ROMHeader {
 
     /**
      * Get the header checksum from the header data.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The header checksum as a byte.
      */
@@ -230,7 +244,7 @@ public class ROMHeader {
 
     /**
      * Get the global checksum from the header data.
-     * 
+     *
      * @param bank The ROM bank to get the data from.
      * @return The global checksum as a short.
      */
@@ -240,7 +254,7 @@ public class ROMHeader {
 
     /**
      * Check if the Nintendo logo data is valid.
-     * 
+     *
      * @param bank The ROM bank to get the header and check the logo of.
      * @return {@code true} if the bytes match, {@code false} otherwise.
      */
@@ -258,7 +272,7 @@ public class ROMHeader {
 
     /**
      * Check if the header checksum of a ROM bank is valid.
-     * 
+     *
      * @param bank The ROM bank to get the header and check the checksum of.
      * @return {@code true} if the checksum matches, {@code false} otherwise.
      */

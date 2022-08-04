@@ -12,6 +12,7 @@ public abstract class MemoryBankController implements WritableMemory {
     protected final int numRAMBanks;
     protected int currROMBank = 1;
     protected int currRAMBank = 0;
+    protected boolean ramEnable = false;
 
     public MemoryBankController(int numROMBanks, int numRAMBanks, boolean battery) {
         this.battery = battery;
@@ -19,12 +20,31 @@ public abstract class MemoryBankController implements WritableMemory {
         this.numRAMBanks = numRAMBanks;
     }
 
+    public void init() {
+        currROMBank = 1;
+        currRAMBank = 0;
+        ramEnable = false;
+    }
+
+    public boolean isRAMEnabled() {
+        return ramEnable;
+    }
+
+    /**
+     * Get the index of the ROM bank that should (in most cases) be bank number 0
+     *
+     * @return 0, unless overridden.
+     */
+    public int getROMBank0Index() {
+        return 0;
+    }
+
     /**
      * Get the index of the current switchable ROM bank.
-     * 
+     *
      * @return The correct ROM bank index.
      */
-    public int getROMBankIndex() {
+    public int getROMBankNIndex() {
         return currROMBank;
     }
 
