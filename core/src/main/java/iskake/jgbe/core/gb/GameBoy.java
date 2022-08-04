@@ -4,7 +4,7 @@ import iskake.jgbe.core.gb.Registers.Flags;
 import iskake.jgbe.core.gb.Registers.Register;
 import iskake.jgbe.core.gb.cpu.CPU;
 import iskake.jgbe.core.gb.interrupt.InterruptHandler;
-import iskake.jgbe.core.gb.joypad.IJoypad;
+import iskake.jgbe.core.gb.input.IJoypad;
 import iskake.jgbe.core.gb.mem.*;
 import iskake.jgbe.core.gb.pointer.ProgramCounter;
 import iskake.jgbe.core.gb.pointer.StackPointer;

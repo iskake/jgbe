@@ -1,8 +1,8 @@
-package iskake.jgbe.gui.controller;
+package iskake.jgbe.gui.input;
 
 import iskake.jgbe.core.Bitwise;
-import iskake.jgbe.core.gb.joypad.IJoypad;
-import iskake.jgbe.core.gb.joypad.Input;
+import iskake.jgbe.core.gb.input.IJoypad;
+import iskake.jgbe.core.gb.input.Input;
 
 public class GameBoyJoypad implements IJoypad {
     private boolean directionsSet = true;

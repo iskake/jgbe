@@ -1,4 +1,4 @@
-package iskake.jgbe.core.gb.joypad;
+package iskake.jgbe.core.gb.input;
 
 public enum Input {
     DPAD_RIGHT(0),
@@ -13,7 +13,7 @@ public enum Input {
 
     public final int bit;
 
-    private Input(int bit) {
+    Input(int bit) {
         this.bit = bit;
     }
 }

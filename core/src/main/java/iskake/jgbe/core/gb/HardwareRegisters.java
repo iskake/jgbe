@@ -1,6 +1,6 @@
 package iskake.jgbe.core.gb;
 
-import iskake.jgbe.core.gb.joypad.IJoypad;
+import iskake.jgbe.core.gb.input.IJoypad;
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.gb.timing.Timers;
 

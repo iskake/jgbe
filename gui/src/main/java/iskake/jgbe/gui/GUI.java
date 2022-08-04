@@ -3,10 +3,10 @@ package iskake.jgbe.gui;
 import imgui.ImGui;
 import iskake.jgbe.core.gb.GameBoy;
 import iskake.jgbe.core.gb.mem.ROMHeader;
-import iskake.jgbe.core.gb.joypad.Input;
+import iskake.jgbe.core.gb.input.Input;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
 import iskake.jgbe.core.gb.mem.ROMFactory;
-import iskake.jgbe.gui.controller.GameBoyJoypad;
+import iskake.jgbe.gui.input.GameBoyJoypad;
 import iskake.jgbe.gui.video.OpenGLRenderer;
 
 import java.nio.*;

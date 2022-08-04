@@ -5,7 +5,7 @@ import iskake.jgbe.core.gb.GameBoy;
 import iskake.jgbe.core.gb.HardwareRegisters;
 import iskake.jgbe.core.gb.interrupt.InterruptHandler;
 import iskake.jgbe.core.gb.interrupt.InterruptHandler.InterruptType;
-import iskake.jgbe.core.gb.joypad.IJoypad;
+import iskake.jgbe.core.gb.input.IJoypad;
 import iskake.jgbe.core.gb.ppu.PPU;
 import iskake.jgbe.core.Bitwise;
 

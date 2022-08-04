@@ -1,4 +1,4 @@
-package iskake.jgbe.core.gb.joypad;
+package iskake.jgbe.core.gb.input;
 
 /**
  * Represents a joypad, as 
