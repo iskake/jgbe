@@ -249,6 +249,7 @@ public class GUI {
             if ((frames % frameMod == 0))
                 glfwSwapBuffers(window);
         }
+        gb.stopRunning();
 
         log.info("Exited the run loop");
     }
