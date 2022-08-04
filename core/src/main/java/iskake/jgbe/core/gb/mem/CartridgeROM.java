@@ -26,6 +26,10 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
         this.mbc = mbc;
     }
 
+    public void init() {
+        mbc.init();
+    }
+
     /**
      * Try to restore all RAM banks, if possible.
      * Will attempt to read the 'save RAM' file if the ROM has battery support.
@@ -78,31 +82,31 @@ public class CartridgeROM implements ReadableMemory, WritableMemory {
 
     /**
      * Get the ROM bank with index 0.
-     * 
+     *
      * @return The correct ROM bank.
      */
     public ROMBank getROMBank0() {
         // ? Some MBCs can switch the first bank to other banks than bank0.
-        return ROMBanks[0];
+        return ROMBanks[mbc.getROMBank0Index()];
     }
 
     /**
      * Get the current switchable ROM bank, according to the MBC.
-     * 
+     *
      * @return The correct ROM bank.
      */
     public ROMBank getROMBankX() {
-        return ROMBanks[mbc.getROMBankIndex()];
+        return ROMBanks[mbc.getROMBankNIndex()];
     }
 
     /**
      * Get the current RAM bank, if any.
-     * 
+     *
      * @return The current RAM bank. If there is none, then {@code null} is
      *         returned instead.
      */
     public RAM getRAMBank() {
-        if (RAMBanks.length == 0)
+        if (RAMBanks.length == 0 || !mbc.isRAMEnabled())
             return null;
 
         return RAMBanks[mbc.getRAMBankIndex()];
