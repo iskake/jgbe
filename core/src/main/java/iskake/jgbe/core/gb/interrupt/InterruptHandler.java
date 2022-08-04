@@ -20,6 +20,9 @@ public class InterruptHandler {
         InterruptType(int address) {
             this.address = address;
         }
+
+        public static final int NUM_INTERRUPTS = 5;
+        public static final InterruptType[] fromBit = { VBLANK, STAT, TIMER, SERIAL, JOYPAD };
     }
 
     private boolean ime;
@@ -99,9 +102,9 @@ public class InterruptHandler {
      * @return {@code true} if the call was successful, {@code false} otherwise.
      */
     public boolean callWaiting() {
-        for (int bit = 0; bit < InterruptType.values().length; bit++) {
+        for (int bit = 0; bit < InterruptType.NUM_INTERRUPTS; bit++) {
             if (Bitwise.isBitSet(gb.hwreg().read(IF), bit)) {
-                InterruptType interruptToCall = InterruptType.values()[bit];
+                InterruptType interruptToCall = InterruptType.fromBit[bit];
                 if (callInterrupt(interruptToCall)) {
                     return true;
                 }
