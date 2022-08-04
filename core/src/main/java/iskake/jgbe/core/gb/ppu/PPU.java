@@ -6,9 +6,9 @@ import iskake.jgbe.core.gb.mem.OAM;
 import iskake.jgbe.core.gb.mem.VRAM;
 import iskake.jgbe.core.Bitwise;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * Pixel Processing Unit.
@@ -27,6 +27,7 @@ public class PPU {
     private final byte[] winBuffer;
     /** Buffer used to hold the raw pixels on the screen (sprites) (each byte is %00-%11). */
     private final byte[] sprBuffer;
+    private final ArrayList<Sprite> scanlineSprites;
     /** Buffer used to hold the pixels of the screen mapped to RGB values. */
     private final byte[] frameBuffer;
     private int windowInternalLineCount;
@@ -45,6 +46,7 @@ public class PPU {
         winBuffer = new byte[LCD_SIZE_Y * LCD_SIZE_X];
         sprBuffer = new byte[LCD_SIZE_Y * LCD_SIZE_X];
         frameBuffer = new byte[LCD_SIZE_X * LCD_SIZE_Y * 3];
+        scanlineSprites = new ArrayList<>(OAM.NUM_SPRITES);
     }
 
     /**
@@ -139,16 +141,23 @@ public class PPU {
 
         int spriteSize = ppuControl.getOBJSize();
 
-        List<Sprite> spritesToDraw = Arrays.stream(sprites)
-                .filter(s -> currScanline >= (s.getYPosInt() - 16)
-                        && currScanline < (s.getYPosInt() - 16 + spriteSize))
-                .sorted(Comparator.comparingInt(Sprite::getXPosInt))
-                .limit(MAX_SPRITES_ON_SCANLINE)
-                .toList();
+        int c = 0;
+        scanlineSprites.clear();
+        for (Sprite s : sprites) {
+            if (currScanline >= (s.getYPosInt() - 16) && currScanline < (s.getYPosInt() - 16 + spriteSize)) {
+                scanlineSprites.add(c, s);
+                c++;
+            }
 
-        // TODO: actually handle sprite priority instead of looping backwards (which only works under certain circumstances)
-        for (int i = spritesToDraw.size() - 1; i >= 0; i--) {
-            Sprite sprite = spritesToDraw.get(i);
+            if (c == 10)
+                break;
+        }
+
+        scanlineSprites.sort(Comparator.comparingInt(Sprite::getXPosInt));
+
+        // TODO: actually handle sprite priority (OAM index) instead of looping backwards
+        for (int i = (Math.min(scanlineSprites.size(), MAX_SPRITES_ON_SCANLINE)) - 1; i >= 0; i--) {
+            Sprite sprite = scanlineSprites.get(i);
 
             int xPos = sprite.getXPosInt();
             int xPosScreen = (xPos - 8);

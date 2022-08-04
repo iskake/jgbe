@@ -8,6 +8,7 @@ import iskake.jgbe.core.gb.ppu.Sprite;
  * Only accessible in modes 0-1 (STAT register bits 0-1).
  */
 public class OAM extends RAM implements ReadableMemoryUnrestricted, WritableMemoryUnrestricted {
+    public static final int NUM_SPRITES = 40;
     private final PPUController ppuControl;
     private final Sprite[] sprites = new Sprite[40];
 
