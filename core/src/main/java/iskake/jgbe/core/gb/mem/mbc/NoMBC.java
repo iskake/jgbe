@@ -1,4 +1,4 @@
-package iskake.jgbe.core.gb.mem;
+package iskake.jgbe.core.gb.mem.mbc;
 
 /**
  * 'No Memory Bank Controller'.

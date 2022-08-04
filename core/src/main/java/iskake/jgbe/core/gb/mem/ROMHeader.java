@@ -2,6 +2,9 @@ package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.NotImplementedException;
+import iskake.jgbe.core.gb.mem.mbc.MBC1;
+import iskake.jgbe.core.gb.mem.mbc.MemoryBankController;
+import iskake.jgbe.core.gb.mem.mbc.NoMBC;
 
 import java.util.Arrays;
 

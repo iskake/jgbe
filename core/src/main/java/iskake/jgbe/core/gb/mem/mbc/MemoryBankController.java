@@ -1,4 +1,6 @@
-package iskake.jgbe.core.gb.mem;
+package iskake.jgbe.core.gb.mem.mbc;
+
+import iskake.jgbe.core.gb.mem.WritableMemory;
 
 /**
  * Memory Bank Controller, controls the currently mapped ROM banks and RAM

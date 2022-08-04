@@ -1,6 +1,8 @@
 package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.NotImplementedException;
+import iskake.jgbe.core.gb.mem.mbc.MemoryBankController;
+import iskake.jgbe.core.gb.mem.mbc.NoMBC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

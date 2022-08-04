@@ -1,4 +1,4 @@
-package iskake.jgbe.core.gb.mem;
+package iskake.jgbe.core.gb.mem.mbc;
 
 public class MBC1 extends MemoryBankController {
     // TODO: move ram enabling to either:
