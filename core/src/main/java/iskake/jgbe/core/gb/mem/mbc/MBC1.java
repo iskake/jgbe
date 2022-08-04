@@ -1,13 +1,32 @@
 package iskake.jgbe.core.gb.mem.mbc;
 
 public class MBC1 extends MemoryBankController {
-    // TODO: move ram enabling to either:
-    // - 'Ram enabled mbc', new mbc?
-    // - The MemoryBankController constructor, non-ram (NoMBC) just uses `false` for this.
-    private boolean ramEnable = false;
+    private int bankMode = 0;
 
+    // TODO: 1MiB Multi-game MBC1 cartridges.
     public MBC1(int numROMBanks, int numRAMBanks, boolean battery) {
         super(numROMBanks, numRAMBanks, battery);
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        bankMode = 0;
+    }
+
+    @Override
+    public int getROMBank0Index() {
+        return bankMode == 1 ? (currROMBank & 0b0110_0000) : 0;
+    }
+
+    @Override
+    public int getROMBankNIndex() {
+        return bankMode == 1 ? (currROMBank & 0b0111_1111) : currROMBank;
+    }
+
+    @Override
+    public int getRAMBankIndex() {
+        return bankMode == 1 ? currRAMBank : 0;
     }
 
     @Override
@@ -15,18 +34,21 @@ public class MBC1 extends MemoryBankController {
         if (address < 0x2000) {
             ramEnable = (Byte.toUnsignedInt(value) & 0xf) == 0xa;
         } else if (address < 0x4000) {
-            int bank = Byte.toUnsignedInt(value) & 0x1f;
+            int num = Byte.toUnsignedInt(value);
 
-            if (bank == 0)
-                bank = 1;
+            if ((num & 0x1f )== 0)
+                num += 1;
 
-            currROMBank = bank;
+            currROMBank = (currROMBank & 0b0110_0000) | ((num & 0x1f) & (numROMBanks - 1));
         } else if (address < 0x6000) {
-            // TODO: mbc for banks which need > 5bits for bank selection
-            currRAMBank = Byte.toUnsignedInt(value) & 0b11;
-        } else {
-            int bank = Byte.toUnsignedInt(value) & 1;
-            // TODO: switchable bank0?
+            if (numRAMBanks > 1)
+                currRAMBank = Byte.toUnsignedInt(value) & 0b11;
+
+            // Bank mode select
+            if (numROMBanks > 0b1_1111)
+                currROMBank = (currROMBank & 0b0001_1111) | (((Byte.toUnsignedInt(value) & 0b11) << 5) & (numROMBanks - 1));
+        } else if (address < 0x8000) {
+            bankMode = Byte.toUnsignedInt(value) & 1;
         }
     }
 }
