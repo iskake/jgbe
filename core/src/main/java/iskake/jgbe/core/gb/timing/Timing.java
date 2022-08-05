@@ -117,7 +117,8 @@ public class Timing {
 
     private void handleVideo(long cycle) {
         boolean doVBlank = false;
-        if (!Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
+        boolean lcdEnabled = Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7);
+        if (!lcdEnabled) {
             cyclesSinceLCDEnable = 0;
             hwreg.writeInternal(LY, (byte) 0);
 
@@ -142,7 +143,7 @@ public class Timing {
         }
 
         int oldSTAT = hwreg.readAsInt(STAT);
-        if ((cyclesSinceLCDEnable % FRAME_CYCLES) >= MODE1_START || !Bitwise.isBitSet(hwreg.readAsInt(LCDC), 7)) {
+        if ((cyclesSinceLCDEnable % FRAME_CYCLES) >= MODE1_START || !lcdEnabled) {
             // Mode 1 (VBlank)
             hwreg.setBit(STAT, 0);
             hwreg.resetBit(STAT, 1);

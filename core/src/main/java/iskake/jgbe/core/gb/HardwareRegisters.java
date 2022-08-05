@@ -206,10 +206,13 @@ public class HardwareRegisters {
             return (byte) 0xff;
         }
 
-        int value = handleSpecialReads(hwreg);
-        if ((byte)value == value) {
-            return (byte)value;
-        } else if (hwreg.writableBits != 0xff && hwreg != LY) {
+        if (hwreg == P1 || hwreg == DIV || hwreg == TIMA || hwreg == TMA || hwreg == TAC) {
+            int value = handleSpecialReads(hwreg);
+            if ((byte) value == value) {
+                return (byte) value;
+            }
+        }
+        if (hwreg.writableBits != 0xff && hwreg != LY) {
             return (byte)(Byte.toUnsignedInt(registerValues[hwreg.ordinal()]) | (~(hwreg.writableBits) & 0xff));
         } else {
             return registerValues[hwreg.ordinal()];
@@ -261,8 +264,11 @@ public class HardwareRegisters {
         if (hwreg == null) {
             return false;
         }
-        if (handleSpecialWrites(hwreg, value)) {
-            return true;
+
+        if (hwreg == P1 || hwreg == DIV || hwreg == TIMA || hwreg == TMA || hwreg == TAC || hwreg == DMA) {
+            if (handleSpecialWrites(hwreg, value)) {
+                return true;
+            }
         }
         registerValues[hwreg.ordinal()] = (byte)(Byte.toUnsignedInt(value) & hwreg.writableBits);
         return true;
