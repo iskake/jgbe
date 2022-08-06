@@ -6,6 +6,7 @@ import iskake.jgbe.core.gb.mem.ROMHeader;
 import iskake.jgbe.core.gb.input.Input;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
 import iskake.jgbe.core.gb.mem.ROMFactory;
+import iskake.jgbe.gui.audio.GameBoyAPU;
 import iskake.jgbe.gui.input.GameBoyJoypad;
 import iskake.jgbe.gui.video.OpenGLRenderer;
 
@@ -114,7 +115,7 @@ public class GUI {
         for (int i = 0; i < count; i++) {
             String name = GLFWDropCallback.getName(stringPtrPtr, i);
             if (name.endsWith(".gb") || name.endsWith(".gbc")) {
-                log.info("Dragged Game Boy ROM detected: " + name);
+                log.debug("Dragged Game Boy ROM detected: " + name);
                 reloadNewROM(name);
                 break;
             } else {
@@ -178,7 +179,7 @@ public class GUI {
     }
 
     public void reloadNewROM(String romPath) {
-        log.info("Loading new ROM.");
+        log.info("Loading ROM: " + romPath);
 
         if (!romPath.equals("")) {
             CartridgeROM rom = romFactory.getROM(romPath);
@@ -261,7 +262,7 @@ public class GUI {
 
         long end = System.nanoTime();
         float deltaTime = (end - start) / 1_000_000f;
-        log.debug("delta: " + deltaTime + "ms");
+//        log.info("delta: " + deltaTime + "ms");
 
         if (frames % frameMod == 0)
             bb.put(gb.getFrame()).rewind();

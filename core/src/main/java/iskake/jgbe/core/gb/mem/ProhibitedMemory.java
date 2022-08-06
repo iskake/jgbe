@@ -21,7 +21,7 @@ public class ProhibitedMemory implements WritableMemory, ReadableMemory {
 
     @Override
     public byte read(int address) {
-        log.warn("Reading from unusable memory address: $%04x".formatted(address));
+        log.warn("Reading from address: $%04x".formatted(address));
         return switch (hwreg.read(HardwareRegister.STAT) & 0b11) {
             case 0, 1 -> (byte) 0;
             default -> (byte) 0xff;
@@ -30,7 +30,7 @@ public class ProhibitedMemory implements WritableMemory, ReadableMemory {
 
     @Override
     public void write(int address, byte value) {
-        log.warn("Attempting write to unusable memory address: $%04x".formatted(address));
+        log.warn("Attempting write to address: $%04x".formatted(address));
     }
 
 }

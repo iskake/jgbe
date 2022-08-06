@@ -27,7 +27,7 @@ public class ROMFactory {
             // numROMBanks = (bytes.length / ROMBank.BANK_SIZE);
             // ?If this is used, should we try to assume the MBC type too?
         } else {
-            log.info("ROM banks: " + numROMBanks);
+            log.debug("ROM banks: " + numROMBanks);
         }
         ROMBank[] ROMBanks = new ROMBank[numROMBanks];
         for (int i = 0; i < numROMBanks; i++) {
@@ -40,7 +40,7 @@ public class ROMFactory {
             log.warn("Invalid/unknown RAM bank size, assuming no external RAM...");
             numRAMBanks = 0;
         } else {
-            log.info("RAM banks: " + numRAMBanks);
+            log.debug("RAM banks: " + numRAMBanks);
         }
         RAM[] RAMBanks = new RAM[numRAMBanks];
         for (int i = 0; i < RAMBanks.length; i++) {
@@ -55,6 +55,7 @@ public class ROMFactory {
             log.warn("Unimplemented/unknown MBC type, assuming no MBC...");
             tmpMBC = new NoMBC();
         }
+        log.debug("MBC type: " + tmpMBC.getClass().getName());
 
         return new CartridgeROM(name, ROMBanks, RAMBanks, tmpMBC);
     }
@@ -65,7 +66,6 @@ public class ROMFactory {
      * @param pathString the path to the ROM file.
      */
     public CartridgeROM getROM(String pathString) {
-        log.info("Loading rom: " + pathString);
         Path path = Paths.get(pathString);
         byte[] romFile;
 
