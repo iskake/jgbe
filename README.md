@@ -1,10 +1,22 @@
 # JGBE
 
-JGBE is a Game Boy Emualator written in Java.
+JGBE is a Game Boy emulator.
+
+## Requirements
+
+### Running
+
+- 64bit Linux, macOS, or Windows (currently, only x86 is supported)
+- Java 17 (or later)
+
+### Building
+
+- JDK 17 (or later)
+- Maven
 
 ## References
 
-[Pandocs](https://gbdev.io/pandocs/) general reference.
+[Pandocs](https://gbdev.io/pandocs/) for general reference.
 
 [RGBDS docs](https://rgbds.gbdev.io/docs/v0.5.2/gbz80.7) for instruction reference.
 
