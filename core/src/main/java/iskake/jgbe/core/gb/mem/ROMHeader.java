@@ -2,10 +2,7 @@ package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.Bitwise;
 import iskake.jgbe.core.NotImplementedException;
-import iskake.jgbe.core.gb.mem.mbc.MBC1;
-import iskake.jgbe.core.gb.mem.mbc.MBC5;
-import iskake.jgbe.core.gb.mem.mbc.MemoryBankController;
-import iskake.jgbe.core.gb.mem.mbc.NoMBC;
+import iskake.jgbe.core.gb.mem.mbc.*;
 
 import java.util.Arrays;
 
@@ -86,11 +83,11 @@ public class ROMHeader {
             case 0x0C -> throw new NotImplementedException("Unimplemented MBC: 'MMM01+RAM'");
             case 0x0D -> throw new NotImplementedException("Unimplemented MBC: 'MMM01+RAM+BATTERY'");
 
-            case 0x0F -> throw new NotImplementedException("Unimplemented MBC: 'MBC3+TIMER+BATTERY'");
-            case 0x10 -> throw new NotImplementedException("Unimplemented MBC: 'MBC3+TIMER+RAM+BATTERY 2'");
-            case 0x11 -> throw new NotImplementedException("Unimplemented MBC: 'MBC3'");
-            case 0x12 -> throw new NotImplementedException("Unimplemented MBC: 'MBC3+RAM 2'");
-            case 0x13 -> throw new NotImplementedException("Unimplemented MBC: 'MBC3+RAM+BATTERY 2'");
+            case 0x0F -> new MBC3(numROM, 0, true, true);
+            case 0x10 -> new MBC3(numROM, numRAM, true, true);
+            case 0x11 -> new MBC3(numROM, 0, false, false);
+            case 0x12 -> new MBC3(numROM, numRAM, false, false);
+            case 0x13 -> new MBC3(numROM, numRAM, true, false);
 
             case 0x19 -> new MBC5(numROM, 0, false, false);
             case 0x1A -> new MBC5(numROM, numRAM, false, false);

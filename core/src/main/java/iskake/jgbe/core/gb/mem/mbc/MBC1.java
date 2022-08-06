@@ -37,7 +37,7 @@ public class MBC1 extends MemoryBankController {
             int num = Byte.toUnsignedInt(value);
 
             if ((num & 0x1f )== 0)
-                num += 1;
+                num++;
 
             currROMBank = (currROMBank & 0b0110_0000) | ((num & 0x1f) & (numROMBanks - 1));
         } else if (address < 0x6000) {

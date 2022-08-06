@@ -37,7 +37,8 @@ public class MBC5 extends MemoryBankController {
                 currROMBank = (currROMBank & 0b0_1111_1111) | (Byte.toUnsignedInt(value) & 1) << 8;
         } else if (address < 0x6000) {
             int num = Byte.toUnsignedInt(value);
-            currRAMBank = (num & 0b1111) & (numRAMBanks - 1);
+            if (numRAMBanks > 1)
+                currRAMBank = (num & 0b1111) & (numRAMBanks - 1);
 
             if (rumble) {
                 rumbling = (num & 0b1000) != 0;
