@@ -31,6 +31,7 @@ public class GUI {
 
     private final GameBoy gb;
     private final GameBoyJoypad joypad;
+//    private final GameBoyAPU apu; // TODO
     private final OpenGLRenderer renderer;
     private final ROMFactory romFactory;
     // TODO? Should this be moved to renderer? (get the frame with callback, for example)
@@ -54,6 +55,7 @@ public class GUI {
 
     public GUI() {
         joypad = new GameBoyJoypad();
+//        apu = new GameBoyAPU();
         gb = new GameBoy(joypad);
         romFactory = new ROMFactory();
         renderer = new OpenGLRenderer();
@@ -61,34 +63,37 @@ public class GUI {
     }
 
     private void keyCallback(long window, int key, int scancode, int action, int mods) {
+        // TODO: use settings file for input and other settings
         if (action == GLFW_PRESS) {
-            switch (key) {
-                case GLFW_KEY_ESCAPE -> glfwSetWindowShouldClose(window, true);
+            if (mods == GLFW_MOD_CONTROL) {
+                switch (key) {
+                    case GLFW_KEY_1 -> glfwSetWindowSize(window, LCD_SIZE_X, LCD_SIZE_Y);
+                    case GLFW_KEY_2 -> glfwSetWindowSize(window, LCD_SIZE_X * 2, LCD_SIZE_Y * 2);
+                    case GLFW_KEY_3 -> glfwSetWindowSize(window, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
+                    case GLFW_KEY_4 -> glfwSetWindowSize(window, LCD_SIZE_X * 4, LCD_SIZE_Y * 4);
 
-                case GLFW_KEY_1 -> glfwSetWindowSize(window, LCD_SIZE_X, LCD_SIZE_Y);
-                case GLFW_KEY_2 -> glfwSetWindowSize(window, LCD_SIZE_X * 2, LCD_SIZE_Y * 2);
-                case GLFW_KEY_3 -> glfwSetWindowSize(window, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
-                case GLFW_KEY_4 -> glfwSetWindowSize(window, LCD_SIZE_X * 4, LCD_SIZE_Y * 4);
+                    case GLFW_KEY_P -> paused = !paused;
+                    case GLFW_KEY_LEFT_BRACKET -> advanceOneFrame = true;
 
-                case GLFW_KEY_O -> reloadNewROM(getROMPathFileDialog());
-                case GLFW_KEY_R -> reload();
+                    case GLFW_KEY_O -> reloadNewROM(getROMPathFileDialog());
+                    case GLFW_KEY_R -> reload();
 
-                case GLFW_KEY_P -> paused = !paused;
-                case GLFW_KEY_LEFT_BRACKET -> advanceOneFrame = true;
+                    case GLFW_KEY_D -> toggleDebugMode();
+                }
+            } else {
+                switch (key) {
+                    case GLFW_KEY_Z -> joypad.setButtonActive(Input.BUTTON_B);
+                    case GLFW_KEY_X -> joypad.setButtonActive(Input.BUTTON_A);
+                    case GLFW_KEY_ENTER -> joypad.setButtonActive(Input.BUTTON_START);
+                    case GLFW_KEY_BACKSPACE -> joypad.setButtonActive(Input.BUTTON_SELECT);
 
-                case GLFW_KEY_D -> toggleDebugMode();
+                    case GLFW_KEY_RIGHT -> joypad.setDirectionActive(Input.DPAD_RIGHT);
+                    case GLFW_KEY_LEFT -> joypad.setDirectionActive(Input.DPAD_LEFT);
+                    case GLFW_KEY_UP -> joypad.setDirectionActive(Input.DPAD_UP);
+                    case GLFW_KEY_DOWN -> joypad.setDirectionActive(Input.DPAD_DOWN);
 
-                case GLFW_KEY_Z -> joypad.setButtonActive(Input.BUTTON_B);
-                case GLFW_KEY_X -> joypad.setButtonActive(Input.BUTTON_A);
-                case GLFW_KEY_ENTER -> joypad.setButtonActive(Input.BUTTON_START);
-                case GLFW_KEY_BACKSPACE -> joypad.setButtonActive(Input.BUTTON_SELECT);
-
-                case GLFW_KEY_RIGHT -> joypad.setDirectionActive(Input.DPAD_RIGHT);
-                case GLFW_KEY_LEFT -> joypad.setDirectionActive(Input.DPAD_LEFT);
-                case GLFW_KEY_UP -> joypad.setDirectionActive(Input.DPAD_UP);
-                case GLFW_KEY_DOWN -> joypad.setDirectionActive(Input.DPAD_DOWN);
-
-                case GLFW_KEY_SPACE -> frameMod = 4;
+                    case GLFW_KEY_SPACE -> frameMod = 4;
+                }
             }
         }
         if (action == GLFW_RELEASE) {
