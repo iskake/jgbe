@@ -15,8 +15,6 @@ import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.*;
  * Timing, incrementing and handling of clock cycles.
  */
 public class Timing {
-    // TODO: many things are not working correctly. For example, opcode timing, DAM
-    // transfers, hwregister reading, etc...
     private long cycles;
     private long cyclesSinceLCDEnable;
     private long vblankWaitCycles;

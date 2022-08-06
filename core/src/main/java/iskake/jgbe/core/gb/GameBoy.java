@@ -21,11 +21,11 @@ import org.slf4j.LoggerFactory;
  */
 public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private static final Logger log = LoggerFactory.getLogger(GameBoy.class);
-    // TODO: joypad handling+dma
+
     public final ProgramCounter pc;
     public final StackPointer sp;
     public final Registers reg;
-    public final Timing timing; // TODO: fix having to pass GameBoy to constructors just to access timing?
+    public final Timing timing;
 
     private CartridgeROM rom;
     private final CPU cpu;
@@ -325,9 +325,9 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     @Override
     public void stop() {
-        // TODO
+        //? ToDoMaybe: only DMG is supported, STOP is not used in commercial games, only on CGB.
+        // ...do something...
         pc.inc(); // stop ignores the next byte, so we just increase the pc by one.
-
     }
 
     @Override
@@ -377,5 +377,9 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
 
     public HardwareRegisters hwreg() {
         return hwreg;
+    }
+
+    public Timing timing() {
+        return timing;
     }
 }

@@ -133,8 +133,8 @@ public class InterruptHandler {
             }
         }
         disable();
-        gb.timing.incCycles();
-        gb.timing.incCycles();
+        gb.timing().incCycles();
+        gb.timing().incCycles();
         gb.sp().push(gb.pc().get());
 
         gb.pc().set(Bitwise.toShort(it.address));

@@ -198,7 +198,7 @@ public class Debugger {
         gb.reg.printValues();
         System.out.println("Mode: " + (hwreg.read(HardwareRegister.STAT) & 0b11)
                 + " LY: " + hwreg.readAsInt(HardwareRegister.LY));
-        System.out.println("Cycles: " + gb.timing.getCycles());
+        System.out.println("Cycles: " + gb.timing().getCycles());
         cpu.printNextInstruction();
     }
 

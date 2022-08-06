@@ -44,7 +44,7 @@ public class ROMFactory {
         }
         RAM[] RAMBanks = new RAM[numRAMBanks];
         for (int i = 0; i < RAMBanks.length; i++) {
-            RAMBanks[i] = new RAM(0x2000); // TODO? handle RAM size < 8KiB.
+            RAMBanks[i] = new RAM(0x2000); //? Is it possible (or even necessary) handle RAM size < 8KiB?
         }
 
         MemoryBankController tmpMBC;

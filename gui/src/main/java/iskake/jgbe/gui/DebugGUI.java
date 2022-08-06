@@ -22,11 +22,9 @@ public class DebugGUI {
     private final ImBoolean showWin = new ImBoolean(true);
     private final ImBoolean showSpr = new ImBoolean(true);
     private final GameBoy gb;
-//    private final Debugger dbg;
 
     public DebugGUI(GameBoy gb) {
         this.gb = gb;
-//        this.dbg = gb.getDebugger(); // todo
     }
 
     public void draw(int screenTex) {
@@ -51,7 +49,7 @@ public class DebugGUI {
         if (showVram.get())
             showVRAMView();
 
-        ImGui.showDemoWindow(); // Tmp.
+//        ImGui.showDemoWindow(); // Tmp.
 
         // Uncomment to enable viewports (after adding the config flag `ViewportsEnable`)
 //        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {

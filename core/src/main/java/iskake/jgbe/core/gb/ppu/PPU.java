@@ -272,6 +272,12 @@ public class PPU {
             (byte) 0x00,
     };
 
+    /**
+     * Get the current frame mapped to the colors corresponding to the
+     * values specified in BGP, OBP0, and OPB1
+     *
+     * @return The current frame mapped with colors.
+     */
     public byte[] getMappedFrame() {
         for (int i = 0; i < LCD_SIZE_X * LCD_SIZE_Y * 3; i += 3) {
             byte sprColor = sprBuffer[i / 3];
@@ -314,29 +320,29 @@ public class PPU {
         return oam.getSprites();
     }
 
-    // TODO: update docs
     /**
-     * Get the tiles in VRAM.
+     * Get 'tile block 0', tiles in the range 0x8000..0x87ff
      *
-     * @return All tiles in VRAM.
+     * @return The tiles in the correct range.
      */
     public Tile[] getTilesBlock0() {
         return vram.getTileBlock0();
     }
 
     /**
-     * Get the tiles in VRAM.
-     * 
-     * @return All tiles in VRAM.
+     * Get 'tile block 1', tiles in the range 0x8800..0x8fff
+     *
+     * @return The tiles in the correct range.
      */
     public Tile[] getTilesBlock1() {
         return vram.getTileBlock1();
     }
 
     /**
-     * Get the tiles based on the 'addressing mode'.
+     * Get 'tile block N (0 or 2)', tiles in the range of either
+     * 0x8000..0x87ff or 0x9000..0x97ff depending on the current BG and Window tile range.
      *
-     * @return The BG and Window tilemap tile data.
+     * @return The tiles in the correct range.
      */
     public Tile[] getTilesBlockN() {
         int tileDataVal = ppuControl.getBGAndWindowTileBlock();

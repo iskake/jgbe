@@ -67,7 +67,6 @@ public class VRAM extends RAM implements ReadableMemoryUnrestricted, WritableMem
         return tileDataBlocks[tileDataVal];
     }
 
-    // TODO: update docs
     /**
      * Get the tiles in VRAM.
      * The tiles are stored in the range {@code $8000-$97ff}.

@@ -19,7 +19,7 @@ public class ProgramCounter extends Pointer {
 
     @Override
     public void set(short address) {
-        gb.timing.incCycles();
+        gb.timing().incCycles();
         super.set(address);
     }
 

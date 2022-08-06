@@ -15,7 +15,6 @@ import static iskake.jgbe.core.gb.HardwareRegisters.HardwareRegister.*;
  * hardware.
  */
 public class HardwareRegisters {
-    // TODO: not all registers are implemented
     public enum HardwareRegister {
         // Note: writable bit masks are for DMG (and MGB, SGB), not CGB.
         /** Joypad */
@@ -326,7 +325,6 @@ public class HardwareRegisters {
                 dmaControl.startDMATransfer(value);
             }
             case P1 -> {
-                // TODO: create a "no joypad" class?
                 if (joypad == null) {
                     break;
                 }
