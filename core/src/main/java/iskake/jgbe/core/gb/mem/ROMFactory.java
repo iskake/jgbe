@@ -1,6 +1,8 @@
 package iskake.jgbe.core.gb.mem;
 
 import iskake.jgbe.core.NotImplementedException;
+import iskake.jgbe.core.gb.mem.mbc.MBC2;
+import iskake.jgbe.core.gb.mem.mbc.MBC2RAM;
 import iskake.jgbe.core.gb.mem.mbc.MemoryBankController;
 import iskake.jgbe.core.gb.mem.mbc.NoMBC;
 import org.slf4j.Logger;
@@ -55,6 +57,11 @@ public class ROMFactory {
             log.warn("Unimplemented/unknown MBC type, assuming no MBC...");
             tmpMBC = new NoMBC();
         }
+
+        if (tmpMBC instanceof MBC2 mbc) {
+            RAMBanks = new RAM[] { new MBC2RAM() };
+        }
+
         log.debug("MBC type: " + tmpMBC.getClass().getName());
 
         return new CartridgeROM(name, ROMBanks, RAMBanks, tmpMBC);

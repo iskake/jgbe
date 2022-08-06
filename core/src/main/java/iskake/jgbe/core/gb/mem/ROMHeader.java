@@ -73,8 +73,8 @@ public class ROMHeader {
             case 0x02 -> new MBC1(numROM, numRAM, false);
             case 0x03 -> new MBC1(numROM, numRAM, true);
 
-            case 0x05 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2'");
-            case 0x06 -> throw new NotImplementedException("Unimplemented MBC: 'MBC2+BATTERY'");
+            case 0x05 -> new MBC2(numROM, false);
+            case 0x06 -> new MBC2(numROM, true);
             //? No licensed games use this
             case 0x08 -> throw new NotImplementedException("Unimplemented MBC: 'ROM+RAM 1'");
             case 0x09 -> throw new NotImplementedException("Unimplemented MBC: 'ROM+RAM+BATTERY 1'");
@@ -161,7 +161,7 @@ public class ROMHeader {
      */
     public static int getRAMBanksNum(ROMBank bank) {
         return switch (bank.bytes()[0x149]) {
-            case 0x00 -> 0; // TODO: MBC2 lists $00 while in actuality having 512*4bits of RAM
+            case 0x00 -> 0;
             // case 0x01 -> ???;
             case 0x02 -> 1;
             case 0x03 -> 4;
