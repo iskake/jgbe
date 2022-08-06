@@ -6,7 +6,7 @@ import iskake.jgbe.core.gb.mem.ROMHeader;
 import iskake.jgbe.core.gb.input.Input;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
 import iskake.jgbe.core.gb.mem.ROMFactory;
-import iskake.jgbe.gui.audio.GameBoyAPU;
+//import iskake.jgbe.gui.audio.GameBoyAPU;
 import iskake.jgbe.gui.input.GameBoyJoypad;
 import iskake.jgbe.gui.video.OpenGLRenderer;
 
@@ -52,6 +52,7 @@ public class GUI {
 
     private int frames = 0;
     private int frameMod = 1;
+    private int currSizeMod = 3;
 
     public GUI() {
         joypad = new GameBoyJoypad();
@@ -67,10 +68,10 @@ public class GUI {
         if (action == GLFW_PRESS) {
             if (mods == GLFW_MOD_CONTROL) {
                 switch (key) {
-                    case GLFW_KEY_1 -> glfwSetWindowSize(window, LCD_SIZE_X, LCD_SIZE_Y);
-                    case GLFW_KEY_2 -> glfwSetWindowSize(window, LCD_SIZE_X * 2, LCD_SIZE_Y * 2);
-                    case GLFW_KEY_3 -> glfwSetWindowSize(window, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
-                    case GLFW_KEY_4 -> glfwSetWindowSize(window, LCD_SIZE_X * 4, LCD_SIZE_Y * 4);
+                    case GLFW_KEY_1 -> setWindowSize(1);
+                    case GLFW_KEY_2 -> setWindowSize(2);
+                    case GLFW_KEY_3 -> setWindowSize(3);
+                    case GLFW_KEY_4 -> setWindowSize(4);
 
                     case GLFW_KEY_P -> paused = !paused;
                     case GLFW_KEY_LEFT_BRACKET -> advanceOneFrame = true;
@@ -111,6 +112,11 @@ public class GUI {
                 case GLFW_KEY_SPACE -> frameMod = 1;
             }
         }
+    }
+
+    private void setWindowSize(int sizeModifier) {
+        currSizeMod = sizeModifier;
+        glfwSetWindowSize(window, LCD_SIZE_X * sizeModifier, LCD_SIZE_Y * sizeModifier);
     }
 
     private void dropCallback(long window, int count, long stringPtrPtr) {
@@ -303,7 +309,7 @@ public class GUI {
         if (debugMode) {
             glfwSetWindowSize(window, 1600, 1000);
         } else {
-            glfwSetWindowSize(window, LCD_SIZE_X * 3, LCD_SIZE_Y * 3);
+            setWindowSize(currSizeMod);
         }
     }
 
