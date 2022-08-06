@@ -5,7 +5,7 @@ import iskake.jgbe.core.gb.input.IJoypad;
 import iskake.jgbe.core.gb.input.Input;
 
 public class GameBoyJoypad implements IJoypad {
-    private boolean directionsSet = true;
+    private boolean directionsSet = false;
     private boolean buttonsSet = false;
     private final boolean[] inputsButton = new boolean[4];
     private final boolean[] inputsDirection = new boolean[4];
@@ -27,6 +27,7 @@ public class GameBoyJoypad implements IJoypad {
             value &= 0b1110_1111;
             value |= getButtonsAsInt();
         } else {
+            value &= 0b1100_1111;
             value |= 0b0000_1111;
         }
         return (byte)(value);
