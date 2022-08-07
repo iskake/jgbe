@@ -58,7 +58,7 @@ public class CPU  {
 
             // ?Should something be done about this? show an alert? (only in debug mode?) do nothing?
             if (oldPC == newPC && !interrupts.enabled()) {
-                log.warn("JGBE has encountered an infinite loop.");
+                log.debug("JGBE has encountered an infinite loop.");
             }
         }
     }
