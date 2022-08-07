@@ -73,9 +73,6 @@ public class GUI {
                     case GLFW_KEY_3 -> setWindowSize(3);
                     case GLFW_KEY_4 -> setWindowSize(4);
 
-                    case GLFW_KEY_P -> paused = !paused;
-                    case GLFW_KEY_LEFT_BRACKET -> advanceOneFrame = true;
-
                     case GLFW_KEY_O -> reloadNewROM(getROMPathFileDialog());
                     case GLFW_KEY_R -> reload();
 
@@ -83,6 +80,9 @@ public class GUI {
                 }
             } else {
                 switch (key) {
+                    case GLFW_KEY_P -> paused = !paused;
+                    case GLFW_KEY_LEFT_BRACKET -> advanceOneFrame = true;
+
                     case GLFW_KEY_Z -> joypad.setButtonActive(Input.BUTTON_B);
                     case GLFW_KEY_X -> joypad.setButtonActive(Input.BUTTON_A);
                     case GLFW_KEY_ENTER -> joypad.setButtonActive(Input.BUTTON_START);
