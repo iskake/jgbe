@@ -93,4 +93,36 @@ public class ROMFactory {
             return null;
         }
     }
+
+    /**
+     * Load the boot ROM file.
+     *
+     * @param pathString the path to the bootstrap ROM file.
+     */
+    public ROMBank getBootROM(String pathString) {
+        Path path = Paths.get(pathString);
+        byte[] romFile;
+
+        try {
+            romFile = Files.readAllBytes(path);
+        } catch (IOException e) {
+            String reason = e instanceof FileNotFoundException || e instanceof NoSuchFileException
+                    ? "file not found."
+                    : "an exception occurred: " + e;
+            log.warn("Could not read the boot ROM " + path.getFileName() + ": " + reason);
+            return null;
+        }
+
+        try {
+            if (romFile.length == 256) {
+                return new ROMBank(romFile);
+            } else {
+                log.warn("The provided boot ROM is invalid.");
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Could not load the file " + path.getFileName() + ": an exception occurred: " + e);
+            return null;
+        }
+    }
 }

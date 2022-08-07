@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private static final Logger log = LoggerFactory.getLogger(GameBoy.class);
+    private final boolean USE_BOOTROM;
 
     public final ProgramCounter pc;
     public final StackPointer sp;
@@ -41,20 +42,26 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
     private boolean vblankJustCalled;
 
     public GameBoy(IJoypad joypad) {
+        this(joypad, null);
+    }
+
+    public GameBoy(IJoypad joypad, ROMBank bootROM) {
+        USE_BOOTROM = bootROM != null;
+
         debuggerEnabled = false;
         vblankJustCalled = false;
 
         DMAController dmaControl = new DMAController(this);
         reg = new Registers(this);
         timers = new Timers();
-        hwreg = new HardwareRegisters(dmaControl, timers, joypad);
+        hwreg = new HardwareRegisters(dmaControl, timers, joypad, this::unmapBootROM);
 
         PPUController ppuControl = new PPUController(hwreg);
         VRAM vram = new VRAM(0x2000, ppuControl);
         OAM oam = new OAM(40 * 4, ppuControl);
         ppu = new PPU(vram, oam, hwreg, ppuControl);
 
-        memoryMap = new MemoryMap(hwreg, vram, oam);
+        memoryMap = new MemoryMap(hwreg, vram, oam, bootROM);
 
         pc = new ProgramCounter(this, (short) 0x100);
         sp = new StackPointer(this, (short) 0xfffe);
@@ -63,6 +70,10 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         cpu = new CPU(this, interrupts);
         timing = new Timing(this, hwreg, dmaControl, timers, joypad, interrupts, ppu);
         dbg = new Debugger(this, cpu, hwreg);
+    }
+
+    private void unmapBootROM() {
+        memoryMap.unmapBootROM();
     }
 
     /**
@@ -103,24 +114,36 @@ public class GameBoy implements IGameBoy, GameBoyDisplayable, Runnable {
         rom.init();
         restoreRAM();
 
-        // ? Suggestion: use BootROM instead of hardcoded values, as this may depend on
-        // ? system revisions. In this case, the values are for the DMG (_not_ the DMG0)
         cpu.init();
-        reg.writeByte(Register.A, 0x01);
-        reg.setFlag(Flags.Z);
-        reg.resetFlag(Flags.N);
-        reg.setFlag(Flags.H);
-        reg.setFlag(Flags.C);
-        reg.writeShort(Register.BC, (short) 0x0013);
-        reg.writeShort(Register.DE, (short) 0x00d8);
-        reg.writeShort(Register.HL, (short) 0x014d);
 
-        pc.setNoCycle((short) 0x100);
+        if (!USE_BOOTROM) {
+            reg.writeByte(Register.A, 0x01);
+            reg.setFlag(Flags.Z);
+            reg.resetFlag(Flags.N);
+            reg.setFlag(Flags.H);
+            reg.setFlag(Flags.C);
+            reg.writeShort(Register.BC, (short) 0x0013);
+            reg.writeShort(Register.DE, (short) 0x00d8);
+            reg.writeShort(Register.HL, (short) 0x014d);
+
+            pc.setNoCycle((short) 0x100);
+        } else {
+            reg.writeByte(Register.A, 0x00);
+            reg.resetFlag(Flags.Z);
+            reg.resetFlag(Flags.N);
+            reg.resetFlag(Flags.H);
+            reg.resetFlag(Flags.C);
+            reg.writeShort(Register.BC, (short) 0x0000);
+            reg.writeShort(Register.DE, (short) 0x0000);
+            reg.writeShort(Register.HL, (short) 0x0000);
+
+            pc.setNoCycle((short) 0);
+        }
         sp.set((short) 0xfffe);
         interrupts.init();
         memoryMap.init(rom);
         timers.init();
-        hwreg.init();
+        hwreg.init(USE_BOOTROM);
         timing.init();
 
         running = true;

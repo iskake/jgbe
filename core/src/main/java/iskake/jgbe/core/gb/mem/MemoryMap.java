@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MemoryMap implements WritableMemoryUnrestricted, ReadableMemoryUnrestricted {
     private static final Logger log = LoggerFactory.getLogger(MemoryMap.class);
+    private final ROMBank bootROM;
     private CartridgeROM rom;
     private final HardwareRegisters hwreg;
     private final VRAM VRAM;
@@ -25,10 +26,12 @@ public class MemoryMap implements WritableMemoryUnrestricted, ReadableMemoryUnre
     private final RAM HRAM;
 
     private int fixedAddress;
+    private boolean bootROMEnabled;
 
 
-    public MemoryMap(HardwareRegisters hwreg, VRAM vram, OAM oam) {
+    public MemoryMap(HardwareRegisters hwreg, VRAM vram, OAM oam, ROMBank bootROM) {
         this.hwreg = hwreg;
+        this.bootROM = bootROM;
         VRAM = vram;
         WRAM1 = new RAM(0x1000);
         WRAM2 = new RAM(0x1000);
@@ -43,6 +46,7 @@ public class MemoryMap implements WritableMemoryUnrestricted, ReadableMemoryUnre
      * Initialize the memory each region.
      */
     public void init(CartridgeROM rom) {
+        mapBootROM();
         this.rom = rom;
         VRAM.clear();
         OAM.clear();
@@ -113,8 +117,11 @@ public class MemoryMap implements WritableMemoryUnrestricted, ReadableMemoryUnre
         address = Bitwise.intAsShort(address);
         fixedAddress = address;
         if (address >= 0 && address < 0x8000) {
+            // Boot ROM, enabled at start, then disabled at the end of the boot sequence.
+            if (bootROMEnabled && address < 0x100)
+                return bootROM;
             // 0000-3fff = 4000
-            // ROM bank0-n, (note that MBC will control )
+            // ROM bank0-n, (note that MBC will control which bank is read from the address.)
             return rom;
         } else if (address < 0xA000) {
             // 8000-9fff = 2000
@@ -170,6 +177,16 @@ public class MemoryMap implements WritableMemoryUnrestricted, ReadableMemoryUnre
             // ff80-fffe (HRAM)
             fixedAddress -= 0xff80;
             return HRAM;
+        }
+    }
+
+    public void mapBootROM() {
+        bootROMEnabled = bootROM != null;
+    }
+
+    public void unmapBootROM() {
+        if (bootROM != null) {
+            bootROMEnabled = false;
         }
     }
 }

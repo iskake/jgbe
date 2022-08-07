@@ -2,6 +2,7 @@ package iskake.jgbe.gui;
 
 import imgui.ImGui;
 import iskake.jgbe.core.gb.GameBoy;
+import iskake.jgbe.core.gb.mem.ROMBank;
 import iskake.jgbe.core.gb.mem.ROMHeader;
 import iskake.jgbe.core.gb.input.Input;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
@@ -55,10 +56,12 @@ public class GUI {
     private int currSizeMod = 3;
 
     public GUI() {
+        romFactory = new ROMFactory();
+        // Try to load the boot ROM.
+        ROMBank bootROM = romFactory.getBootROM("dmg_boot.bin");
         joypad = new GameBoyJoypad();
 //        apu = new GameBoyAPU();
-        gb = new GameBoy(joypad);
-        romFactory = new ROMFactory();
+        gb = new GameBoy(joypad, bootROM);
         renderer = new OpenGLRenderer();
         debugGUI = new DebugGUI(gb);
     }

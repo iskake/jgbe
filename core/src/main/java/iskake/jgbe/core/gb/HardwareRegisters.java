@@ -88,7 +88,10 @@ public class HardwareRegisters {
         WX   (0xff4b, 0b1111_1111),
 
         KEY1 (0xff4d, 0b0000_0000), //? CGB only
-        VBK  (0xff4f, 0b0000_0000), //? CGB only
+        VBK  (0xff4f, 0b0000_0000), //? CGB
+
+        /** Boot ROM */
+        BANK (0xff50, 0b0000_0000),
 
         HDMA1(0xff51, 0b0000_0000), //? CGB only
         HDMA2(0xff52, 0b0000_0000), //? CGB only
@@ -117,6 +120,13 @@ public class HardwareRegisters {
         }
     }
 
+    @FunctionalInterface
+    interface BootROMUnmapFunc {
+        void unmap();
+    }
+
+    private final BootROMUnmapFunc bootROM;
+
     /** The hardware registers as a map. Each address is mapped to its corresponding register. */
     public static final Map<Integer, HardwareRegister> map = Arrays.stream(HardwareRegister.values())
             .collect(Collectors.toMap(r -> r.val, r -> r));
@@ -126,71 +136,132 @@ public class HardwareRegisters {
     private final Timers timers;
     private final IJoypad joypad;
 
-    public HardwareRegisters(DMAController dmaControl, Timers timers, IJoypad joypad) {
+    public HardwareRegisters(DMAController dmaControl, Timers timers, IJoypad joypad, BootROMUnmapFunc bootROM) {
         this.dmaControl = dmaControl;
         this.timers = timers;
         this.joypad = joypad;
+        this.bootROM = bootROM;
     }
 
     /**
      * Initialize hardware registers. (Based on DMG reset)
      */
-    public void init() {
-        write        (P1,    0xCF);
-        writeInternal(SB,    0x00);
-        writeInternal(SC,    0x7E);
-        timers.writeDIVInternal(0xABCC);
-        writeInternal(TIMA,  0x00);
-        writeInternal(TMA,   0x00);
-        writeInternal(TAC,   0xF8);
-        write        (IF,    0xE1);
-        writeInternal(NR10,  0x80);
-        writeInternal(NR11,  0xBF);
-        writeInternal(NR12,  0xF3);
-        writeInternal(NR13,  0xFF);
-        writeInternal(NR14,  0xBF);
-        writeInternal(NR21,  0x3F);
-        writeInternal(NR22,  0x00);
-        writeInternal(NR23,  0xFF);
-        writeInternal(NR24,  0xBF);
-        writeInternal(NR30,  0x7F);
-        writeInternal(NR31,  0xFF);
-        writeInternal(NR32,  0x9F);
-        writeInternal(NR33,  0xFF);
-        writeInternal(NR34,  0xBF);
-        writeInternal(NR41,  0xFF);
-        writeInternal(NR42,  0x00);
-        writeInternal(NR43,  0x00);
-        writeInternal(NR44,  0xBF);
-        writeInternal(NR50,  0x77);
-        writeInternal(NR51,  0xF3);
-        writeInternal(NR52,  0xF1);
-        writeInternal(LCDC,  0x91);
-        writeInternal(STAT,  0x85);
-        writeInternal(SCY,   0x00);
-        writeInternal(SCX,   0x00);
-        writeInternal(LY,    0x00);
-        writeInternal(LYC,   0x00);
-        writeInternal(DMA,   0xFF);
-        writeInternal(BGP,   0xFC);
-        writeInternal(OBP0,  0xFF); // '??'
-        writeInternal(OBP1,  0xFF); // '??'
-        writeInternal(WY,    0x00);
-        writeInternal(WX,    0x00);
-        writeInternal(KEY1,  0xFF);
-        writeInternal(VBK,   0xFF);
-        writeInternal(HDMA1, 0xFF);
-        writeInternal(HDMA2, 0xFF);
-        writeInternal(HDMA3, 0xFF);
-        writeInternal(HDMA4, 0xFF);
-        writeInternal(HDMA5, 0xFF);
-        writeInternal(RP,    0xFF);
-        writeInternal(BCPS,  0xFF);
-        writeInternal(BCPD,  0xFF);
-        writeInternal(OCPS,  0xFF);
-        writeInternal(OCPD,  0xFF);
-        writeInternal(SVBK,  0xFF);
-        write        (IE,    0x00);
+    public void init(boolean bootROM) {
+        if (!bootROM) {
+            write(P1, 0xCF);
+            writeInternal(SB, 0x00);
+            writeInternal(SC, 0x7E);
+            timers.writeDIVInternal(0xABCC);
+            writeInternal(TIMA, 0x00);
+            writeInternal(TMA, 0x00);
+            writeInternal(TAC, 0xF8);
+            write        (IF, 0xE1);
+            writeInternal(NR10, 0x80);
+            writeInternal(NR11, 0xBF);
+            writeInternal(NR12, 0xF3);
+            writeInternal(NR13, 0xFF);
+            writeInternal(NR14, 0xBF);
+            writeInternal(NR21, 0x3F);
+            writeInternal(NR22, 0x00);
+            writeInternal(NR23, 0xFF);
+            writeInternal(NR24, 0xBF);
+            writeInternal(NR30, 0x7F);
+            writeInternal(NR31, 0xFF);
+            writeInternal(NR32, 0x9F);
+            writeInternal(NR33, 0xFF);
+            writeInternal(NR34, 0xBF);
+            writeInternal(NR41, 0xFF);
+            writeInternal(NR42, 0x00);
+            writeInternal(NR43, 0x00);
+            writeInternal(NR44, 0xBF);
+            writeInternal(NR50, 0x77);
+            writeInternal(NR51, 0xF3);
+            writeInternal(NR52, 0xF1);
+            writeInternal(LCDC, 0x91);
+            writeInternal(STAT, 0x85);
+            writeInternal(SCY, 0x00);
+            writeInternal(SCX, 0x00);
+            writeInternal(LY, 0x00);
+            writeInternal(LYC, 0x00);
+            writeInternal(DMA, 0xFF);
+            writeInternal(BGP, 0xFC);
+            writeInternal(OBP0, 0xFF); // '??'
+            writeInternal(OBP1, 0xFF); // '??'
+            writeInternal(WY, 0x00);
+            writeInternal(WX, 0x00);
+            writeInternal(KEY1, 0xFF);
+            writeInternal(BANK, 0xFF);
+            writeInternal(VBK, 0xFF);
+            writeInternal(HDMA1, 0xFF);
+            writeInternal(HDMA2, 0xFF);
+            writeInternal(HDMA3, 0xFF);
+            writeInternal(HDMA4, 0xFF);
+            writeInternal(HDMA5, 0xFF);
+            writeInternal(RP, 0xFF);
+            writeInternal(BCPS, 0xFF);
+            writeInternal(BCPD, 0xFF);
+            writeInternal(OCPS, 0xFF);
+            writeInternal(OCPD, 0xFF);
+            writeInternal(SVBK, 0xFF);
+            write(IE, 0x00);
+        } else {
+            write        (P1,    0xCF);
+            writeInternal(SB,    0x00);
+            writeInternal(SC,    0x7E);
+            timers.writeDIVInternal(0);
+            writeInternal(TIMA,  0x00);
+            writeInternal(TMA,   0x00);
+            writeInternal(TAC,   0x00);
+            write        (IF,    0xE1);
+            writeInternal(NR10,  0x00);
+            writeInternal(NR11,  0x00);
+            writeInternal(NR12,  0x00);
+            writeInternal(NR13,  0x00);
+            writeInternal(NR14,  0x00);
+            writeInternal(NR21,  0x00);
+            writeInternal(NR22,  0x00);
+            writeInternal(NR23,  0x00);
+            writeInternal(NR24,  0x00);
+            writeInternal(NR30,  0x00);
+            writeInternal(NR31,  0x00);
+            writeInternal(NR32,  0x00);
+            writeInternal(NR33,  0x00);
+            writeInternal(NR34,  0x00);
+            writeInternal(NR41,  0x00);
+            writeInternal(NR42,  0x00);
+            writeInternal(NR43,  0x00);
+            writeInternal(NR44,  0x00);
+            writeInternal(NR50,  0x00);
+            writeInternal(NR51,  0x00);
+            writeInternal(NR52,  0x00);
+            writeInternal(LCDC,  0x00);
+            writeInternal(STAT,  0x85);
+            writeInternal(SCY,   0x00);
+            writeInternal(SCX,   0x00);
+            writeInternal(LY,    0x00);
+            writeInternal(LYC,   0x00);
+            writeInternal(DMA,   0xFF);
+            writeInternal(BGP,   0xFC);
+            writeInternal(OBP0,  0xFF); // '??'
+            writeInternal(OBP1,  0xFF); // '??'
+            writeInternal(WY,    0x00);
+            writeInternal(WX,    0x00);
+            writeInternal(KEY1,  0xFF);
+            writeInternal(BANK,  0x00);
+            writeInternal(VBK,   0xFF);
+            writeInternal(HDMA1, 0xFF);
+            writeInternal(HDMA2, 0xFF);
+            writeInternal(HDMA3, 0xFF);
+            writeInternal(HDMA4, 0xFF);
+            writeInternal(HDMA5, 0xFF);
+            writeInternal(RP,    0xFF);
+            writeInternal(BCPS,  0xFF);
+            writeInternal(BCPD,  0xFF);
+            writeInternal(OCPS,  0xFF);
+            writeInternal(OCPD,  0xFF);
+            writeInternal(SVBK,  0xFF);
+            write        (IE,    0x00);
+        }
     }
 
     /**
@@ -264,7 +335,7 @@ public class HardwareRegisters {
             return false;
         }
 
-        if (hwreg == P1 || hwreg == DIV || hwreg == TIMA || hwreg == TMA || hwreg == TAC || hwreg == DMA) {
+        if (hwreg == P1 || hwreg == DIV || hwreg == TIMA || hwreg == TMA || hwreg == TAC || hwreg == DMA || hwreg == BANK) {
             if (handleSpecialWrites(hwreg, value)) {
                 return true;
             }
@@ -324,6 +395,8 @@ public class HardwareRegisters {
                 writeInternal(hwreg, value);
                 dmaControl.startDMATransfer(value);
             }
+            // Technically this should only happen if value != 0.
+            case BANK -> bootROM.unmap();
             case P1 -> {
                 if (joypad == null) {
                     break;
