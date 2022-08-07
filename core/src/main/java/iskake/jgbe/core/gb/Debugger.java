@@ -197,7 +197,11 @@ public class Debugger {
     private void printCPUInfo() {
         gb.reg.printValues();
         System.out.println("Mode: " + (hwreg.read(HardwareRegister.STAT) & 0b11)
-                + " LY: " + hwreg.readAsInt(HardwareRegister.LY));
+                                   + " LY: " + hwreg.readAsInt(HardwareRegister.LY));
+        System.out.println("IF: %02x".formatted(hwreg.readAsInt(HardwareRegister.IF))
+                                   + ", IE: %02x".formatted(hwreg.readAsInt(HardwareRegister.IE)));
+        System.out.println("LCDC: %02x".formatted(hwreg.readAsInt(HardwareRegister.LCDC))
+                                   + ", STAT: %02x".formatted(hwreg.readAsInt(HardwareRegister.STAT)));
         System.out.println("Cycles: " + gb.timing().getCycles());
         cpu.printNextInstruction();
     }
