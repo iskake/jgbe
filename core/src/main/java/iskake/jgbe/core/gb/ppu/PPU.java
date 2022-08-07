@@ -233,11 +233,14 @@ public class PPU {
         }
     }
 
+    /**
+     * Clear the entire framebuffer.
+     * Internally, this sets each of the scanline buffers of the three layers to 'no color'.
+     */
     public void clearFrameBuffer() {
-        // Temp.
-        Arrays.fill(bgBuffer, COLORS_MAP[0]);
-        Arrays.fill(winBuffer, COLORS_MAP[0]);
-        Arrays.fill(sprBuffer, COLORS_MAP[0]);
+        Arrays.fill(bgBuffer,  (byte)-1);
+        Arrays.fill(winBuffer, (byte)-1);
+        Arrays.fill(sprBuffer, (byte)-1);
     }
 
     /**

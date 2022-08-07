@@ -44,6 +44,7 @@ public class Timing {
     private final int MODE1_START = SCANLINE_CYCLES * 144;
 
     private boolean hasDoneSTAT = false;
+    private boolean lcdJustEnabled = false;
 
     public Timing(GameBoy gb, HardwareRegisters hwreg, DMAController dmaControl, Timers timers, IJoypad joypad, InterruptHandler interrupts, PPU ppu) {
         this.gb = gb;
@@ -65,6 +66,7 @@ public class Timing {
         cyclesSinceLCDEnable = 0;
         vblankWaitCycles = 0;
         hasDoneSTAT = false;
+        lcdJustEnabled = false;
     }
 
     /**
@@ -121,12 +123,13 @@ public class Timing {
             hwreg.writeInternal(LY, (byte) 0);
 
             // TODO? temp. workaround for hanging application (when lcd is never enabled)
-            vblankWaitCycles++;
             if (vblankWaitCycles == FRAME_CYCLES) {
                 ppu.clearFrameBuffer();
                 gb.setVBlankJustCalled();
                 vblankWaitCycles = 0;
             }
+            vblankWaitCycles++;
+            lcdJustEnabled = true;
         } else {
             doVBlank = true;
         }
@@ -180,8 +183,13 @@ public class Timing {
 
         // VBlank handling
         if (doVBlank) {
-            if (scanDot == MODE3_END_MIN)
-                ppu.addScanline(0, PPU.LCD_SIZE_X); // TODO: actually use pixel FIFO
+            if (!lcdJustEnabled) {
+                if (scanDot == MODE3_END_MIN)
+                    ppu.addScanline(0, PPU.LCD_SIZE_X); // TODO: actually use pixel FIFO
+            } else {
+                if (cyclesSinceLCDEnable % FRAME_CYCLES == 0)
+                    ppu.clearFrameBuffer();
+            }
 
             if ((cyclesSinceLCDEnable % SCANLINE_CYCLES) == 0 && cyclesSinceLCDEnable != 0) {
                 hwreg.inc(LY);
@@ -190,6 +198,7 @@ public class Timing {
                     interrupts.setWaitingToCall(InterruptType.VBLANK);
                     gb.setVBlankJustCalled();
                     vblankWaitCycles = 0;
+                    lcdJustEnabled = false;
                 } else if (ly_val > 0x99) {
                     hwreg.writeInternal(LY, (byte)0);
                 }
