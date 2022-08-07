@@ -130,52 +130,56 @@ public class Timing {
         } else {
             doVBlank = true;
         }
-        // 0xff40 LCDC
-        // 'Automatically' 'handled' in PPUController
 
-        // 0xff41 (STAT)
+        // STAT handling
         long scanDot = (cyclesSinceLCDEnable % SCANLINE_CYCLES);
 
-        if (scanDot == 0) {
-            hasDoneSTAT = false;
-        }
-
-        int oldSTAT = hwreg.readAsInt(STAT);
-        if ((cyclesSinceLCDEnable % FRAME_CYCLES) >= MODE1_START || !lcdEnabled) {
-            // Mode 1 (VBlank)
-            hwreg.setBit(STAT, 0);
-            hwreg.resetBit(STAT, 1);
-        } else if (scanDot < MODE2_END) {
-            // Mode 2 (OAM search)
+        if (!lcdEnabled) {
             hwreg.resetBit(STAT, 0);
-            hwreg.setBit(STAT, 1);
-        } else if (scanDot < MODE3_END_MIN) {
-            // Mode 3 (Scanline render)
-            // For simplicity, assume minimum cycles spent drawing
-            hwreg.setBit(STAT, 0);
-            hwreg.setBit(STAT, 1);
+            hwreg.resetBit(STAT, 1);
+            hwreg.resetBit(STAT, 2);
         } else {
-            // Mode 0 (HBlank)
-            // For simplicity, assume maximum cycles spend in HBlank
-            hwreg.resetBit(STAT, 0);
-            hwreg.resetBit(STAT, 1);
-        }
-        hwreg.setBitConditional(STAT, 2, (hwreg.read(LY) == hwreg.read(LYC)));
-        int newSTAT = hwreg.readAsInt(STAT);
+            if (scanDot == 0) {
+                hasDoneSTAT = false;
+            }
 
-        if (oldSTAT != newSTAT && !hasDoneSTAT) {
-            boolean STATLY = Bitwise.isBitSet(newSTAT, 2) && Bitwise.isBitSet(newSTAT, 6);
-            boolean STATHBL = Bitwise.isBitSet(newSTAT, 3) && ((newSTAT & 0b11) == 0);
-            boolean STATVBL = Bitwise.isBitSet(newSTAT, 4) && ((newSTAT & 0b11) == 1);
-            boolean STATOAM = Bitwise.isBitSet(newSTAT, 5) && ((newSTAT & 0b11) == 2);
-            if (STATLY || STATHBL || STATVBL || STATOAM) {
-                interrupts.setWaitingToCall(InterruptType.STAT);
-                hasDoneSTAT = true;
+            int oldSTAT = hwreg.readAsInt(STAT);
+            if ((cyclesSinceLCDEnable % FRAME_CYCLES) >= MODE1_START) {
+                // Mode 1 (VBlank)
+                hwreg.setBit(STAT, 0);
+                hwreg.resetBit(STAT, 1);
+            } else if (scanDot < MODE2_END) {
+                // Mode 2 (OAM search)
+                hwreg.resetBit(STAT, 0);
+                hwreg.setBit(STAT, 1);
+            } else if (scanDot < MODE3_END_MIN) {
+                // Mode 3 (Scanline render)
+                // For simplicity, assume minimum cycles spent drawing
+                hwreg.setBit(STAT, 0);
+                hwreg.setBit(STAT, 1);
+            } else {
+                // Mode 0 (HBlank)
+                // For simplicity, assume maximum cycles spend in HBlank
+                hwreg.resetBit(STAT, 0);
+                hwreg.resetBit(STAT, 1);
+            }
+            hwreg.setBitConditional(STAT, 2, (hwreg.read(LY) == hwreg.read(LYC)));
+            int newSTAT = hwreg.readAsInt(STAT);
+
+            if (oldSTAT != newSTAT && !hasDoneSTAT) {
+                boolean STATLY = Bitwise.isBitSet(newSTAT, 2) && Bitwise.isBitSet(newSTAT, 6);
+                boolean STATHBL = Bitwise.isBitSet(newSTAT, 3) && ((newSTAT & 0b11) == 0);
+                boolean STATVBL = Bitwise.isBitSet(newSTAT, 4) && ((newSTAT & 0b11) == 1);
+                boolean STATOAM = Bitwise.isBitSet(newSTAT, 5) && ((newSTAT & 0b11) == 2);
+                if (STATLY || STATHBL || STATVBL || STATOAM) {
+                    interrupts.setWaitingToCall(InterruptType.STAT);
+                    hasDoneSTAT = true;
+                }
             }
         }
 
+        // VBlank handling
         if (doVBlank) {
-            // VBlank
             if (scanDot == MODE3_END_MIN)
                 ppu.addScanline(0, PPU.LCD_SIZE_X); // TODO: actually use pixel FIFO
 
