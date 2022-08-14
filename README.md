@@ -4,7 +4,12 @@ JGBE is a Game Boy (DMG) emulator written in Java.
 
 ![Kirby's Dream land](img/k1.png)
 
+
+## Status
+
 Currently, JGBE can run many games well, though certain games do not work as intended.
+
+See the [status](status.md) for more information about the currently implemented features.
 
 ## Keybinds
 
