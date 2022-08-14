@@ -1,15 +1,48 @@
 # JGBE
 
-JGBE is a Game Boy emulator.
+JGBE is a Game Boy (DMG) emulator written in Java.
 
-## Requirements
+![Kirby's Dream land](img/k1.png)
 
-### Running
+Currently, JGBE can run many games well, though certain games do not work as intended.
+
+## Keybinds
+
+### Controls
+
+| Key         | Input       |
+|-------------|-------------|
+| X           | A           |
+| Z           | B           |
+| Enter       | Start       |
+| Backspace   | Select      |
+| Left arrow  | Left D-pad  |
+| Right arrow | Right D-pad |
+| Up arrow    | Up D-pad    |
+| Down arrow  | Down D-pad  |
+
+### Hotkeys
+
+| Key-combo    | Function          |
+|--------------|-------------------|
+| Ctrl-R       | Restart           |
+| Ctrl-O       | Open new ROM      |
+| Ctrl-1,2,3,4 | Resize window     |
+| P            | Pause             |
+| Left bracket | Frame advance     |
+| Space        | Fast forward (4x) |
+
+
+## Running
+
+Requirements:
 
 - 64bit Linux, macOS, or Windows (currently, only x86 is supported)
 - Java 17 (or later)
 
-### Building
+## Building
+
+Requirements:
 
 - JDK 17 (or later)
 - Maven
