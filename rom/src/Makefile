@@ -17,9 +17,14 @@ GB := test_alu.gb\
 	
 all: $(GB)
 
-%.gb: %.o
+%.gb: %.o %.sym
 	$(LD) $< -o $@
 	$(FIX) $(FIXFLAGS) $@
+	mkdir -p ../bin/
+	mv $@ ../bin/
+
+%.sym: %.o
+	$(LD) -n $@ $<
 	mkdir -p ../bin/
 	mv $@ ../bin/
 
@@ -27,4 +32,4 @@ all: $(GB)
 	$(AS) $< $(ASFLAGS) -o $@
 
 clean:
-	rm -rf *.gb *.o ../bin/
+	rm -rf *.gb *.o *.sym ../bin/
