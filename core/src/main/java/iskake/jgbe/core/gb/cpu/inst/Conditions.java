@@ -19,6 +19,8 @@ public enum Conditions {
     /** Not carry condition, if {@code Flags.C} not is set. */
     NC;
 
+    public static final Conditions[] tableIndex = { NZ, Z, NC, C };
+
     /**
      * Check if the specified condition is satisfied.
      * 
