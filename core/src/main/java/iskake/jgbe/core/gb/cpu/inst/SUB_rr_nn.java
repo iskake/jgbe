@@ -11,22 +11,19 @@ import iskake.jgbe.core.gb.Registers.Register;
  * Implements opcodes: {@code sub r8}, {@code sub $n8}, {@code sbc r8} and {@code sbc $n8}
  */
 public class SUB_rr_nn extends Instruction {
-    private final Register r1;
-    private final Register r2;
-    public final boolean carry;
 
-    public SUB_rr_nn(String name, Register r1, Register r2, boolean carry) {
+    public SUB_rr_nn(String name) {
         super(name);
-        this.r1 = r1;
-        this.r2 = r2;
-        this.carry = carry;
     }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
+        Register r1 = Register.A;
+        Register r2 = ((opcode & 0b1100_0000) >> 6) == 3 ? null : Register.tableByte[(opcode & 0b111)];
         byte value = r2 == null ? gb.readNextByte() : gb.reg().readByte(r2);
 
         byte c = 0;
+        boolean carry = (opcode & 0b111000) == 0b11000;
         if (carry) {
             // sbc nn
             c += gb.reg().isFlagSet(Flags.C) ? 1 : 0;

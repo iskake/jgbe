@@ -1,7 +1,6 @@
 package iskake.jgbe.core.gb.cpu.inst;
 
 import iskake.jgbe.core.gb.IGameBoy;
-import iskake.jgbe.core.gb.Registers;
 import iskake.jgbe.core.gb.Registers.Flags;
 import iskake.jgbe.core.gb.Registers.Register;
 
@@ -14,17 +13,17 @@ import iskake.jgbe.core.gb.Registers.Register;
 public class INC_rr extends Instruction {
     private static final int OP_INC_$HL = 0x34;
 
-    private final Register reg;
-
-    public INC_rr(String name, Register reg) {
+    public INC_rr(String name) {
         super(name);
-        this.reg = reg;
     }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
+        boolean inc8 = (opcode & 0b111) == 0b100;
+
         // 0x34 -> inc [hl]
-        if (Registers.isByteRegister(reg) || opcode == OP_INC_$HL) {
+        if (inc8 || opcode == OP_INC_$HL) {
+            Register reg = Register.tableByte[(opcode & 0b111000) >> 3];
             gb.reg().incByte(reg);
 
             byte value = gb.reg().readByte(reg);
@@ -34,6 +33,7 @@ public class INC_rr extends Instruction {
             gb.reg().setFlagIf(Flags.H, (Byte.toUnsignedInt(value) & 0b1111) == 0);
 
         } else {
+            Register reg = Register.tableShortSP[(opcode & 0b110000) >> 4];
             gb.reg().incShort(reg);
         }
     }

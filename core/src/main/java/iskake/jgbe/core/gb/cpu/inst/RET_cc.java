@@ -11,15 +11,14 @@ import iskake.jgbe.core.gb.IGameBoy;
 public class RET_cc extends Instruction {
     private static final int OP_RETI = 0xd9;
 
-    private final Conditions condition;
-
-    public RET_cc(String name, Conditions condition) {
+    public RET_cc(String name) {
         super(name);
-        this.condition = condition;
     }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
+        Conditions condition = (opcode & 1) == 0 ? Conditions.tableIndex[(opcode & 0b111000) >> 3] : Conditions.NONE;
+
         if (Conditions.conditionSatisfied(gb.reg(), condition)) {
             if (opcode == OP_RETI) {
                 // reti

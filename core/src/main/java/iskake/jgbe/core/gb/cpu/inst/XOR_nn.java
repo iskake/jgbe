@@ -11,15 +11,15 @@ import iskake.jgbe.core.gb.Registers.Register;
  * Implements opcodes: {@code xor r8} and {@code xor $n8}
  */
 public class XOR_nn extends Instruction {
-    public final Register reg;
+    public static final int OP_XOR_N8 = 0xee;
 
-    public XOR_nn(String name, Register reg) {
+    public XOR_nn(String name) {
         super(name);
-        this.reg = reg;
     }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
+        Register reg = opcode == OP_XOR_N8 ? null : Register.tableByte[opcode & 0b111];
         byte value = reg == null ? gb.readNextByte() : gb.reg().readByte(reg);
 
         byte a = gb.reg().readByte(Register.A);

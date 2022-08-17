@@ -10,16 +10,16 @@ import iskake.jgbe.core.gb.IGameBoy;
  * {@code call nc, $n16}, {@code call z, $n16} and {@code call c, $n16}
  */
 public class CALL_cc_n16 extends Instruction {
-    private final Conditions condition;
 
-    public CALL_cc_n16(String name, Conditions condition) {
+    public CALL_cc_n16(String name) {
         super(name);
-        this.condition = condition;
     }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
         short address = gb.readNextShort();
+
+        Conditions condition = (opcode & 0b111) == 0b100 ? Conditions.tableIndex[(opcode & 0b111000) >> 3] : Conditions.NONE;
 
         if (Conditions.conditionSatisfied(gb.reg(), condition)) {
             gb.sp().push(gb.pc().get());

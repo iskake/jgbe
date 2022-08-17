@@ -45,7 +45,10 @@ public class Registers {
          * {@code RegisterIndex.H}, such as $44 ({@code ld b, h}) and $ac
          * ({@code xor h})
          */
-        public static final Register[] tableIndex = { B, C, D, E, H, L, HL, A };
+        public static final Register[] tableByte = { B, C, D, E, H, L, HL, A };
+        public static final Register[] tableShortSP = { BC, DE, HL, SP };
+        public static final Register[] tableShortAF = { BC, DE, HL, AF };
+        public static final Register[] tableShortHLID = { BC, DE, HL, HL };
     }
 
     /**

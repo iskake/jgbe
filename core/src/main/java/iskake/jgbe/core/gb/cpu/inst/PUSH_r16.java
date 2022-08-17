@@ -11,15 +11,14 @@ import iskake.jgbe.core.gb.Registers.Register;
  * Implements opcodes: {@code pop r16}
  */
 public class PUSH_r16 extends Instruction {
-    private final Register reg;
 
-    public PUSH_r16(String name, Register reg) {
+    public PUSH_r16(String name) {
         super(name);
-        this.reg = reg;
     }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
+        Register reg = Register.tableShortAF[(opcode & 0b110000) >> 4];
         gb.sp().push(gb.reg().readShort(reg));
     }
 

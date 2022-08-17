@@ -11,15 +11,15 @@ import iskake.jgbe.core.gb.Registers.Register;
  * Implements opcodes: {@code and r8} and {@code and $n8}
  */
 public class AND_nn extends Instruction {
-    private final Register reg;
+    private static final int OP_AND_N8 = 0xe6;
 
-    public AND_nn(String name, Register reg) {
+    public AND_nn(String name) {
         super(name);
-        this.reg = reg;
     }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
+        Register reg = opcode == OP_AND_N8 ? null : Register.tableByte[opcode & 0b111];
         byte value = reg == null ? gb.readNextByte() : gb.reg().readByte(reg);
 
         byte a = gb.reg().readByte(Register.A);

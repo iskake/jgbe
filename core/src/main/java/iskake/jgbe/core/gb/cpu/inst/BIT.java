@@ -39,7 +39,7 @@ public class BIT extends Instruction {
         int opcodeType = (opcode >> 6);
         int bitNum = (opcode >> 3) & 0b111;
         int regNum = opcode & 0b111;
-        Register reg = Register.tableIndex[regNum];
+        Register reg = Register.tableByte[regNum];
 
         switch (opcodeType) {
             case BIT_VAL -> {
@@ -79,7 +79,7 @@ public class BIT extends Instruction {
         int opcodeType = (opcode >> 6);
         int bitNum = (opcode >> 3) & 0b111;
         int regNum = opcode & 0b111;
-        Register r = Register.tableIndex[regNum];
+        Register r = Register.tableByte[regNum];
 
         String opcodeName = switch (opcodeType) {
             case BIT_VAL -> "bit";

@@ -51,7 +51,7 @@ public class ROT extends Instruction {
          */
         int opcodeType = (opcode >> 3);
         int regNum = opcode & 0b111;
-        Register reg = Register.tableIndex[regNum];
+        Register reg = Register.tableByte[regNum];
 
         int result = switch (opcodeType) {
             case RLC_VAL -> gb.reg().rotateLeft(reg, false);
@@ -80,7 +80,7 @@ public class ROT extends Instruction {
     public static String getFixedName(int opcode) {
         int opcodeType = (opcode >> 3);
         int regNum = opcode & 0b111;
-        Register r = Register.tableIndex[regNum];
+        Register r = Register.tableByte[regNum];
 
         String opcodeName = switch (opcodeType) {
             case RLC_VAL -> "rlc";
