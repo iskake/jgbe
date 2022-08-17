@@ -72,26 +72,4 @@ public class ROT {
         gb.reg().setFlagIf(Flags.C, result == 1);
     }
 
-    public static String getFixedName(int opcode) {
-        int opcodeType = (opcode >> 3);
-        int regNum = opcode & 0b111;
-        Register r = Register.tableByte[regNum];
-
-        String opcodeName = switch (opcodeType) {
-            case RLC_VAL -> "rlc";
-            case RRC_VAL -> "rrc";
-            case RL_VAL -> "rl";
-            case RR_VAL -> "rr";
-            case SLA_VAL -> "sla";
-            case SRA_VAL -> "sra";
-            case SWAP_VAL -> "swap";
-            case SRL_VAL -> "srl";
-            default -> "invalid";
-        };
-
-        String regName = r == Register.HL ? "[hl]" : r.name().toLowerCase();
-
-        return String.format("%s %s", opcodeName, regName);
-    }
-
 }

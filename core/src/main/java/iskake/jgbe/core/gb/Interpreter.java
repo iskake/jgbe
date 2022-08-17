@@ -1,8 +1,6 @@
 package iskake.jgbe.core.gb;
 
 import iskake.jgbe.core.gb.cpu.Opcodes;
-import iskake.jgbe.core.gb.cpu.inst.BIT;
-import iskake.jgbe.core.gb.cpu.inst.ROT;
 import iskake.jgbe.core.gb.mem.CartridgeROM;
 import iskake.jgbe.core.Bitwise;
 
@@ -19,9 +17,9 @@ import java.util.Scanner;
 public class Interpreter {
     // TODO: Remove this class / rework into a minimal assembler.
     private boolean finishedInterpreting;
-    private GameBoy gb;
-    private Map<String, Short> labels;
-    private HashMap<String, String> commands = new HashMap<>();
+    private final GameBoy gb;
+    private final Map<String, Short> labels;
+    private final HashMap<String, String> commands = new HashMap<>();
 
     public Interpreter(GameBoy gb) {
         this.gb = gb;
@@ -67,7 +65,7 @@ public class Interpreter {
             String[] inParts = line.split(" ");
 
             // Check for commands or 'special' instructions (prt / prefixed)
-            if (line == "" || handleCommands(inParts) || handleSpecialInstruction(line)) {
+            if (line.equals("") || handleCommands(inParts) || handleSpecialInstruction(line)) {
                 continue;
             }
 
@@ -94,7 +92,7 @@ public class Interpreter {
                                 && (inParts[k].endsWith("]") || inParts[k].endsWith("],"))
                                 && opParts[k].startsWith("[")
                                 && (opParts[k].endsWith("]") || opParts[k].endsWith("],"))) {
-                            fixedName = (inParts[k].replaceAll("\\[(.+)\\].?", "$1"));
+                            fixedName = (inParts[k].replaceAll("\\[(.+)].?", "$1"));
                             brackets = true;
                         } else if (inParts[k].startsWith("[")
                                 || (inParts[k].endsWith("]") || inParts[k].endsWith("],"))
@@ -106,9 +104,9 @@ public class Interpreter {
 
                         // Byte decoding handle
                         if (opParts[k].equals("$_N8")
-                                || (opParts[k].matches("\\[.+?_N8\\].?") && brackets)
+                                || (opParts[k].matches("\\[.+?_N8].?") && brackets)
                                 || opParts[k].equals("$_N16")
-                                || (opParts[k].matches("\\[.?_N16\\].?") && brackets)) {
+                                || (opParts[k].matches("\\[.?_N16].?") && brackets)) {
                             if ((fixedName.charAt(0) == '$') || (fixedName.charAt(0) == '%')) {
                                 matchingParts[k] = true;
                                 value = Bitwise.decodeInt(fixedName);
@@ -132,7 +130,7 @@ public class Interpreter {
                             // A short was decoded only if the opcode name contains '_N16' according to the
                             // rules below.
                             decodedShort = (opParts[k].equals("$_N16")
-                                    || (opParts[k].matches("\\[.?_N16\\].?") && brackets));
+                                    || (opParts[k].matches("\\[.?_N16].?") && brackets));
                         }
                     }
                 }
@@ -206,7 +204,7 @@ public class Interpreter {
                 } catch (Exception e) {
                     System.err
                             .println("Could not read the file because an exception occurred: "
-                                    + e.toString()
+                                    + e
                                     + "\nPossible solution if a file could not be read: try writing the filename without quotes."
                                     + "\nFor example, write"
                                     + "\n    open src/test/asm/bin/test_alu.zb"
@@ -331,8 +329,7 @@ public class Interpreter {
             }
         }
 
-        System.out.println(
-                "\nFor writing values in the instructions, replace `_N8` and `_N16` with a 8-bit and 16-bit value respectively."
+        System.out.println("\nFor writing values in the instructions, replace `_N8` and `_N16` with a 8-bit and 16-bit value respectively."
                         + "\nTo write the instruction `ld hl, $_N16` with the short value $1234, write: `ld hl, $1234`"
                         + "(note: does not have to be a hex value (starting with `$` or `0x`),"
                         + "you can also just type a normal decimal number, like so: `ld b, 23`"
