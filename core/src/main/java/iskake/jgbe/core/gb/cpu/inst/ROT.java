@@ -12,9 +12,7 @@ import iskake.jgbe.core.gb.Registers.Register;
  * {@code rl r8}, {@code rr r8}, {@code sla r8}, {@code sra r8},
  * {@code swap r8}, and {@code srl r8}
  */
-public class ROT extends Instruction {
-    private final boolean prefixed;
-
+public class ROT implements Instruction {
     private static final int RLC_VAL = 0b000;
     private static final int RRC_VAL = 0b001;
     private static final int RL_VAL = 0b010;
@@ -24,22 +22,20 @@ public class ROT extends Instruction {
     private static final int SWAP_VAL = 0b110;
     private static final int SRL_VAL = 0b111;
 
-    public ROT() {
-        super("ROT_INST");
-        prefixed = true;
-    }
-
-    public ROT(String name) {
-        super(name);
-        prefixed = false;
-    }
-
     @Override
     public void doOp(IGameBoy gb, int opcode) {
+        doOpInternal(gb, opcode, false);
+    }
+
+    public void doOpPrefix(IGameBoy gb, int opcode) {
+        doOpInternal(gb, opcode, true);
+    }
+
+    public void doOpInternal(IGameBoy gb, int opcode, boolean prefixed) {
         /*
          * The prefixed rotate/shift opcodes can be indexed like so:
          * 00-3f => Rotate/shift instructions
-         * 
+         *
          * 00-07 => RLC r8
          * 08-0f => RRC r8
          * 10-17 => RL r8

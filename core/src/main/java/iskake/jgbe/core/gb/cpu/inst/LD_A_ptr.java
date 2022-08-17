@@ -11,17 +11,9 @@ import iskake.jgbe.core.Bitwise;
  * Implements opcodes: {@code ld a, [$n16]}, {@code ldh a, [$n16]} and
  * {@code ldh a, [c]}
  */
-public class LD_A_ptr extends Instruction {
+public class LD_A_ptr implements Instruction {
     private static final int OP_LDH_A_$N16 = 0xF0;
     private static final int OP_LDH_A_$C = 0xF2;
-
-    private final Register reg;
-
-    public LD_A_ptr(String name) {
-        super(name);
-
-        this.reg = Register.A;
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
@@ -38,7 +30,7 @@ public class LD_A_ptr extends Instruction {
         };
 
         byte value = gb.readAddress(address);
-        gb.reg().writeByte(reg, value);
+        gb.reg().writeByte(Register.A, value);
     }
 
 }

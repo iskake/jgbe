@@ -10,12 +10,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code xor r8} and {@code xor $n8}
  */
-public class XOR_nn extends Instruction {
+public class XOR_nn implements Instruction {
     public static final int OP_XOR_N8 = 0xee;
-
-    public XOR_nn(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

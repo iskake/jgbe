@@ -9,14 +9,10 @@ import iskake.jgbe.core.gb.IGameBoy;
  * <p>
  * Implements opcodes: {@code di} and {@code ei}
  */
-public class Interrupt extends Instruction {
+public class Interrupt implements Instruction {
 
     private static final int OP_EI = 0xf3;
     private static final int OP_DI = 0xfb;
-
-    public Interrupt(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

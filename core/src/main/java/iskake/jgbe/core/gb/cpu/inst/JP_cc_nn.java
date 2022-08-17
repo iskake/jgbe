@@ -11,12 +11,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * {@code jp nc, $n16}, {@code jp z, $n16}, {@code jp c, $n16} and
  * {@code jp hl}
  */
-public class JP_cc_nn extends Instruction {
+public class JP_cc_nn implements Instruction {
     private static final int OP_JP_HL = 0xe9;
-
-    public JP_cc_nn(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

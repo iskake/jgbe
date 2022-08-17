@@ -11,12 +11,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code cp r8} and {@code cp $n8}
  */
-public class CP_nn extends Instruction {
+public class CP_nn implements Instruction {
     private static final int OP_CP_N8 = 0xfe;
-
-    public CP_nn(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

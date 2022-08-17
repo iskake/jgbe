@@ -10,11 +10,7 @@ import iskake.jgbe.core.gb.Registers.Register;
  * Implements opcodes: {@code ld r1, r2}, {@code ld [hli], a},
  * {@code ld [hld], a}, {@code ld a, [hli]}, {@code ld a, [hld]} and {@code ld sp, hl}
  */
-public final class LD_r8_r8 extends Instruction {
-
-    public LD_r8_r8(String name) {
-        super(name);
-    }
+public final class LD_r8_r8 implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

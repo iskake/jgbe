@@ -10,11 +10,7 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code sub r8}, {@code sub $n8}, {@code sbc r8} and {@code sbc $n8}
  */
-public class SUB_rr_nn extends Instruction {
-
-    public SUB_rr_nn(String name) {
-        super(name);
-    }
+public class SUB_rr_nn implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

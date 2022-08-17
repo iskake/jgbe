@@ -10,11 +10,7 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcode: {@code cpl}
  */
-public class CPL extends Instruction {
-
-    public CPL() {
-        super("cpl");
-    }
+public class CPL implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

@@ -8,12 +8,8 @@ import iskake.jgbe.core.gb.IGameBoy;
  * <p>
  * Implements opcodes: {@code ret}, {@code ret cc} and {@code reti}
  */
-public class RET_cc extends Instruction {
+public class RET_cc implements Instruction {
     private static final int OP_RETI = 0xd9;
-
-    public RET_cc(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

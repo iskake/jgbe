@@ -7,11 +7,7 @@ import iskake.jgbe.core.gb.IGameBoy;
  * <p>
  * The instruction does the following: nothing.
  */
-public class NOP extends Instruction {
-
-    public NOP() {
-        super("nop");
-    }
+public class NOP implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

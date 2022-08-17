@@ -7,13 +7,9 @@ import iskake.jgbe.core.gb.IGameBoy;
  * 
  * Implements opcodes: {@code $CB $xx}
  */
-public class Prefixed extends Instruction {
-    private final static ROT ROT_INST = new ROT();
-    private final static BIT BIT_INST = new BIT();
-
-    public Prefixed() {
-        super("PREFIXED");
-    }
+public class Prefixed implements Instruction {
+    private static final ROT ROT_INST = new ROT();
+    private static final Instruction BIT_INST = new BIT();
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
@@ -29,10 +25,11 @@ public class Prefixed extends Instruction {
          * [1] https://gbdev.io/gb-opcodes/optables/#prefixed
          */
         opcode = Byte.toUnsignedInt(gb.readNextByte());
-        Instruction inst;
 
-        inst = (opcode >> 6 == 0) ? ROT_INST : BIT_INST;
-        inst.doOp(gb, opcode);
+        if (opcode >> 6 == 0)
+            ROT_INST.doOpPrefix(gb, opcode);
+        else
+            BIT_INST.doOp(gb, opcode);
     }
 
     public String getPrefixedName(int opcode) {

@@ -13,12 +13,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * {@code add hl, r16}, {@code add sp, $e8}, {@code adc r8} and
  * {@code adc $n8}
  */
-public class ADD_rr_nn extends Instruction {
+public class ADD_rr_nn implements Instruction {
     private static final int OP_ADD_SP_E8 = 0xe8;
-
-    public ADD_rr_nn(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

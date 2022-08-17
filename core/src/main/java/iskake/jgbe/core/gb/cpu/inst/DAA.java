@@ -11,11 +11,7 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcode: {@code daa}
  */
-public class DAA extends Instruction {
-
-    public DAA() {
-        super("daa");
-    }
+public class DAA implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

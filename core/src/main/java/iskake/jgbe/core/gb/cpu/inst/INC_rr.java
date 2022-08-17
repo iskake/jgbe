@@ -10,12 +10,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code inc r8}, {@code inc [hl]} and {@code inc r16}
  */
-public class INC_rr extends Instruction {
+public class INC_rr implements Instruction {
     private static final int OP_INC_$HL = 0x34;
-
-    public INC_rr(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

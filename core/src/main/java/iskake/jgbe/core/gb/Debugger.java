@@ -287,7 +287,7 @@ public class Debugger {
      */
     private void stepOver() {
         byte opcode = gb.readAddress(gb.pc().get());
-        String name = Opcodes.getOpcode(opcode).getName();
+        String name = Opcodes.opcodeNames[Byte.toUnsignedInt(opcode)];
 
         short oldPC = gb.pc().get();
         doCPUStep();

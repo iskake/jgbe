@@ -10,11 +10,7 @@ import iskake.jgbe.core.gb.Registers.Flags;
  * <p>
  * Implements opcode: {@code scf}.
  */
-public class SCF extends Instruction {
-
-    public SCF() {
-        super("scf");
-    }
+public class SCF implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

@@ -10,12 +10,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code and r8} and {@code and $n8}
  */
-public class AND_nn extends Instruction {
+public class AND_nn implements Instruction {
     private static final int OP_AND_N8 = 0xe6;
-
-    public AND_nn(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

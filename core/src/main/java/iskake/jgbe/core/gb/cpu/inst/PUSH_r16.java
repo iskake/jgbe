@@ -10,11 +10,7 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code pop r16}
  */
-public class PUSH_r16 extends Instruction {
-
-    public PUSH_r16(String name) {
-        super(name);
-    }
+public class PUSH_r16 implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

@@ -9,11 +9,7 @@ import iskake.jgbe.core.gb.IGameBoy;
  * Implements opcodes: {@code jr $e8}, {@code jr nz, $e8},
  * {@code jr nc, $e8}, {@code jr z, $e8} and {@code jr c, $e8}
  */
-public class JR_cc_e8 extends Instruction {
-
-    public JR_cc_e8(String name) {
-        super(name);
-    }
+public class JR_cc_e8 implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

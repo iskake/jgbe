@@ -11,11 +11,7 @@ import iskake.jgbe.core.Bitwise;
  * {@code RST $18}, {@code RST $20}, {@code RST $28}, {@code RST $30}, and
  * {@code RST $38}
  */
-public class RST_vec extends Instruction {
-
-    public RST_vec(String name) {
-        super(name);
-    }
+public class RST_vec implements Instruction {
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {

@@ -74,7 +74,7 @@ public class Interpreter {
             boolean match = false;
             for (int i = 0; i < 0x100; i++) {
 
-                String opName = Opcodes.getOpcode(i).getName();
+                String opName = Opcodes.opcodeNames[i];
 
                 String[] opParts = opName.split(" ");
                 if (inParts.length != opParts.length) {
@@ -332,7 +332,7 @@ public class Interpreter {
                     System.out.println("    $cb $%02x".formatted(j) + ": " + opName);
                 }
             } else {
-                System.out.println("$%02x".formatted(i) + ": " + Opcodes.getOpcode(i).getName());
+                System.out.println("$%02x".formatted(i) + ": " + Opcodes.opcodeNames[i]);
             }
         }
 

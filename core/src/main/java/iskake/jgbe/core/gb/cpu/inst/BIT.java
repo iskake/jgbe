@@ -11,17 +11,13 @@ import iskake.jgbe.core.Bitwise;
  * Implements opcodes: {@code bit u3, r8}, {@code res u3, r8} and
  * {@code set u3, r8}
  */
-public class BIT extends Instruction {
+public class BIT implements Instruction {
     public int opcode;
 
     // Values from bit 7-6 from opcode
     private static final int BIT_VAL = 0b01;
     private static final int RES_VAL = 0b10;
     private static final int SET_VAL = 0b11;
-
-    public BIT() {
-        super("BIT_INST");
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
@@ -54,17 +50,6 @@ public class BIT extends Instruction {
             default -> throw new IllegalInstructionException(
                     "Value %02x is not a valid bitwise instruction.".formatted(opcodeType));
         }
-    }
-
-    /**
-     * Unsupported, use {@code getFixedName} instead.
-     * 
-     * @throws IllegalInstructionException Always.
-     * @return Nothing, will throw an exception instead.
-     */
-    @Override
-    public String getName() {
-        throw new IllegalInstructionException("getName is not supported, use getFixedName instead.");
     }
 
     /**

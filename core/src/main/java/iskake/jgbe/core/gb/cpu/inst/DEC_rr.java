@@ -10,12 +10,8 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code dec r8}, {@code dec [hl]} and {@code dec r16}
  */
-public class DEC_rr extends Instruction {
+public class DEC_rr implements Instruction {
     private static final int OP_DEC_$HL = 0x35;
-
-    public DEC_rr(String name) {
-        super(name);
-    }
 
     @Override
     public void doOp(IGameBoy gb, int opcode) {
