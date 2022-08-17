@@ -303,7 +303,7 @@ public class Opcodes {
 
 /* 0xd2 */ JP::jp_cc_nn,
 
-/* 0xd3 */ IllegalInst::illegal, // illegal
+/* 0xd3 */ IllegalInst::illegal,
 
 /* 0xd4 */ CALL::call_cc_n16,
 
@@ -316,11 +316,11 @@ public class Opcodes {
 /* 0xd9 */ RET::ret_cc,
 /* 0xda */ JP::jp_cc_nn,
 
-/* 0xdb */ IllegalInst::illegal, // illegal
+/* 0xdb */ IllegalInst::illegal,
 
 /* 0xdc */ CALL::call_cc_n16,
 
-/* 0xdd */ IllegalInst::illegal, // illegal
+/* 0xdd */ IllegalInst::illegal,
 
 /* 0xde */ SUB::sub,
 
@@ -332,8 +332,8 @@ public class Opcodes {
 
 /* 0xe2 */ LD_ptr::ld_ptr_rr,
 
-/* 0xe3 */ IllegalInst::illegal, // illegal
-/* 0xe4 */ IllegalInst::illegal, // illegal
+/* 0xe3 */ IllegalInst::illegal,
+/* 0xe4 */ IllegalInst::illegal,
 
 /* 0xe5 */ PUSH::push_r16,
 
@@ -347,9 +347,9 @@ public class Opcodes {
 
 /* 0xea */ LD_ptr::ld_ptr_rr,
 
-/* 0xeb */ IllegalInst::illegal, // illegal
-/* 0xec */ IllegalInst::illegal, // illegal
-/* 0xed */ IllegalInst::illegal, // illegal
+/* 0xeb */ IllegalInst::illegal,
+/* 0xec */ IllegalInst::illegal,
+/* 0xed */ IllegalInst::illegal,
 
 /* 0xee */ XOR::xor,
 
@@ -363,7 +363,7 @@ public class Opcodes {
 
 /* 0xf3 */ Interrupt::di,
 
-/* 0xf4 */ IllegalInst::illegal, // illegal
+/* 0xf4 */ IllegalInst::illegal,
 
 /* 0xf5 */ PUSH::push_r16,
 
@@ -377,8 +377,8 @@ public class Opcodes {
 
 /* 0xfb */ Interrupt::ei,
 
-/* 0xfc */ IllegalInst::illegal, // illegal
-/* 0xfd */ IllegalInst::illegal, // illegal
+/* 0xfc */ IllegalInst::illegal,
+/* 0xfd */ IllegalInst::illegal,
 
 /* 0xfe */ CP::cp,
 
@@ -415,7 +415,7 @@ public class Opcodes {
             "ret nz",           "pop bc",    "jp nz, $_N16",        "jp $_N16", "call nz, $_N16", "push bc",    "add a, $_N8", "rst $00",
             "ret z",            "ret",       "jp z, $_N16",         "PREFIXED", "call z, $_N16",  "call $_N16", "adc $_N8",    "rst $08",
             "ret nc",           "pop de",    "jp nc, $_N16",        "ILLEGAL",  "call nc, $_N16", "push de",    "sub $_N8",    "rst $10",
-            "ret c",            "reti",      "jp c, $_N16",         "ILLEGAL",  "call c, $_N16",  "ill $dd",   "sbc $_N8",    "rst $18",
+            "ret c",            "reti",      "jp c, $_N16",         "ILLEGAL",  "call c, $_N16",  "ill $dd",    "sbc $_N8",    "rst $18",
             "ldh [$ff_N8], a",  "pop hl",    "ldh [c], a",          "ILLEGAL",  "ILLEGAL",        "push hl",    "and $_N8",    "rst $20",
             "add sp, $_N8",     "jp hl",     "ld [$_N16], a",       "ILLEGAL",  "ILLEGAL",        "ILLEGAL",    "xor $_N8",    "rst $28",
             "ldh a, [$ff_N8]",  "pop af",    "ldh a, [c]",          "di",       "ILLEGAL",        "push af",    "or $_N8",     "rst $30",
