@@ -8,15 +8,13 @@ import iskake.jgbe.core.gb.IGameBoy;
  * <p>
  * Implements opcodes: {@code stop} and {@code halt}
  */
-public class Halt implements Instruction {
-    private static final int OP_STOP = 0x10;
-    private static final int OP_HALT = 0x76;
+public class Halt {
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
-        switch (opcode) {
-            case OP_STOP -> gb.stop();
-            case OP_HALT -> gb.halt();
-        }
+    public static void halt(IGameBoy gb, int opcode) {
+        gb.halt();
+    }
+
+    public static void stop(IGameBoy gb, int opcode) {
+        gb.stop();
     }
 }

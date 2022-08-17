@@ -9,18 +9,14 @@ import iskake.jgbe.core.gb.IGameBoy;
  * <p>
  * Implements opcodes: {@code di} and {@code ei}
  */
-public class Interrupt implements Instruction {
+public class Interrupt {
 
-    private static final int OP_EI = 0xf3;
-    private static final int OP_DI = 0xfb;
+    public static void ei(IGameBoy gb, int opcode) {
+        gb.waitEnableInterrupts();
+    }
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
-        switch (opcode) {
-            case OP_EI -> gb.disableInterrupts();
-            case OP_DI -> gb.waitEnableInterrupts();
-            default -> throw new IllegalInstructionException();
-        }
+    public static void di(IGameBoy gb, int opcode) {
+        gb.disableInterrupts();
     }
 
 }

@@ -11,11 +11,10 @@ import iskake.jgbe.core.gb.Registers.Register;
  * {@code jp nc, $n16}, {@code jp z, $n16}, {@code jp c, $n16} and
  * {@code jp hl}
  */
-public class JP_cc_nn implements Instruction {
+public class JP {
     private static final int OP_JP_HL = 0xe9;
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void jp_cc_nn(IGameBoy gb, int opcode) {
         short address = opcode == OP_JP_HL ? gb.reg().readShort(Register.HL) : gb.readNextShort();
 
         Conditions condition = (opcode & 0b111) == 0b10 ? Conditions.tableIndex[(opcode & 0b111000) >> 3] : Conditions.NONE;

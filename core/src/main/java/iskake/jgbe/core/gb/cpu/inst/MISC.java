@@ -5,16 +5,31 @@ import iskake.jgbe.core.gb.Registers.Flags;
 import iskake.jgbe.core.gb.Registers.Register;
 
 /**
- * Decimal Adjust Accumulator, get BCD of accumulator.
- * (E.g. $56 + $27 = $7d = $83 in BCD)
- * 
- * <p>
- * Implements opcode: {@code daa}
+ * Misc instructions.
  */
-public class DAA implements Instruction {
+public class MISC {
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void nop(IGameBoy gb, int opcode) {}
+
+    public static void cpl(IGameBoy gb, int opcode) {
+        gb.reg().writeByte(Register.A, ~gb.reg().readByte(Register.A));
+        gb.reg().setFlag(Flags.N);
+        gb.reg().setFlag(Flags.H);
+    }
+
+    public static void ccf(IGameBoy gb, int opcode) {
+        gb.reg().resetFlag(Flags.N);
+        gb.reg().resetFlag(Flags.H);
+        gb.reg().complementFlag(Flags.C);
+    }
+
+    public static void scf(IGameBoy gb, int opcode) {
+        gb.reg().resetFlag(Flags.N);
+        gb.reg().resetFlag(Flags.H);
+        gb.reg().setFlag(Flags.C);
+    }
+
+    public static void daa(IGameBoy gb, int opcode) {
         int value = Byte.toUnsignedInt(gb.reg().readByte(Register.A));
         if (!gb.reg().isFlagSet(Flags.N)) {
             // Adjust value for additions

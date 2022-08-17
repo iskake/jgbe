@@ -323,12 +323,7 @@ public class Interpreter {
             if (i == 0xcb) {
                 System.out.println("$cb: Prefixed instructions:");
                 for (int j = 0; j < 0x100; j++) {
-                    String opName = "";
-                    if (j < 0x40) {
-                        opName = ROT.getFixedName(j);
-                    } else {
-                        opName = BIT.getFixedName(j);
-                    }
+                    String opName = Opcodes.opcodeNamesPrefixed[j];
                     System.out.println("    $cb $%02x".formatted(j) + ": " + opName);
                 }
             } else {

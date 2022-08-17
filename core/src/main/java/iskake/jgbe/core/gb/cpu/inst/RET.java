@@ -8,11 +8,10 @@ import iskake.jgbe.core.gb.IGameBoy;
  * <p>
  * Implements opcodes: {@code ret}, {@code ret cc} and {@code reti}
  */
-public class RET_cc implements Instruction {
+public class RET {
     private static final int OP_RETI = 0xd9;
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void ret_cc(IGameBoy gb, int opcode) {
         Conditions condition = (opcode & 1) == 0 ? Conditions.tableIndex[(opcode & 0b111000) >> 3] : Conditions.NONE;
 
         if (Conditions.conditionSatisfied(gb.reg(), condition)) {

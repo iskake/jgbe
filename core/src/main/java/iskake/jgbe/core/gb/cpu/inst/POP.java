@@ -10,10 +10,9 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code pop r16}
  */
-public class POP_r16 implements Instruction {
+public class POP {
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void pop_r16(IGameBoy gb, int opcode) {
         Register reg = Register.tableShortAF[(opcode & 0b110000) >> 4];
         short value = gb.sp().pop();
         gb.reg().writeShort(reg, value);

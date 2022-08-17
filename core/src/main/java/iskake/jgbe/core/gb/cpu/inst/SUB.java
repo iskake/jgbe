@@ -10,10 +10,9 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code sub r8}, {@code sub $n8}, {@code sbc r8} and {@code sbc $n8}
  */
-public class SUB_rr_nn implements Instruction {
+public class SUB {
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void sub(IGameBoy gb, int opcode) {
         Register r1 = Register.A;
         Register r2 = ((opcode & 0b1100_0000) >> 6) == 3 ? null : Register.tableByte[(opcode & 0b111)];
         byte value = r2 == null ? gb.readNextByte() : gb.reg().readByte(r2);

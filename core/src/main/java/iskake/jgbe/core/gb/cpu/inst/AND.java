@@ -10,11 +10,10 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code and r8} and {@code and $n8}
  */
-public class AND_nn implements Instruction {
+public class AND {
     private static final int OP_AND_N8 = 0xe6;
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void and(IGameBoy gb, int opcode) {
         Register reg = opcode == OP_AND_N8 ? null : Register.tableByte[opcode & 0b111];
         byte value = reg == null ? gb.readNextByte() : gb.reg().readByte(reg);
 

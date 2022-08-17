@@ -11,7 +11,7 @@ import iskake.jgbe.core.Bitwise;
  * Implements opcodes: {@code bit u3, r8}, {@code res u3, r8} and
  * {@code set u3, r8}
  */
-public class BIT implements Instruction {
+public class BIT {
     public int opcode;
 
     // Values from bit 7-6 from opcode
@@ -19,8 +19,7 @@ public class BIT implements Instruction {
     private static final int RES_VAL = 0b10;
     private static final int SET_VAL = 0b11;
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void doOp(IGameBoy gb, int opcode) {
         /*
          * The prefixed Bitwise opcodes can be indexed like so:
          * 40-ff => Bitwise instructions

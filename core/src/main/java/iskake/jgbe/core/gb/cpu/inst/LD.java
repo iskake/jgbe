@@ -4,25 +4,11 @@ import iskake.jgbe.core.gb.IGameBoy;
 import iskake.jgbe.core.gb.Registers.Register;
 
 /**
- * Load byte from register2 into register1.
- * 
- * <p>
- * Implements opcodes: {@code ld r1, r2}, {@code ld [hli], a},
- * {@code ld [hld], a}, {@code ld a, [hli]}, {@code ld a, [hld]} and {@code ld sp, hl}
+ * Load instructions
  */
-public final class LD_r8_r8 implements Instruction {
+public final class LD {
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
-        int x = (opcode & 0b1100_0000) >> 6;
-        if (x == 0) {
-            ld_ptr(gb, opcode);
-        } else {
-            ld_r8_r8(gb, opcode);
-        }
-    }
-
-    private void ld_ptr(IGameBoy gb, int opcode) {
+    public static void ld_ptr(IGameBoy gb, int opcode) {
         boolean q = (opcode & 0b1000) != 0;
         int p = (opcode & 0b110000) >> 4;
 
@@ -47,10 +33,20 @@ public final class LD_r8_r8 implements Instruction {
         }
     }
 
-    private void ld_r8_r8(IGameBoy gb, int opcode) {
+    public static void ld_r8_r8(IGameBoy gb, int opcode) {
         Register r1 = Register.tableByte[(opcode & 0b111000) >> 3];
         Register r2 = Register.tableByte[opcode & 0b111];
         gb.reg().writeByte(r1, gb.reg().readByte(r2));
+    }
+
+    public static void ld_r8_n8(IGameBoy gb, int opcode) {
+        Register reg = Register.tableByte[(opcode & 0b111000) >> 3];
+        gb.reg().writeByte(reg, gb.readNextByte());
+    }
+
+    public static void ld_r16_n16(IGameBoy gb, int opcode) {
+        Register reg = Register.tableShortSP[(opcode & 0b110000) >> 4];
+        gb.reg().writeShort(reg, gb.readNextShort());
     }
 
 }

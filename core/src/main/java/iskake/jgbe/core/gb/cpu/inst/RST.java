@@ -11,10 +11,9 @@ import iskake.jgbe.core.Bitwise;
  * {@code RST $18}, {@code RST $20}, {@code RST $28}, {@code RST $30}, and
  * {@code RST $38}
  */
-public class RST_vec implements Instruction {
+public class RST {
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void rst_vec(IGameBoy gb, int opcode) {
         short vector = Bitwise.toShort(opcode & 0b111000);
 
         gb.sp().push(gb.pc().get());

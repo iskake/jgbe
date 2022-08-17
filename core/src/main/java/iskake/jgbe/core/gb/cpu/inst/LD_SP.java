@@ -10,28 +10,25 @@ import iskake.jgbe.core.gb.Registers.Register;
  * <p>
  * Implements opcodes: {@code ld hl, sp+$e8} and {@code ld sp, hl}
  */
-public class LD_SP implements Instruction {
+public class LD_SP {
 
-    private static final int OP_LD_HL_SP_E8 = 0xf8;
+    public static void ld_hl_sp(IGameBoy gb, int opcode) {
+        // ld hl, sp+$e8
+        short sp = gb.sp().get();
+        byte value = gb.readNextByte();
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
-        if (opcode == OP_LD_HL_SP_E8) {
-            // ld hl, sp+$e8
-            short sp = gb.sp().get();
-            byte value = gb.readNextByte();
+        gb.reg().writeShort(Register.HL, sp + value);
 
-            gb.reg().writeShort(Register.HL, sp + value);
+        gb.reg().resetFlag(Flags.Z);
+        gb.reg().resetFlag(Flags.N);
+        gb.reg().setFlagIf(Flags.H,
+                           (Short.toUnsignedInt(sp) & 0b111) + (Byte.toUnsignedInt(value) & 0b111) > 0b111);
+        gb.reg().setFlagIf(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
+    }
 
-            gb.reg().resetFlag(Flags.Z);
-            gb.reg().resetFlag(Flags.N);
-            gb.reg().setFlagIf(Flags.H,
-                    (Short.toUnsignedInt(sp) & 0b111) + (Byte.toUnsignedInt(value) & 0b111) > 0b111);
-            gb.reg().setFlagIf(Flags.C, (Short.toUnsignedInt(sp) & 0xff) + Byte.toUnsignedInt(value) > 0xff);
-        } else {
-            // ld sp, hl
-            gb.sp().set(gb.reg().readShort(Register.HL));
-        }
+    public static void ld_sp_hl(IGameBoy gb, int opcode) {
+        // ld sp, hl
+        gb.sp().set(gb.reg().readShort(Register.HL));
     }
 
 }

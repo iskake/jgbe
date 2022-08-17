@@ -5,19 +5,34 @@ import iskake.jgbe.core.gb.Registers.Register;
 import iskake.jgbe.core.Bitwise;
 
 /**
- * Load register value into byte at address (and the next byte for {@code ld [$n16], sp}).
- * 
- * <p>
- * Implements opcodes: {@code ld [$n16], a}, {@code ldh [$n16], a},
- * {@code ldh [c], a} and {@code ld [$n16], sp})
+ * Pointer load instructions.
  */
-public class LD_ptr_rr implements Instruction {
+public class LD_ptr {
+    private static final int OP_LDH_A_$N16 = 0xF0;
+    private static final int OP_LDH_A_$C = 0xF2;
+
     private static final int OP_LDH_$N16_A = 0xE0;
     private static final int OP_LDH_$C_SP = 0xE2;
     private static final int OP_LD_$N16_SP = 0x08;
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void ld_a_ptr(IGameBoy gb, int opcode) {
+        // Because the three implemented opcodes (see javadoc above class) all load a
+        // value from an address into the A register (hence, `LD_A_ptr`), we can use the
+        // same class for all three opcodes.
+        short address = switch (opcode) {
+            // ldh a, [$n16] (a.k.a. `ld a, [$ff00+n8]`)
+            case OP_LDH_A_$N16 -> Bitwise.toShort((byte) 0xff, gb.readNextByte());
+            // ldh a, [c] (a.k.a. `ld a, [$ff00+c]`)
+            case OP_LDH_A_$C -> Bitwise.toShort((byte) 0xff, gb.reg().readByte(Register.C));
+            // ld a, [$n16]
+            default -> gb.readNextShort();
+        };
+
+        byte value = gb.readAddress(address);
+        gb.reg().writeByte(Register.A, value);
+    }
+
+    public static void ld_ptr_rr(IGameBoy gb, int opcode) {
         // Because the three implemented opcodes (see javadoc above class) all load the
         // value in the A register to an address (hence, `LD_ptr_A`), we can use the
         // same class for all three opcodes.

@@ -7,12 +7,11 @@ import iskake.jgbe.core.gb.IGameBoy;
  * 
  * Implements opcodes: {@code $CB $xx}
  */
-public class Prefixed implements Instruction {
-    private static final ROT ROT_INST = new ROT();
-    private static final Instruction BIT_INST = new BIT();
+public class Prefixed {
+    private static final Instruction ROT_INST = ROT::rot;
+    private static final Instruction BIT_INST = BIT::doOp;
 
-    @Override
-    public void doOp(IGameBoy gb, int opcode) {
+    public static void doOp(IGameBoy gb, int opcode) {
         /*
          * Instead of creating a whole table to hold all prefixed opcodes (as in [1]),
          * it is possible to find each 'instruction type' by looking at the value of the
@@ -24,16 +23,12 @@ public class Prefixed implements Instruction {
          * 
          * [1] https://gbdev.io/gb-opcodes/optables/#prefixed
          */
-        opcode = Byte.toUnsignedInt(gb.readNextByte());
+        int nextOpcode = Byte.toUnsignedInt(gb.readNextByte());
 
-        if (opcode >> 6 == 0)
-            ROT_INST.doOpPrefix(gb, opcode);
+        if (nextOpcode >> 6 == 0)
+            ROT_INST.doOp(gb, nextOpcode);
         else
-            BIT_INST.doOp(gb, opcode);
-    }
-
-    public String getPrefixedName(int opcode) {
-        return (opcode >> 6 == 0) ? ROT.getFixedName(opcode) : BIT.getFixedName(opcode);
+            BIT_INST.doOp(gb, nextOpcode);
     }
 
 }
