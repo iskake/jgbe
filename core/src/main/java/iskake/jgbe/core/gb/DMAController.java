@@ -17,7 +17,7 @@ public class DMAController {
 
     public void startDMATransfer(byte address) {
         dmaActive = true;
-        dmaCyclesLeft = 160 * 4;
+        dmaCyclesLeft = 160 * (gb.timing.CYCLE_LEN_DIV == 4 ? 1 : 4);
         this.address = address;
     }
 

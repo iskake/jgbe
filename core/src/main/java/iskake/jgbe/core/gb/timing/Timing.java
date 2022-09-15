@@ -27,14 +27,18 @@ public class Timing {
     private final IJoypad joypad;
     private final InterruptHandler interrupts;
 
-    private final int MODE2_CYCLES = 80;
-    private final int MODE3_CYCLES_MIN = 172;
-    private final int MODE3_CYCLES_MAX = 289;
+    // Using M-cycle accuracy (set to `false`) should increase performance (in some cases, by a lot)
+    private final boolean T_STATE_ACCURATE = false; // FEATURE?: make this optional
+    public  final int CYCLE_LEN_DIV = T_STATE_ACCURATE ? 1 : 4;
 
-    private final int MODE0_CYCLES_MIN = 172;
-    private final int MODE0_CYCLES_MAX = 289;
+    private final int MODE2_CYCLES = 80 / CYCLE_LEN_DIV;
+    private final int MODE3_CYCLES_MIN = 172 / CYCLE_LEN_DIV;
+    private final int MODE3_CYCLES_MAX = 289 / CYCLE_LEN_DIV;   // TODO: 289/4 = 72.25
 
-    private final int SCANLINE_CYCLES = 456;
+    private final int MODE0_CYCLES_MIN = 172 / CYCLE_LEN_DIV;
+    private final int MODE0_CYCLES_MAX = 289 / CYCLE_LEN_DIV;   // TODO: 289/4 = 72.25
+
+    private final int SCANLINE_CYCLES = 456 / CYCLE_LEN_DIV;
     private final int MODE1_CYCLES = SCANLINE_CYCLES * 10;
     private final int FRAME_CYCLES = SCANLINE_CYCLES * 144 + MODE1_CYCLES;
 
@@ -83,7 +87,7 @@ public class Timing {
      */
     public void incCycles() {
         long oldCycles = cycles;
-        cycles += 4;
+        cycles += (4 / CYCLE_LEN_DIV);
         handleCycles(oldCycles);
     }
 
@@ -107,7 +111,11 @@ public class Timing {
     }
 
     private void handleTimers(long cycle) {
-        timers.tick();
+        // TODO (for M-cycle accuracy): check if ticking 4 times in a row
+        //  makes anything behave incorrectly (TIMA?)
+        for (int i = 0; i < CYCLE_LEN_DIV; i++) {
+            timers.tick();
+        }
 
         if (timers.shouldDispatchInterrupt()) {
             interrupts.setWaitingToCall(InterruptType.TIMER);
